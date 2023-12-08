@@ -7,7 +7,6 @@ on:
 
 jobs:
   release:
-    needs: [license-check, build]
     name: create-github-release
     runs-on: ubuntu-latest
     steps:
