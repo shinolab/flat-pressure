@@ -161,7 +161,7 @@ def should_update_dll(config: Config, version: str) -> bool:
         if not os.path.isfile("dll/libautd3capi.so"):
             return True
 
-    if not os.path.ifile("VERSION"):
+    if not os.path.isfile("VERSION"):
         return True
 
     with open("VERSION", "r") as f:
