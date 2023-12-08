@@ -1,0 +1,57 @@
+name: build
+
+on:
+  push:
+    branches:
+      - 'develop'
+  pull_request:
+    types: [opened, reopened, review_requested]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    name: check if files changed
+    outputs:
+      status: ${{ steps.changed-files.outputs.modified_files }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: tj-actions/changed-files@v40
+        id: changed-files
+        with:
+          files: |
+            .github/workflows/build-cpp.yml
+            ./CMakeLists.txt
+            ./**/CMakeLists.txt
+            ./**/*.hpp
+            ./**/*.cpp
+
+  build:
+    needs: check
+    name: build-cpp-${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Python
+        if: needs.check.outputs.status
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+      - name: Install packaging
+        shell: bash
+        run: |
+          python3 -m pip install -U packaging requests
+
+      - name: Build C++ library on ${{ matrix.os }}
+        run: |
+          python3 build.py cpp build --release --cmake-extra="-DCMAKE_C_COMPILER=gcc-12 -DCMAKE_CXX_COMPILER=g++-12"
+        if: needs.check.outputs.status
+      - name: Run C++ tests on ${{ matrix.os }}
+        run: |
+          python3 build.py cpp test --release --cmake-extra="-DCMAKE_C_COMPILER=gcc-12 -DCMAKE_CXX_COMPILER=g++-12"
+        if: needs.check.outputs.status
