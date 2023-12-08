@@ -46,7 +46,7 @@ jobs:
           sudo ln -s /usr/bin/gcov-12 /usr/bin/gcov
           python3 build.py cov --cmake-extra="-DCMAKE_C_COMPILER=gcc-12 -DCMAKE_CXX_COMPILER=g++-12"
 
-      - name: Upload coverage to Codecov (cpp)
+      - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

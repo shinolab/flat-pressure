@@ -19,7 +19,7 @@ jobs:
         id: changed-files
         with:
           files: |
-            .github/workflows/build-cpp.yml
+            .github/workflows/build.yml
             ./CMakeLists.txt
             ./**/CMakeLists.txt
             ./**/*.hpp
