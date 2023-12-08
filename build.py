@@ -185,14 +185,14 @@ def copy_dll(config: Config):
         shutil.unpack_archive("tmp.zip", ".")
         rm_f("tmp.zip")
     elif config.is_macos():
-        url = f"https://github.com/shinolab/autd3-capi/releases/download/v{version}/autd3-v{version}-win-x64.zip"
+        url = f"https://github.com/shinolab/autd3-capi/releases/download/v{version}/autd3-v{version}-macos-universal.tar.gz"
         with open("tmp.tar.gz", mode="wb") as f:
             f.write(requests.get(url).content)
         with tarfile.open("tmp.tar.gz", "r:gz") as tar:
             tar.extractall()
         rm_f("tmp.tar.gz")
     elif config.is_linux():
-        url = f"https://github.com/shinolab/autd3-capi/releases/download/v{version}/autd3-v{version}-win-x64.zip"
+        url = f"https://github.com/shinolab/autd3-capi/releases/download/v{version}/autd3-v{version}-linux-x64.tar.gz"
         with open("tmp.tar.gz", mode="wb") as f:
             f.write(requests.get(url).content)
         with tarfile.open("tmp.tar.gz", "r:gz") as tar:

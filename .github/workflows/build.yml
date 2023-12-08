@@ -20,6 +20,7 @@ jobs:
         with:
           files: |
             .github/workflows/build.yml
+            build.py
             ./CMakeLists.txt
             ./**/CMakeLists.txt
             ./**/*.hpp
@@ -49,9 +50,9 @@ jobs:
 
       - name: Build C++ library on ${{ matrix.os }}
         run: |
-          python3 build.py cpp build --release --cmake-extra="-DCMAKE_C_COMPILER=gcc-12 -DCMAKE_CXX_COMPILER=g++-12"
+          python3 build.py build --release --cmake-extra="-DCMAKE_C_COMPILER=gcc-12 -DCMAKE_CXX_COMPILER=g++-12"
         if: needs.check.outputs.status
       - name: Run C++ tests on ${{ matrix.os }}
         run: |
-          python3 build.py cpp test --release --cmake-extra="-DCMAKE_C_COMPILER=gcc-12 -DCMAKE_CXX_COMPILER=g++-12"
+          python3 build.py test --release --cmake-extra="-DCMAKE_C_COMPILER=gcc-12 -DCMAKE_CXX_COMPILER=g++-12"
         if: needs.check.outputs.status
