@@ -40,6 +40,9 @@ jobs:
         shell: bash
         run: |
           python3 -m pip install -U packaging requests
+      - name: Install lcov
+        run: |
+          sudo apt update && sudo apt -y install lcov
 
       - name: Generate code coverage for cpp
         run: |
