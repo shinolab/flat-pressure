@@ -15,6 +15,7 @@ option(RUN_LINK_REMOTE_SOEM "RUN_LINK_REMOTE_SOEM" OFF)
 option(RUN_LINK_TWINCAT "RUN_LINK_TWINCAT" OFF)
 option(RUN_LINK_REMOTE_TWINCAT "RUN_LINK_REMOTE_TWINCAT" OFF)
 option(RUN_LINK_SIMULATOR "RUN_LINK_SIMULATOR" OFF)
+option(RUN_BACKEND_CUDA "RUN_BACKEND_CUDA" OFF)
 option(COVERAGE "Take coverage" OFF)
 
 if(COVERAGE)
@@ -36,6 +37,10 @@ FetchContent_Declare(
   autd3
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/..
 )
+if(RUN_BACKEND_CUDA)
+  set(USE_BACKEND_CUDA ON)
+endif()
+set(USE_LINK_VISUALIZER ON)
 FetchContent_MakeAvailable(autd3)
 
 add_executable(test_autd3 main.cpp)
@@ -73,5 +78,7 @@ endif()
 if(RUN_LINK_SIMULATOR)
   target_compile_definitions(test_autd3 PRIVATE RUN_LINK_SIMULATOR)
 endif()
-
+if(RUN_BACKEND_CUDA)
+  target_compile_definitions(test_autd3 PRIVATE RUN_BACKEND_CUDA)
+endif()
 target_compile_definitions(test_autd3 PRIVATE AUTD3_RESOURCE_PATH="${PROJECT_SOURCE_DIR}/../examples/resources")

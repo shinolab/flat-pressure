@@ -15,7 +15,6 @@ Copyright (c) 2023 Shun Suzuki. All rights reserved.
 
 import argparse
 import contextlib
-import glob
 import os
 import platform
 import re
@@ -135,6 +134,9 @@ class Config:
     def exe_ext(self):
         return ".exe" if self.is_windows() else ""
 
+    def is_cuda_available(self):
+        return shutil.which("nvcc") is not None
+
     def is_pcap_available(self):
         if not self.is_windows():
             return True
@@ -237,6 +239,8 @@ def cpp_test(args):
             if config.cmake_extra is not None:
                 for cmd in config.cmake_extra:
                     command.append(cmd)
+            if config.is_cuda_available():
+                command.append("-DRUN_BACKEND_CUDA=ON")
             subprocess.run(command).check_returncode()
             command = ["cmake", "--build", ".", "--parallel", "8"]
             if config.release:
@@ -268,6 +272,8 @@ def cpp_cov(args):
             if config.cmake_extra is not None:
                 for cmd in config.cmake_extra:
                     command.append(cmd)
+            if config.is_cuda_available():
+                command.append("-DRUN_BACKEND_CUDA=ON")
             subprocess.run(command).check_returncode()
             command = ["cmake", "--build", ".", "--parallel", "8"]
             if config.release:
@@ -293,6 +299,7 @@ def cpp_cov(args):
                     "*/tests/*",
                     "*/c++/*",
                     "*/gcc/*",
+                    "*/gain/holo/backend_cuda.hpp",
                     "-o",
                     "coverage.info",
                 ]

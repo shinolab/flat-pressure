@@ -3,7 +3,7 @@
 // Created Date: 29/05/2023
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/12/2023
+// Last Modified: 11/12/2023
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -70,7 +70,7 @@ class Controller {
   /**
    * @brief Close connection
    */
-  [[nodiscard]] bool close() const { return validate(AUTDControllerClose(_ptr)) == native_methods::AUTD3_TRUE; }
+  bool close() const { return validate(AUTDControllerClose(_ptr)) == native_methods::AUTD3_TRUE; }
 
   /**
    * @brief Close connection
