@@ -176,6 +176,7 @@ def copy_dll(config: Config):
     with open("CMakeLists.txt", "r") as f:
         content = f.read()
         version = re.search(r"project\(autd3 VERSION (.*)\)", content).group(1)
+        version = ".".join(version.split(".")[:3])
 
     if not should_update_dll(config, version):
         return
