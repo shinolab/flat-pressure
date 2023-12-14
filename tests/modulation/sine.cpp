@@ -3,7 +3,7 @@
 // Created Date: 26/09/2023
 // Author: Shun Suzuki
 // -----
-// Last Modified: 08/12/2023
+// Last Modified: 14/12/2023
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -46,7 +46,7 @@ TEST(Modulation, SineWithMode) {
   for (auto& dev : autd.geometry()) {
     auto mod = autd.link().modulation(dev.idx());
     std::vector<uint8_t> mod_expect{127, 156, 184, 209, 229, 244, 252, 254, 249, 237, 219, 197, 170, 142,
-                                    112, 84,  57,  35,  17,  5,   0,   2,   10,  25,  45,  70,  0};
+                                    112, 84,  57,  35,  17,  5,   0,   2,   10,  25,  45,  70,  98};
     ASSERT_TRUE(std::ranges::equal(mod, mod_expect));
   }
 

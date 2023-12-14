@@ -3,7 +3,7 @@
 // Created Date: 29/05/2023
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/12/2023
+// Last Modified: 14/12/2023
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -16,11 +16,6 @@
 #include "autd3/internal/utils.hpp"
 
 namespace autd3::internal {
-
-template <class S>
-concept special_datagram = requires(S s) {
-  { s.ptr() } -> std::same_as<native_methods::DatagramSpecialPtr>;
-};
 
 template <class D>
 concept datagram = requires(D d, const geometry::Geometry& g) {

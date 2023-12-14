@@ -3,7 +3,7 @@
 // Created Date: 29/05/2023
 // Author: Shun Suzuki
 // -----
-// Last Modified: 08/12/2023
+// Last Modified: 14/12/2023
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -38,7 +38,6 @@
 #include "autd3/internal/geometry/transducer.hpp"
 #include "autd3/internal/phase.hpp"
 #include "autd3/internal/sampling_config.hpp"
-#include "autd3/internal/special.hpp"
 #include "autd3/internal/stm.hpp"
 #include "autd3/modulation/cache.hpp"
 #include "autd3/modulation/fourier.hpp"
@@ -59,7 +58,7 @@ constexpr double pi = internal::pi;
 /**
  * @brief AUTD3 software version
  */
-static inline std::string version = "19.0.0.1";
+static inline std::string version = "19.1.0";
 
 using internal::geometry::AUTD3;
 using internal::geometry::deg;
@@ -84,8 +83,6 @@ using datagram::ConfigureReadsFPGAInfo;
 using internal::Clear;
 using internal::Silencer;
 using internal::Synchronize;
-
-using internal::Stop;
 
 using internal::ControlPoint;
 using internal::FocusSTM;

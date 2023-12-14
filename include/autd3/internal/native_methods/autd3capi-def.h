@@ -86,10 +86,6 @@ struct DatagramPtr {
   void* _0;
 };
 
-struct DatagramSpecialPtr {
-  void* _0;
-};
-
 struct STMPropsPtr {
   void* _0;
 };

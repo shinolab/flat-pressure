@@ -76,8 +76,6 @@ void AUTDFirmwareLatest(char *latest);
 
 [[nodiscard]] DatagramPtr AUTDDatagramClear();
 
-[[nodiscard]] DatagramSpecialPtr AUTDDatagramStop();
-
 [[nodiscard]]
 DatagramPtr AUTDDatagramConfigureModDelay(void* f,
                                           void* context,
@@ -106,11 +104,6 @@ ResultI32 AUTDControllerSend(ControllerPtr cnt,
                              DatagramPtr d2,
                              int64_t timeout_ns);
 
-[[nodiscard]]
-ResultI32 AUTDControllerSendSpecial(ControllerPtr cnt,
-                                    DatagramSpecialPtr special,
-                                    int64_t timeout_ns);
-
 [[nodiscard]] GroupKVMapPtr AUTDControllerGroupCreateKVMap();
 
 [[nodiscard]]
@@ -119,12 +112,6 @@ ResultGroupKVMap AUTDControllerGroupKVMapSet(GroupKVMapPtr map,
                                              DatagramPtr d1,
                                              DatagramPtr d2,
                                              int64_t timeout_ns);
-
-[[nodiscard]]
-ResultGroupKVMap AUTDControllerGroupKVMapSetSpecial(GroupKVMapPtr map,
-                                                    int32_t key,
-                                                    DatagramSpecialPtr special,
-                                                    int64_t timeout_ns);
 
 [[nodiscard]]
 ResultI32 AUTDControllerGroup(ControllerPtr cnt,

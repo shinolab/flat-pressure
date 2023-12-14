@@ -3,7 +3,7 @@
 // Created Date: 26/09/2023
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/12/2023
+// Last Modified: 14/12/2023
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -16,7 +16,6 @@
 #include <autd3/gain/null.hpp>
 #include <autd3/gain/uniform.hpp>
 #include <autd3/internal/datagram.hpp>
-#include <autd3/internal/special.hpp>
 #include <autd3/modulation/sine.hpp>
 #include <autd3/modulation/static.hpp>
 
@@ -54,9 +53,6 @@ TEST(Internal, ControllerSendTimeout) {
 
     autd.send_async(autd3::gain::Null(), autd3::gain::Null(), std::chrono::microseconds(2)).get();
     ASSERT_EQ(autd.link().last_timeout_ns(), 2000);
-
-    autd.send_async(autd3::internal::Stop(), std::chrono::microseconds(1)).get();
-    ASSERT_EQ(autd.link().last_timeout_ns(), 1000);
   }
 
   {
@@ -74,9 +70,6 @@ TEST(Internal, ControllerSendTimeout) {
 
     autd.send_async(autd3::gain::Null(), autd3::gain::Null(), std::chrono::microseconds(2)).get();
     ASSERT_EQ(autd.link().last_timeout_ns(), 2000);
-
-    autd.send_async(autd3::internal::Stop(), std::chrono::microseconds(1)).get();
-    ASSERT_EQ(autd.link().last_timeout_ns(), 1000);
   }
 }
 
@@ -128,29 +121,6 @@ TEST(Internal, ControllerSendDouble) {
   ASSERT_THROW(autd.send_async(autd3::modulation::Static(), autd3::gain::Uniform(1)).get(), autd3::internal::AUTDException);
 }
 
-TEST(Internal, ControllerSendSpecial) {
-  auto autd = create_controller();
-
-  ASSERT_TRUE(autd.send_async(autd3::gain::Uniform(0x80)).get());
-  for (auto& dev : autd.geometry()) {
-    auto [intensities, phases] = autd.link().intensities_and_phases(dev.idx(), 0);
-    ASSERT_TRUE(std::ranges::all_of(intensities, [](auto d) { return d == 0x80; }));
-    ASSERT_TRUE(std::ranges::all_of(phases, [](auto p) { return p == 0; }));
-  }
-
-  ASSERT_TRUE(autd.send_async(autd3::internal::Stop()).get());
-  for (auto& dev : autd.geometry()) {
-    auto [intensities, phases] = autd.link().intensities_and_phases(dev.idx(), 0);
-    ASSERT_TRUE(std::ranges::all_of(intensities, [](auto d) { return d == 0; }));
-  }
-
-  autd.link().down();
-  ASSERT_FALSE(autd.send_async(autd3::internal::Stop()).get());
-
-  autd.link().break_down();
-  ASSERT_THROW(autd.send_async(autd3::internal::Stop()).get(), autd3::internal::AUTDException);
-}
-
 TEST(Internal, ControllerGroup) {
   auto autd = create_controller();
 
@@ -177,7 +147,7 @@ TEST(Internal, ControllerGroup) {
   }
 
   autd.group([](auto& dev) -> std::optional<size_t> { return dev.idx(); })
-      .set(1, autd3::internal::Stop())
+      .set(1, autd3::gain::Null())
       .set(0, autd3::modulation::Sine(150), autd3::gain::Uniform(0x80))
       .send_async()
       .get();

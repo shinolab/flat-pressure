@@ -3,7 +3,7 @@
 // Created Date: 29/05/2023
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/12/2023
+// Last Modified: 14/12/2023
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -269,76 +269,6 @@ class Controller {
     });
   }
 
-  /**
-   * @brief Send data to the devices
-   *
-   * @tparam S Special type (Stop)
-   * @tparam Rep
-   * @tparam Period
-   * @param s special data
-   * @param timeout timeout
-   * @return If true, it is confirmed that the data has been successfully transmitted. Otherwise, there are no errors, but it is unclear whether the
-   * data has been sent reliably or not.
-   */
-  template <special_datagram S, typename Rep, typename Period>
-  bool send(S&& s, const std::chrono::duration<Rep, Period> timeout) {
-    return send(std::forward<S>(s), std::optional(timeout));
-  }
-
-  /**
-   * @brief Send data to the devices
-   *
-   * @tparam S Special type (Stop)
-   * @tparam Rep
-   * @tparam Period
-   * @param s special data
-   * @param timeout timeout
-   * @return If true, it is confirmed that the data has been successfully transmitted. Otherwise, there are no errors, but it is unclear whether the
-   * data has been sent reliably or not.
-   */
-  template <special_datagram S, typename Rep, typename Period>
-  std::future<bool> send_async(S&& s, const std::chrono::duration<Rep, Period> timeout) {
-    return send_async(std::forward<S>(s), std::optional(timeout));
-  }
-
-  /**
-   * @brief Send data to the devices
-   *
-   * @tparam S Special type (Stop)
-   * @tparam Rep
-   * @tparam Period
-   * @param s special data
-   * @param timeout timeout
-   * @return If true, it is confirmed that the data has been successfully transmitted. Otherwise, there are no errors, but it is unclear whether the
-   * data has been sent reliably or not.
-   */
-  template <special_datagram S, typename Rep = uint64_t, typename Period = std::milli>
-  bool send(S&& s, const std::optional<std::chrono::duration<Rep, Period>> timeout = std::nullopt) {
-    const int64_t timeout_ns =
-        timeout.has_value() ? static_cast<int64_t>(std::chrono::duration_cast<std::chrono::nanoseconds>(timeout.value()).count()) : -1;
-    return validate(native_methods::AUTDControllerSendSpecial(_ptr, s.ptr(), timeout_ns)) == native_methods::AUTD3_TRUE;
-  }
-
-  /**
-   * @brief Send data to the devices
-   *
-   * @tparam S Special type (Stop)
-   * @tparam Rep
-   * @tparam Period
-   * @param s special data
-   * @param timeout timeout
-   * @return If true, it is confirmed that the data has been successfully transmitted. Otherwise, there are no errors, but it is unclear whether the
-   * data has been sent reliably or not.
-   */
-  template <special_datagram S, typename Rep = uint64_t, typename Period = std::milli>
-  std::future<bool> send_async(S&& s, const std::optional<std::chrono::duration<Rep, Period>> timeout = std::nullopt) {
-    return std::async(std::launch::deferred, [this, s_ = std::forward<S>(s), timeout]() -> bool {
-      const int64_t timeout_ns =
-          timeout.has_value() ? static_cast<int64_t>(std::chrono::duration_cast<std::chrono::nanoseconds>(timeout.value()).count()) : -1;
-      return validate(native_methods::AUTDControllerSendSpecial(_ptr, s_.ptr(), timeout_ns)) == native_methods::AUTD3_TRUE;
-    });
-  }
-
   template <group_f F>
   class GroupGuard {
    public:
@@ -376,21 +306,6 @@ class Controller {
     template <datagram D1, datagram D2, typename Rep, typename Period>
     GroupGuard set(const key_type key, D1&& data1, D2&& data2, const std::chrono::duration<Rep, Period> timeout) {
       return set(key, std::forward<D1>(data1), std::forward<D2>(data2), std::optional(timeout));
-    }
-
-    template <special_datagram D, typename Rep = uint64_t, typename Period = std::milli>
-    GroupGuard set(const key_type key, D&& data, const std::optional<std::chrono::duration<Rep, Period>> timeout = std::nullopt) {
-      if (_keymap.contains(key)) throw AUTDException("Key already exists");
-      const int64_t timeout_ns = timeout.has_value() ? timeout.value().count() : -1;
-      const auto ptr = data.ptr();
-      _keymap[key] = _k++;
-      _kv_map = validate(native_methods::AUTDControllerGroupKVMapSetSpecial(_kv_map, _keymap[key], ptr, timeout_ns));
-      return std::move(*this);
-    }
-
-    template <special_datagram D, typename Rep, typename Period>
-    GroupGuard set(const key_type key, D&& data, const std::chrono::duration<Rep, Period> timeout) {
-      return set(key, std::forward<D>(data), std::optional(timeout));
     }
 
     bool send() {
