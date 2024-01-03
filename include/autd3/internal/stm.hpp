@@ -3,7 +3,7 @@
 // Created Date: 29/05/2023
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/12/2023
+// Last Modified: 03/01/2024
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -49,7 +49,7 @@ class STM {
  protected:
   [[nodiscard]] native_methods::STMPropsPtr props() const {
     native_methods::STMPropsPtr ptr{nullptr};
-    if (_freq.has_value()) ptr = native_methods::AUTDSTMPropsNew(_freq.value());
+    if (_freq.has_value()) ptr = native_methods::AUTDSTMPropsFromFreq(_freq.value());
     if (_period.has_value()) ptr = native_methods::AUTDSTMPropsFromPeriod(static_cast<uint64_t>(_period.value().count()));
     if (_config.has_value()) ptr = AUTDSTMPropsFromSamplingConfig(static_cast<native_methods::SamplingConfiguration>(_config.value()));
     if (ptr._0 == nullptr) throw std::runtime_error("unreachable!");
@@ -109,13 +109,14 @@ concept focus_range_c = std::ranges::viewable_range<R> && std::same_as<std::rang
  */
 class FocusSTM final : public STM {
  public:
-  explicit FocusSTM(const double freq) : STM(freq, std::nullopt, std::nullopt) {}
-
+  FocusSTM() = delete;
   FocusSTM(const FocusSTM& obj) = default;
   FocusSTM& operator=(const FocusSTM& obj) = default;
   FocusSTM(FocusSTM&& obj) = default;
   FocusSTM& operator=(FocusSTM&& obj) = default;
   ~FocusSTM() override = default;  // LCOV_EXCL_LINE
+
+  static FocusSTM from_freq(const double freq) { return FocusSTM(freq, std::nullopt, std::nullopt); }
 
   static FocusSTM from_sampling_config(const SamplingConfiguration config) { return FocusSTM(std::nullopt, std::nullopt, config); }
 
@@ -280,17 +281,19 @@ concept gain_range = std::ranges::viewable_range<R> && gain<std::ranges::range_v
  */
 class GainSTM final : public STM {
  public:
-  /**
-   * @brief Constructor
-   *
-   * @param freq STM frequency
-   */
-  explicit GainSTM(const double freq) : STM(freq, std::nullopt, std::nullopt) {}
+  GainSTM() = delete;
   GainSTM(const GainSTM& obj) = default;
   GainSTM& operator=(const GainSTM& obj) = default;
   GainSTM(GainSTM&& obj) = default;
   GainSTM& operator=(GainSTM&& obj) = default;
   ~GainSTM() override = default;  // LCOV_EXCL_LINE
+
+  /**
+   * @brief Constructor
+   *
+   * @param freq STM frequency
+   */
+  static GainSTM from_freq(const double freq) { return GainSTM(freq, std::nullopt, std::nullopt); }
 
   /**
    * @brief Constructor

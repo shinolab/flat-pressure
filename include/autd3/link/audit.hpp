@@ -3,7 +3,7 @@
 // Created Date: 26/09/2023
 // Author: Shun Suzuki
 // -----
-// Last Modified: 06/12/2023
+// Last Modified: 03/01/2024
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -67,10 +67,24 @@ class Audit final {
 
   void update(const size_t idx) const { AUTDLinkAuditCpuUpdate(_ptr, static_cast<std::uint32_t>(idx)); }
 
-  [[nodiscard]] int silencer_step_intensity(const size_t idx) const {
-    return AUTDLinkAuditFpgaSilencerStepIntensity(_ptr, static_cast<std::uint32_t>(idx));
+  [[nodiscard]] uint16_t silencer_update_rate_intensity(const size_t idx) const {
+    return AUTDLinkAuditFpgaSilencerUpdateRateIntensity(_ptr, static_cast<std::uint32_t>(idx));
   }
-  [[nodiscard]] int silencer_step_phase(const size_t idx) const { return AUTDLinkAuditFpgaSilencerStepPhase(_ptr, static_cast<std::uint32_t>(idx)); }
+  [[nodiscard]] uint16_t silencer_update_rate_phase(const size_t idx) const {
+    return AUTDLinkAuditFpgaSilencerUpdateRatePhase(_ptr, static_cast<std::uint32_t>(idx));
+  }
+
+  [[nodiscard]] uint16_t silencer_completion_steps_intensity(const size_t idx) const {
+    return AUTDLinkAuditFpgaSilencerCompletionStepsIntensity(_ptr, static_cast<std::uint32_t>(idx));
+  }
+
+  [[nodiscard]] uint16_t silencer_completion_steps_phase(const size_t idx) const {
+    return AUTDLinkAuditFpgaSilencerCompletionStepsPhase(_ptr, static_cast<std::uint32_t>(idx));
+  }
+
+  [[nodiscard]] bool silencer_fixed_completion_steps_mode(const size_t idx) const {
+    return AUTDLinkAuditFpgaSilencerFixedCompletionStepsMode(_ptr, static_cast<std::uint32_t>(idx));
+  }
 
   [[nodiscard]] uint8_t debug_output_idx(const size_t idx) const { return AUTDLinkAuditFpgaDebugOutputIdx(_ptr, static_cast<std::uint32_t>(idx)); }
 

@@ -37,17 +37,17 @@ FetchContent_Declare(
   autd3
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/..
 )
-if(RUN_BACKEND_CUDA)
-  set(USE_BACKEND_CUDA ON)
-endif()
-set(USE_LINK_VISUALIZER ON)
 FetchContent_MakeAvailable(autd3)
 
 add_executable(test_autd3 main.cpp)
 
 target_include_directories(test_autd3 PRIVATE .)
 target_link_libraries(test_autd3 PRIVATE gtest_main)
-autd3_target_link_library(test_autd3 PRIVATE)
+target_link_libraries(test_autd3 PRIVATE autd3::autd3 autd3::gain::holo autd3::modulation::audio_file)
+target_link_libraries(test_autd3 PRIVATE autd3::link::soem)
+target_link_libraries(test_autd3 PRIVATE autd3::link::twincat)
+target_link_libraries(test_autd3 PRIVATE autd3::link::simulator)
+target_link_libraries(test_autd3 PRIVATE autd3::link::visualizer)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/gain)
 add_subdirectory(${PROJECT_SOURCE_DIR}/internal)
@@ -80,5 +80,6 @@ if(RUN_LINK_SIMULATOR)
 endif()
 if(RUN_BACKEND_CUDA)
   target_compile_definitions(test_autd3 PRIVATE RUN_BACKEND_CUDA)
+  target_link_libraries(test_autd3 PRIVATE autd3::backend::cuda)
 endif()
 target_compile_definitions(test_autd3 PRIVATE AUTD3_RESOURCE_PATH="${PROJECT_SOURCE_DIR}/../examples/resources")

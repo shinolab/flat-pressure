@@ -25,17 +25,17 @@ if(AUTD_LOCAL_TEST)
 elseif(WIN32)
   FetchContent_Declare(
     autd3
-    URL https://github.com/shinolab/autd3-cpp/releases/download/v19.1.0/autd3-v19.1.0-win-x64.zip
+    URL https://github.com/shinolab/autd3-cpp/releases/download/v20.0.0/autd3-v20.0.0-win-x64.zip
   )
 elseif(APPLE)
   FetchContent_Declare(
     autd3
-    URL https://github.com/shinolab/autd3-cpp/releases/download/v19.1.0/autd3-v19.1.0-macos-universal.tar.gz
+    URL https://github.com/shinolab/autd3-cpp/releases/download/v20.0.0/autd3-v20.0.0-macos-universal.tar.gz
   )
 else()
   FetchContent_Declare(
     autd3
-    URL https://github.com/shinolab/autd3-cpp/releases/download/v19.1.0/autd3-v19.1.0-linux-x64.tar.gz
+    URL https://github.com/shinolab/autd3-cpp/releases/download/v20.0.0/autd3-v20.0.0-linux-x64.tar.gz
   )
 endif()
 FetchContent_MakeAvailable(autd3)
@@ -44,21 +44,21 @@ add_library(autd3-example INTERFACE)
 target_compile_definitions(autd3-example INTERFACE AUTD3_RESOURCE_PATH="${PROJECT_SOURCE_DIR}/resources")
 
 add_executable(soem soem.cpp)
-autd3_target_link_library(soem PRIVATE)
+target_link_libraries(soem PRIVATE autd3::autd3 autd3::modulation::audio_file autd3::gain::holo autd3::link::soem)
 target_link_libraries(soem PRIVATE autd3-example)
 
 add_executable(twincat twincat.cpp)
-autd3_target_link_library(twincat PRIVATE)
+target_link_libraries(twincat PRIVATE autd3::autd3 autd3::modulation::audio_file autd3::gain::holo autd3::link::twincat)
 target_link_libraries(twincat PRIVATE autd3-example)
 
 add_executable(remote_twincat remote_twincat.cpp)
-autd3_target_link_library(remote_twincat PRIVATE)
+target_link_libraries(remote_twincat PRIVATE autd3::autd3 autd3::modulation::audio_file autd3::gain::holo autd3::link::twincat)
 target_link_libraries(remote_twincat PRIVATE autd3-example)
 
 add_executable(remote_soem remote_soem.cpp)
-autd3_target_link_library(remote_soem PRIVATE)
+target_link_libraries(remote_soem PRIVATE autd3::autd3 autd3::modulation::audio_file autd3::gain::holo autd3::link::soem)
 target_link_libraries(remote_soem PRIVATE autd3-example)
 
 add_executable(simulator simulator.cpp)
-autd3_target_link_library(simulator PRIVATE)
+target_link_libraries(simulator PRIVATE autd3::autd3 autd3::modulation::audio_file autd3::gain::holo autd3::link::simulator)
 target_link_libraries(simulator PRIVATE autd3-example)

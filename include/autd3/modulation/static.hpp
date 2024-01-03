@@ -3,7 +3,7 @@
 // Created Date: 13/09/2023
 // Author: Shun Suzuki
 // -----
-// Last Modified: 28/11/2023
+// Last Modified: 03/01/2024
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -26,13 +26,17 @@ namespace autd3::modulation {
 class Static final : public internal::Modulation, public IntoCache<Static>, public IntoRadiationPressure<Static>, public IntoTransform<Static> {
  public:
   Static() = default;
+  explicit Static(const uint8_t intensity) : _intensity(internal::EmitIntensity(intensity)) {}
+  explicit Static(const internal::EmitIntensity intensity) : _intensity(intensity) {}
 
-  AUTD3_DEF_PARAM_INTENSITY(Static, intensity)
+  static Static with_intensity(const uint8_t intensity) { return Static(intensity); }
+  static Static with_intensity(const internal::EmitIntensity intensity) { return Static(intensity); }
 
   [[nodiscard]] internal::native_methods::ModulationPtr modulation_ptr() const override {
-    auto ptr = internal::native_methods::AUTDModulationStatic();
-    if (_intensity.has_value()) ptr = AUTDModulationStaticWithIntensity(ptr, _intensity.value().value());
-    return ptr;
+    if (_intensity.has_value())
+      return internal::native_methods::AUTDModulationStaticWithIntensity(_intensity.value().value());
+    else
+      return internal::native_methods::AUTDModulationStatic();
   }
 
  private:

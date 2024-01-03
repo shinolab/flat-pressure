@@ -96,7 +96,17 @@ DatagramPtr AUTDDatagramConfigureReadsFPGAInfo(void* f,
                                                void* context,
                                                GeometryPtr geometry);
 
-[[nodiscard]] ResultDatagram AUTDDatagramSilencer(uint16_t step_intensity, uint16_t step_phase);
+[[nodiscard]]
+ResultDatagram AUTDDatagramSilencerFixedUpdateRate(uint16_t value_intensity,
+                                                   uint16_t value_phase);
+
+[[nodiscard]]
+ResultDatagram AUTDDatagramSilencerFixedCompletionSteps(uint16_t value_intensity,
+                                                        uint16_t value_phase);
+
+[[nodiscard]]
+DatagramPtr AUTDDatagramSilencerFixedCompletionStepsWithStrictMode(DatagramPtr silcenr,
+                                                                   bool mode);
 
 [[nodiscard]]
 ResultI32 AUTDControllerSend(ControllerPtr cnt,
@@ -273,9 +283,17 @@ void AUTDLinkAuditFpgaDeassertThermalSensor(LinkPtr audit, uint32_t idx);
 
 [[nodiscard]] bool AUTDLinkAuditFpgaIsStmGainMode(LinkPtr audit, uint32_t idx);
 
-[[nodiscard]] uint16_t AUTDLinkAuditFpgaSilencerStepIntensity(LinkPtr audit, uint32_t idx);
+[[nodiscard]] uint16_t AUTDLinkAuditFpgaSilencerUpdateRateIntensity(LinkPtr audit, uint32_t idx);
 
-[[nodiscard]] uint16_t AUTDLinkAuditFpgaSilencerStepPhase(LinkPtr audit, uint32_t idx);
+[[nodiscard]] uint16_t AUTDLinkAuditFpgaSilencerUpdateRatePhase(LinkPtr audit, uint32_t idx);
+
+[[nodiscard]]
+uint16_t AUTDLinkAuditFpgaSilencerCompletionStepsIntensity(LinkPtr audit,
+                                                           uint32_t idx);
+
+[[nodiscard]] uint16_t AUTDLinkAuditFpgaSilencerCompletionStepsPhase(LinkPtr audit, uint32_t idx);
+
+[[nodiscard]] bool AUTDLinkAuditFpgaSilencerFixedCompletionStepsMode(LinkPtr audit, uint32_t idx);
 
 [[nodiscard]] uint8_t AUTDLinkAuditFpgaDebugOutputIdx(LinkPtr audit, uint32_t idx);
 
@@ -364,11 +382,11 @@ ModulationPtr AUTDModulationSquareWithSamplingConfig(ModulationPtr m,
 
 [[nodiscard]] ModulationPtr AUTDModulationStatic();
 
-[[nodiscard]] ModulationPtr AUTDModulationStaticWithIntensity(ModulationPtr m, uint8_t intensity);
+[[nodiscard]] ModulationPtr AUTDModulationStaticWithIntensity(uint8_t intensity);
 
 [[nodiscard]] ModulationPtr AUTDModulationWithTransform(ModulationPtr m, void* f, void* context);
 
-[[nodiscard]] STMPropsPtr AUTDSTMPropsNew(double freq);
+[[nodiscard]] STMPropsPtr AUTDSTMPropsFromFreq(double freq);
 
 [[nodiscard]] STMPropsPtr AUTDSTMPropsFromPeriod(uint64_t p);
 

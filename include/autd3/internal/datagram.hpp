@@ -3,7 +3,7 @@
 // Created Date: 29/05/2023
 // Author: Shun Suzuki
 // -----
-// Last Modified: 14/12/2023
+// Last Modified: 03/01/2024
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -39,29 +39,80 @@ class NullDatagram final {
  */
 class Silencer final {
  public:
-  Silencer() noexcept : Silencer(256, 256) {}
+  /**
+   * @brief Datagram to configure silencer
+   */
+  class FixedUpdateRate final {
+   public:
+    explicit FixedUpdateRate(const uint16_t update_rate_intensity, const uint16_t update_rate_phase) noexcept
+        : _value_intensity(update_rate_intensity), _value_phase(update_rate_phase) {}
+
+    [[nodiscard]] native_methods::DatagramPtr ptr(const geometry::Geometry&) const {
+      return validate(native_methods::AUTDDatagramSilencerFixedUpdateRate(_value_intensity, _value_phase));
+    }
+
+   private:
+    uint16_t _value_intensity;
+    uint16_t _value_phase;
+  };
+
+  /**
+   * @brief Datagram to configure silencer
+   */
+  class FixedCompletionSteps final {
+   public:
+    explicit FixedCompletionSteps(const uint16_t steps_intensity, const uint16_t steps_phase) noexcept
+        : _value_intensity(steps_intensity), _value_phase(steps_phase) {}
+
+    AUTD3_DEF_PARAM(FixedCompletionSteps, bool, strict_mode)
+
+    [[nodiscard]] native_methods::DatagramPtr ptr(const geometry::Geometry&) const {
+      auto ptr = validate(native_methods::AUTDDatagramSilencerFixedCompletionSteps(_value_intensity, _value_phase));
+      if (_strict_mode.has_value()) ptr = native_methods::AUTDDatagramSilencerFixedCompletionStepsWithStrictMode(ptr, _strict_mode.value());
+      return ptr;
+    }
+
+   private:
+    uint16_t _value_intensity;
+    uint16_t _value_phase;
+    std::optional<bool> _strict_mode;
+  };
+
+  Silencer() = default;
+
   /**
    * @brief Constructor
    *
-   * @param step_intensity Intensity update step of silencer. The smaller `step`
+   * @param update_rate_intensity Intensity update rate of silencer. The smaller value
    * is, the quieter the output is.
-   * @param step_phase Phase update step of silencer. The smaller `step` is, the
+   * @param update_rate_phase Phase update rate of silencer. The smaller value is, the
    * quieter the output is.
    */
-  explicit Silencer(const uint16_t step_intensity, const uint16_t step_phase) noexcept : _step_intensity(step_intensity), _step_phase(step_phase) {}
+  static FixedUpdateRate fixed_update_rate(const uint16_t update_rate_intensity, const uint16_t update_rate_phase) noexcept {
+    return FixedUpdateRate(update_rate_intensity, update_rate_phase);
+  }
+
+  /**
+   * @brief Constructor
+   *
+   * @param steps_intensity Intensity completion steps of silencer. The smaller value is,
+   * the quieter the output is.
+   * @param steps_phase Phase completion steps of silencer. The smaller value is, the
+   * quieter the output is.
+   */
+  static FixedCompletionSteps fixed_completion_steps(const uint16_t steps_intensity, const uint16_t steps_phase) noexcept {
+    return FixedCompletionSteps(steps_intensity, steps_phase);
+  }
 
   /**
    * @brief Disable silencer
    */
-  static Silencer disable() noexcept { return Silencer(0xFFFF, 0xFFFF); }
+  static FixedCompletionSteps disable() noexcept { return fixed_completion_steps(1, 1); }
 
   [[nodiscard]] native_methods::DatagramPtr ptr(const geometry::Geometry&) const {
-    return validate(native_methods::AUTDDatagramSilencer(_step_intensity, _step_phase));
+    return native_methods::AUTDDatagramSilencerFixedCompletionStepsWithStrictMode(
+        validate(native_methods::AUTDDatagramSilencerFixedCompletionSteps(10, 40)), true);
   }
-
- private:
-  uint16_t _step_intensity;
-  uint16_t _step_phase;
 };
 
 /**

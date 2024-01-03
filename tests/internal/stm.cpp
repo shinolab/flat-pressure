@@ -3,7 +3,7 @@
 // Created Date: 26/09/2023
 // Author: Shun Suzuki
 // -----
-// Last Modified: 02/12/2023
+// Last Modified: 03/01/2024
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -24,12 +24,12 @@ TEST(STMTest, FocusSTM) {
   constexpr double radius = 30.0;
   constexpr int size = 2;
   autd3::internal::Vector3 center = autd.geometry().center() + autd3::internal::Vector3(0, 0, 150);
-  auto stm = autd3::internal::FocusSTM(1).add_foci_from_iter(std::views::iota(0) | std::views::take(size) | std::views::transform([&](auto i) {
-                                                               const double theta = 2 * autd3::internal::pi * i / size;
-                                                               return autd3::internal::ControlPoint{
-                                                                   center + autd3::internal::Vector3(radius * cos(theta), radius * sin(theta), 0),
-                                                                   autd3::internal::EmitIntensity::maximum()};
-                                                             }));
+  auto stm = autd3::internal::FocusSTM::from_freq(1).add_foci_from_iter(
+      std::views::iota(0) | std::views::take(size) | std::views::transform([&](auto i) {
+        const double theta = 2 * autd3::internal::pi * i / size;
+        return autd3::internal::ControlPoint{center + autd3::internal::Vector3(radius * cos(theta), radius * sin(theta), 0),
+                                             autd3::internal::EmitIntensity::maximum()};
+      }));
   ASSERT_TRUE(autd.send_async(stm).get());
   for (const auto& dev : autd.geometry()) {
     ASSERT_FALSE(autd.link().is_stm_gain_mode(dev.idx()));
@@ -103,11 +103,11 @@ TEST(STMTest, GainSTM) {
   constexpr double radius = 30.0;
   constexpr int size = 2;
   autd3::internal::Vector3 center = autd.geometry().center() + autd3::internal::Vector3(0, 0, 150);
-  auto stm = autd3::internal::GainSTM(1).add_gains_from_iter(std::views::iota(0) | std::views::take(size) | std::views::transform([&](auto i) {
-                                                               const double theta = 2 * autd3::internal::pi * i / size;
-                                                               return autd3::gain::Focus(
-                                                                   center + autd3::internal::Vector3(radius * cos(theta), radius * sin(theta), 0));
-                                                             }));
+  auto stm = autd3::internal::GainSTM::from_freq(1).add_gains_from_iter(
+      std::views::iota(0) | std::views::take(size) | std::views::transform([&](auto i) {
+        const double theta = 2 * autd3::internal::pi * i / size;
+        return autd3::gain::Focus(center + autd3::internal::Vector3(radius * cos(theta), radius * sin(theta), 0));
+      }));
   ASSERT_TRUE(autd.send_async(stm).get());
   for (const auto& dev : autd.geometry()) {
     ASSERT_TRUE(autd.link().is_stm_gain_mode(dev.idx()));
