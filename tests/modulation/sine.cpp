@@ -3,7 +3,7 @@
 // Created Date: 26/09/2023
 // Author: Shun Suzuki
 // -----
-// Last Modified: 14/12/2023
+// Last Modified: 04/01/2024
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -34,8 +34,9 @@ TEST(Modulation, Sine) {
   }
 
   ASSERT_TRUE(
-      autd.send_async(autd3::modulation::Sine(150).with_sampling_config(autd3::internal::SamplingConfiguration::from_frequency_division(512))).get());
-  for (auto& dev : autd.geometry()) ASSERT_EQ(512, autd.link().modulation_frequency_division(dev.idx()));
+      autd.send_async(autd3::modulation::Sine(150).with_sampling_config(autd3::internal::SamplingConfiguration::from_frequency_division(10240)))
+          .get());
+  for (auto& dev : autd.geometry()) ASSERT_EQ(10240, autd.link().modulation_frequency_division(dev.idx()));
 }
 
 TEST(Modulation, SineWithMode) {

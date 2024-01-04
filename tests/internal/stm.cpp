@@ -3,7 +3,7 @@
 // Created Date: 26/09/2023
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/01/2024
+// Last Modified: 04/01/2024
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -20,6 +20,8 @@
 
 TEST(STMTest, FocusSTM) {
   auto autd = create_controller();
+
+  ASSERT_TRUE(autd.send_async(autd3::internal::ConfigureSilencer::disable()).get());
 
   constexpr double radius = 30.0;
   constexpr int size = 2;
@@ -99,6 +101,8 @@ TEST(STMTest, GainSTM) {
                   .add_device(autd3::internal::geometry::AUTD3(autd3::internal::Vector3::Zero()))
                   .open_with_async(autd3::link::Audit::builder())
                   .get();
+
+  ASSERT_TRUE(autd.send_async(autd3::internal::ConfigureSilencer::disable()).get());
 
   constexpr double radius = 30.0;
   constexpr int size = 2;

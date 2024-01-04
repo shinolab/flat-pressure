@@ -3,7 +3,7 @@
 // Created Date: 26/09/2023
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/12/2023
+// Last Modified: 04/01/2024
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -34,7 +34,7 @@ TEST(Modulation, Cache) {
     auto mod = autd2.link().modulation(dev.idx());
     auto mod_expect = autd1.link().modulation(dev.idx());
     ASSERT_TRUE(std::ranges::equal(mod, mod_expect));
-    ASSERT_EQ(5120, autd2.link().modulation_frequency_division(dev.idx()));
+    ASSERT_EQ(0xFFFFFFFF, autd2.link().modulation_frequency_division(dev.idx()));
   }
 }
 

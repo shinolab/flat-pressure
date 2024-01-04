@@ -3,7 +3,7 @@
 // Created Date: 26/09/2023
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/01/2024
+// Last Modified: 04/01/2024
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -27,21 +27,21 @@ TEST(Internal, Silencer) {
     ASSERT_TRUE(autd.link().silencer_fixed_completion_steps_mode(dev.idx()));
   }
 
-  ASSERT_TRUE(autd.send_async(autd3::internal::Silencer::fixed_completion_steps(20, 30)).get());
+  ASSERT_TRUE(autd.send_async(autd3::internal::ConfigureSilencer::fixed_completion_steps(1, 2)).get());
   for (auto& dev : autd.geometry()) {
-    ASSERT_EQ(20, autd.link().silencer_completion_steps_intensity(dev.idx()));
-    ASSERT_EQ(30, autd.link().silencer_completion_steps_phase(dev.idx()));
+    ASSERT_EQ(1, autd.link().silencer_completion_steps_intensity(dev.idx()));
+    ASSERT_EQ(2, autd.link().silencer_completion_steps_phase(dev.idx()));
     ASSERT_TRUE(autd.link().silencer_fixed_completion_steps_mode(dev.idx()));
   }
 
-  ASSERT_TRUE(autd.send_async(autd3::internal::Silencer::disable()).get());
+  ASSERT_TRUE(autd.send_async(autd3::internal::ConfigureSilencer::disable()).get());
   for (auto& dev : autd.geometry()) {
     ASSERT_EQ(1, autd.link().silencer_completion_steps_intensity(dev.idx()));
     ASSERT_EQ(1, autd.link().silencer_completion_steps_phase(dev.idx()));
     ASSERT_TRUE(autd.link().silencer_fixed_completion_steps_mode(dev.idx()));
   }
 
-  ASSERT_TRUE(autd.send_async(autd3::internal::Silencer()).get());
+  ASSERT_TRUE(autd.send_async(autd3::internal::ConfigureSilencer()).get());
   for (auto& dev : autd.geometry()) {
     ASSERT_EQ(10, autd.link().silencer_completion_steps_intensity(dev.idx()));
     ASSERT_EQ(40, autd.link().silencer_completion_steps_phase(dev.idx()));
