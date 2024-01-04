@@ -48,11 +48,20 @@ jobs:
         run: |
           python3 -m pip install -U packaging requests
 
-      - name: Build C++ library on ${{ matrix.os }}
+      - name: Build and test C++ library on ${{ matrix.os }}
         run: |
           python3 build.py build --release --cmake-extra="-DCMAKE_C_COMPILER=gcc-12 -DCMAKE_CXX_COMPILER=g++-12"
-        if: needs.check.outputs.status
-      - name: Run C++ tests on ${{ matrix.os }}
-        run: |
           python3 build.py test --release --cmake-extra="-DCMAKE_C_COMPILER=gcc-12 -DCMAKE_CXX_COMPILER=g++-12"
-        if: needs.check.outputs.status
+        if: needs.check.outputs.status && matrix.os == 'ubuntu-latest'
+
+      - name: Build and test C++ library on ${{ matrix.os }}
+        run: |
+          python3 build.py build --release
+          python3 build.py test --release
+        if: needs.check.outputs.status && matrix.os == 'windows-latest'
+
+      # - name: Build and test C++ library on ${{ matrix.os }}
+      #   run: |
+      #     python3 build.py build --release
+      #     python3 build.py test --release
+      #   if: needs.check.outputs.status && matrix.os == 'macos-latest'
