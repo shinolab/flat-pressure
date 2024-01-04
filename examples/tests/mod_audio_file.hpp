@@ -20,7 +20,7 @@ namespace fs = std::filesystem;
 
 template <typename L>
 inline void mod_audio_file_test(autd3::Controller<L>& autd) {
-  autd3::ConfigureSilencer silencer;
+  auto silencer = autd3::ConfigureSilencer::default_();
   autd.send_async(silencer).get();
 
   const fs::path path = fs::path(AUTD3_RESOURCE_PATH).append("sin150.wav");

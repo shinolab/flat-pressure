@@ -15,7 +15,7 @@
 
 template <typename L>
 inline void plane_test(autd3::Controller<L>& autd) {
-  autd3::ConfigureSilencer silencer;
+  auto silencer = autd3::ConfigureSilencer::default_();
   autd.send_async(silencer).get();
 
   autd3::modulation::Sine m(150);  // 150Hz AM

@@ -72,7 +72,7 @@ inline int run(autd3::Controller<L>& autd) {
     std::cin.ignore();
 
     std::cout << "finish." << std::endl;
-    autd.send_async(autd3::ConfigureSilencer(), autd3::gain::Null()).get();
+    autd.send_async(autd3::ConfigureSilencer::default_(), autd3::gain::Null()).get();
   }
 
   autd.close_async().get();

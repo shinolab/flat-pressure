@@ -41,7 +41,7 @@ TEST(Internal, Silencer) {
     ASSERT_TRUE(autd.link().silencer_fixed_completion_steps_mode(dev.idx()));
   }
 
-  ASSERT_TRUE(autd.send_async(autd3::internal::ConfigureSilencer()).get());
+  ASSERT_TRUE(autd.send_async(autd3::internal::ConfigureSilencer::default_()).get());
   for (auto& dev : autd.geometry()) {
     ASSERT_EQ(10, autd.link().silencer_completion_steps_intensity(dev.idx()));
     ASSERT_EQ(40, autd.link().silencer_completion_steps_phase(dev.idx()));
