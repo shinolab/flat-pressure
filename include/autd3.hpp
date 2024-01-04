@@ -3,7 +3,7 @@
 // Created Date: 29/05/2023
 // Author: Shun Suzuki
 // -----
-// Last Modified: 14/12/2023
+// Last Modified: 04/01/2024
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -81,7 +81,7 @@ using datagram::ConfigureForceFan;
 using datagram::ConfigureModDelay;
 using datagram::ConfigureReadsFPGAInfo;
 using internal::Clear;
-using internal::Silencer;
+using internal::ConfigureSilencer;
 using internal::Synchronize;
 
 using internal::ControlPoint;

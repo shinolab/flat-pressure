@@ -3,7 +3,7 @@
 // Created Date: 08/09/2023
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/01/2024
+// Last Modified: 04/01/2024
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -18,7 +18,7 @@ using namespace std::ranges::views;
 
 template <typename L>
 inline void focus_stm(autd3::Controller<L>& autd) {
-  auto silencer = autd3::Silencer::disable();
+  auto silencer = autd3::ConfigureSilencer::disable();
   autd.send_async(silencer).get();
 
   autd3::modulation::Static m;
@@ -41,7 +41,7 @@ inline void focus_stm(autd3::Controller<L>& autd) {
 
 template <typename L>
 inline void gain_stm(autd3::Controller<L>& autd) {
-  auto silencer = autd3::Silencer::disable();
+  auto silencer = autd3::ConfigureSilencer::disable();
   autd.send_async(silencer).get();
 
   autd3::modulation::Static m;

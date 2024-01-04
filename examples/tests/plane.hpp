@@ -3,7 +3,7 @@
 // Created Date: 16/05/2022
 // Author: Shun Suzuki
 // -----
-// Last Modified: 13/11/2023
+// Last Modified: 04/01/2024
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2022-2023 Shun Suzuki. All rights reserved.
@@ -15,7 +15,7 @@
 
 template <typename L>
 inline void plane_test(autd3::Controller<L>& autd) {
-  autd3::Silencer silencer;
+  autd3::ConfigureSilencer silencer;
   autd.send_async(silencer).get();
 
   autd3::modulation::Sine m(150);  // 150Hz AM

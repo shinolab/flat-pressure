@@ -3,7 +3,7 @@
 // Created Date: 29/05/2023
 // Author: Shun Suzuki
 // -----
-// Last Modified: 03/01/2024
+// Last Modified: 04/01/2024
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -37,7 +37,7 @@ class NullDatagram final {
 /**
  * @brief Datagram to configure silencer
  */
-class Silencer final {
+class ConfigureSilencer final {
  public:
   /**
    * @brief Datagram to configure silencer
@@ -78,7 +78,7 @@ class Silencer final {
     std::optional<bool> _strict_mode;
   };
 
-  Silencer() = default;
+  ConfigureSilencer() = default;
 
   /**
    * @brief Constructor

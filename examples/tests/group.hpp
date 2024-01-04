@@ -3,7 +3,7 @@
 // Created Date: 15/09/2023
 // Author: Shun Suzuki
 // -----
-// Last Modified: 02/12/2023
+// Last Modified: 04/01/2024
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -15,7 +15,7 @@
 
 template <typename T>
 inline void group_by_device_test(autd3::Controller<T>& autd) {
-  autd3::Silencer silencer;
+  autd3::ConfigureSilencer silencer;
   autd.send_async(silencer).get();
 
   const autd3::Vector3 center = autd.geometry().center() + autd3::Vector3(0.0, 0.0, 150.0);
@@ -37,7 +37,7 @@ inline void group_by_device_test(autd3::Controller<T>& autd) {
 
 template <typename T>
 inline void group_by_transducer_test(autd3::Controller<T>& autd) {
-  autd3::Silencer silencer;
+  autd3::ConfigureSilencer silencer;
   autd.send_async(silencer).get();
 
   const autd3::Vector3 center = autd.geometry().center() + autd3::Vector3(0.0, 0.0, 150.0);

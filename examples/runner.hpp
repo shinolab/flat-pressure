@@ -3,7 +3,7 @@
 // Created Date: 16/05/2022
 // Author: Shun Suzuki
 // -----
-// Last Modified: 14/12/2023
+// Last Modified: 04/01/2024
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2022-2023 Shun Suzuki. All rights reserved.
@@ -72,7 +72,7 @@ inline int run(autd3::Controller<L>& autd) {
     std::cin.ignore();
 
     std::cout << "finish." << std::endl;
-    autd.send_async(autd3::Silencer(), autd3::gain::Null()).get();
+    autd.send_async(autd3::ConfigureSilencer(), autd3::gain::Null()).get();
   }
 
   autd.close_async().get();
