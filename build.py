@@ -150,17 +150,12 @@ class Config:
         return wpcap_exists and packet_exists
 
 
-def should_update_dll(config: Config, version: str) -> bool:
+def should_update_lib(config: Config, version: str) -> bool:
     if config.is_windows():
-        if not os.path.isfile("dll/autd3capi.dll") or not os.path.isfile(
-            "lib/autd3capi.dll.lib"
-        ):
+        if not os.path.isfile("lib/autd3capi.lib"):
             return True
-    elif config.is_macos():
-        if not os.path.isfile("dll/libautd3capi.dylib"):
-            return True
-    elif config.is_linux():
-        if not os.path.isfile("dll/libautd3capi.so"):
+    else:
+        if not os.path.isfile("lib/libautd3capi.a"):
             return True
 
     if not os.path.isfile("VERSION"):
@@ -172,13 +167,13 @@ def should_update_dll(config: Config, version: str) -> bool:
     return old_version != version
 
 
-def copy_dll(config: Config):
+def copy_lib(config: Config):
     with open("CMakeLists.txt", "r") as f:
         content = f.read()
         version = re.search(r"project\(autd3 VERSION (.*)\)", content).group(1)
         version = ".".join(version.split(".")[:3])
 
-    if not should_update_dll(config, version):
+    if not should_update_lib(config, version):
         return
 
     if config.is_windows():
@@ -201,6 +196,7 @@ def copy_dll(config: Config):
         with tarfile.open("tmp.tar.gz", "r:gz") as tar:
             tar.extractall()
         rm_f("tmp.tar.gz")
+    rmtree_f("bin")
 
     with open("VERSION", mode="w") as f:
         f.write(version)
@@ -209,7 +205,7 @@ def copy_dll(config: Config):
 def cpp_build(args):
     config = Config(args)
 
-    copy_dll(config)
+    copy_lib(config)
 
     if not config.no_examples:
         info("Building examples...")
