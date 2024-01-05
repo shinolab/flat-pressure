@@ -45,6 +45,11 @@ if(WIN32)
   set(WPCAP_LIB_DIR ${PROJECT_BINARY_DIR}/../soem-src/oshw/win32/wpcap/Lib/x64)
 endif()
 
+if(AUTD3_ASYNC_API AND APPLE)
+  set(AUTD3_ASYNC_API OFF)
+  message(STATUS "Disable async APIs on macOS.")
+endif()
+
 if(AUTD3_ASYNC_API)
   if(USE_SYSTEM_LIBCORO)
     find_package(libcoro REQUIRED)
