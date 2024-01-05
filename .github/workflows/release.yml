@@ -62,7 +62,7 @@ jobs:
       - name: Build project x64
         run: |
           python3 build.py build --release --no-examples
-          Compress-Archive -Path LICENSE, bin, lib, include, CMakeLists.txt, README.md, ThirdPartyNotice.txt -DestinationPath assets_x64.zip
+          Compress-Archive -Path LICENSE, lib, include, CMakeLists.txt, README.md, ThirdPartyNotice.txt -DestinationPath assets_x64.zip
       - name: Load Release URL File from release job
         uses: actions/download-artifact@v1
         with:
@@ -112,7 +112,7 @@ jobs:
       - name: Build project x64
         run: |
           python3 build.py build --release --no-examples
-          tar -zcvf assets_x64.tar.gz bin include CMakeLists.txt LICENSE README.md ThirdPartyNotice.txt
+          tar -zcvf assets_x64.tar.gz lib include CMakeLists.txt LICENSE README.md ThirdPartyNotice.txt
         shell: bash
       - name: Load Release URL File from release job
         uses: actions/download-artifact@v1
@@ -163,7 +163,7 @@ jobs:
       - name: Build project
         run: |
           python3 build.py build --release --no-examples
-          tar -zcvf assets.tar.gz bin include CMakeLists.txt LICENSE README.md ThirdPartyNotice.txt
+          tar -zcvf assets.tar.gz lib include CMakeLists.txt LICENSE README.md ThirdPartyNotice.txt
       - name: Load Release URL File from release job
         uses: actions/download-artifact@v1
         with:
