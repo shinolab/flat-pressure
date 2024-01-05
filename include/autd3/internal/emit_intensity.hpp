@@ -32,7 +32,7 @@ class EmitIntensity final {
 
   [[nodiscard]] uint8_t value() const noexcept { return _value; }
 
-  friend EmitIntensity operator/(EmitIntensity&& lhs, const int& rhs) { return EmitIntensity(lhs._value / rhs); }
+  friend EmitIntensity operator/(EmitIntensity&& lhs, const int& rhs) { return EmitIntensity(static_cast<uint8_t>(lhs._value / rhs)); }
   auto operator<=>(const EmitIntensity&) const = default;
 
  private:

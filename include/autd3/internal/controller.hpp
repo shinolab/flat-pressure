@@ -3,7 +3,7 @@
 // Created Date: 29/05/2023
 // Author: Shun Suzuki
 // -----
-// Last Modified: 14/12/2023
+// Last Modified: 05/01/2024
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -73,13 +73,6 @@ class Controller {
   bool close() const { return validate(AUTDControllerClose(_ptr)) == native_methods::AUTD3_TRUE; }
 
   /**
-   * @brief Close connection
-   */
-  [[nodiscard]] std::future<bool> close_async() const {
-    return std::async(std::launch::deferred, [this]() -> bool { return close(); });
-  }
-
-  /**
    * @brief Get FPGA information
    *
    * @return List of FPGA information
@@ -92,15 +85,6 @@ class Controller {
     ret.reserve(num_devices);
     std::ranges::transform(info, std::back_inserter(ret), [](const uint8_t i) { return FPGAInfo(i); });
     return ret;
-  }
-
-  /**
-   * @brief Get FPGA information
-   *
-   * @return List of FPGA information
-   */
-  [[nodiscard]] std::future<std::vector<FPGAInfo>> fpga_info_async() {
-    return std::async(std::launch::deferred, [this]() -> std::vector<FPGAInfo> { return fpga_info(); });
   }
 
   /**
@@ -119,15 +103,6 @@ class Controller {
     AUTDControllerFirmwareInfoListPointerDelete(handle);
     return ret;
   }  // LCOV_EXCL_LINE
-
-  /**
-   * @brief Get firmware information
-   *
-   * @return List of firmware information
-   */
-  [[nodiscard]] std::future<std::vector<FirmwareInfo>> firmware_infos_async() {
-    return std::async(std::launch::deferred, [this]() -> std::vector<FirmwareInfo> { return firmware_infos(); });
-  }
 
   /**
    * @brief Send data to the devices
@@ -156,41 +131,9 @@ class Controller {
    * @return If true, it is confirmed that the data has been successfully transmitted. Otherwise, there are no errors, but it is unclear whether the
    * data has been sent reliably or not.
    */
-  template <datagram D, typename Rep, typename Period>
-  std::future<bool> send_async(D&& data, const std::chrono::duration<Rep, Period> timeout) {
-    return send_async(std::forward<D>(data), std::optional(timeout));
-  }
-
-  /**
-   * @brief Send data to the devices
-   *
-   * @tparam D Datagram
-   * @tparam Rep
-   * @tparam Period
-   * @param data data
-   * @param timeout timeout
-   * @return If true, it is confirmed that the data has been successfully transmitted. Otherwise, there are no errors, but it is unclear whether the
-   * data has been sent reliably or not.
-   */
   template <datagram D, typename Rep = uint64_t, typename Period = std::milli>
   bool send(D&& data, const std::optional<std::chrono::duration<Rep, Period>> timeout = std::nullopt) {
     return send(std::forward<D>(data), NullDatagram(), timeout);
-  }
-
-  /**
-   * @brief Send data to the devices
-   *
-   * @tparam D Datagram
-   * @tparam Rep
-   * @tparam Period
-   * @param data data
-   * @param timeout timeout
-   * @return If true, it is confirmed that the data has been successfully transmitted. Otherwise, there are no errors, but it is unclear whether the
-   * data has been sent reliably or not.
-   */
-  template <datagram D, typename Rep = uint64_t, typename Period = std::milli>
-  std::future<bool> send_async(D&& data, const std::optional<std::chrono::duration<Rep, Period>> timeout = std::nullopt) {
-    return send_async(std::forward<D>(data), NullDatagram(), timeout);
   }
 
   /**
@@ -224,49 +167,10 @@ class Controller {
    * @return If true, it is confirmed that the data has been successfully transmitted. Otherwise, there are no errors, but it is unclear whether the
    * data has been sent reliably or not.
    */
-  template <datagram D1, datagram D2, typename Rep, typename Period>
-  std::future<bool> send_async(D1&& data1, D2&& data2, const std::chrono::duration<Rep, Period> timeout) {
-    return send_async(std::forward<D1>(data1), std::forward<D2>(data2), std::optional(timeout));
-  }
-
-  /**
-   * @brief Send data to the devices
-   *
-   * @tparam D1 Datagram
-   * @tparam D2 Datagram
-   * @tparam Rep
-   * @tparam Period
-   * @param data1 first data
-   * @param data2 second data
-   * @param timeout timeout
-   * @return If true, it is confirmed that the data has been successfully transmitted. Otherwise, there are no errors, but it is unclear whether the
-   * data has been sent reliably or not.
-   */
   template <datagram D1, datagram D2, typename Rep = uint64_t, typename Period = std::milli>
   bool send(D1&& data1, D2&& data2, const std::optional<std::chrono::duration<Rep, Period>> timeout = std::nullopt) {
     const int64_t timeout_ns = timeout.has_value() ? std::chrono::duration_cast<std::chrono::nanoseconds>(timeout.value()).count() : -1;
     return validate(AUTDControllerSend(_ptr, data1.ptr(_geometry), data2.ptr(_geometry), timeout_ns)) == native_methods::AUTD3_TRUE;
-  }
-
-  /**
-   * @brief Send data to the devices
-   *
-   * @tparam D1 Datagram
-   * @tparam D2 Datagram
-   * @tparam Rep
-   * @tparam Period
-   * @param data1 first data
-   * @param data2 second data
-   * @param timeout timeout
-   * @return If true, it is confirmed that the data has been successfully transmitted. Otherwise, there are no errors, but it is unclear whether the
-   * data has been sent reliably or not.
-   */
-  template <datagram D1, datagram D2, typename Rep = uint64_t, typename Period = std::milli>
-  std::future<bool> send_async(D1&& data1, D2&& data2, const std::optional<std::chrono::duration<Rep, Period>> timeout = std::nullopt) {
-    return std::async(std::launch::deferred, [this, d1 = std::forward<D1>(data1), d2 = std::forward<D2>(data2), timeout]() -> bool {
-      const int64_t timeout_ns = timeout.has_value() ? std::chrono::duration_cast<std::chrono::nanoseconds>(timeout.value()).count() : -1;
-      return validate(AUTDControllerSend(_ptr, d1.ptr(_geometry), d2.ptr(_geometry), timeout_ns)) == native_methods::AUTD3_TRUE;
-    });
   }
 
   template <group_f F>
@@ -319,9 +223,9 @@ class Controller {
       return validate(AUTDControllerGroup(_controller._ptr, map.data(), _kv_map)) == native_methods::AUTD3_TRUE;
     }
 
-    [[nodiscard]] std::future<bool> send_async() {
-      return std::async(std::launch::deferred, [this] { return send(); });
-    }
+#ifdef AUTD3_ASYNC_API
+    [[nodiscard]] coro::task<bool> send_async() { co_return send(); }
+#endif
 
    private:
     Controller& _controller;
@@ -335,6 +239,98 @@ class Controller {
   GroupGuard<F> group(const F& map) {
     return GroupGuard<F>(map, *this);
   }
+
+#ifdef AUTD3_ASYNC_API
+  /**
+   * @brief Close connection
+   */
+  [[nodiscard]] coro::task<bool> close_async() const { co_return close(); }
+  /**
+   * @brief Get FPGA information
+   *
+   * @return List of FPGA information
+   */
+  [[nodiscard]] coro::task<std::vector<FPGAInfo>> fpga_info_async() { co_return fpga_info(); }
+
+  /**
+   * @brief Send data to the devices
+   *
+   * @tparam D Datagram
+   * @tparam Rep
+   * @tparam Period
+   * @param data data
+   * @param timeout timeout
+   * @return If true, it is confirmed that the data has been successfully transmitted. Otherwise, there are no errors, but it is unclear whether the
+   * data has been sent reliably or not.
+   */
+  template <datagram D, typename Rep, typename Period>
+  coro::task<bool> send_async(D&& data, const std::chrono::duration<Rep, Period> timeout) {
+    auto res = co_await send_async(std::forward<D>(data), std::optional(timeout));
+    co_return res;
+  }
+
+  /**
+   * @brief Send data to the devices
+   *
+   * @tparam D Datagram
+   * @tparam Rep
+   * @tparam Period
+   * @param data data
+   * @param timeout timeout
+   * @return If true, it is confirmed that the data has been successfully transmitted. Otherwise, there are no errors, but it is unclear whether the
+   * data has been sent reliably or not.
+   */
+  template <datagram D, typename Rep = uint64_t, typename Period = std::milli>
+  coro::task<bool> send_async(D&& data, const std::optional<std::chrono::duration<Rep, Period>> timeout = std::nullopt) {
+    auto res = co_await send_async(std::forward<D>(data), NullDatagram(), timeout);
+    co_return res;
+  }
+
+  /**
+   * @brief Send data to the devices
+   *
+   * @tparam D1 Datagram
+   * @tparam D2 Datagram
+   * @tparam Rep
+   * @tparam Period
+   * @param data1 first data
+   * @param data2 second data
+   * @param timeout timeout
+   * @return If true, it is confirmed that the data has been successfully transmitted. Otherwise, there are no errors, but it is unclear whether the
+   * data has been sent reliably or not.
+   */
+  template <datagram D1, datagram D2, typename Rep, typename Period>
+  coro::task<bool> send_async(D1&& data1, D2&& data2, const std::chrono::duration<Rep, Period> timeout) {
+    auto res = co_await send_async(std::forward<D1>(data1), std::forward<D2>(data2), std::optional(timeout));
+    co_return res;
+  }
+
+  /**
+   * @brief Send data to the devices
+   *
+   * @tparam D1 Datagram
+   * @tparam D2 Datagram
+   * @tparam Rep
+   * @tparam Period
+   * @param data1 first data
+   * @param data2 second data
+   * @param timeout timeout
+   * @return If true, it is confirmed that the data has been successfully transmitted. Otherwise, there are no errors, but it is unclear whether the
+   * data has been sent reliably or not.
+   */
+  template <datagram D1, datagram D2, typename Rep = uint64_t, typename Period = std::milli>
+  coro::task<bool> send_async(D1&& data1, D2&& data2, const std::optional<std::chrono::duration<Rep, Period>> timeout = std::nullopt) {
+    const int64_t timeout_ns = timeout.has_value() ? std::chrono::duration_cast<std::chrono::nanoseconds>(timeout.value()).count() : -1;
+    co_return validate(AUTDControllerSend(_ptr, data1.ptr(_geometry), data2.ptr(_geometry), timeout_ns)) == native_methods::AUTD3_TRUE;
+  }
+
+  /**
+   * @brief Get firmware information
+   *
+   * @return List of firmware information
+   */
+  [[nodiscard]] coro::task<std::vector<FirmwareInfo>> firmware_infos_async() { co_return firmware_infos(); }
+#endif
 
  private:
   Controller(geometry::Geometry geometry, const native_methods::ControllerPtr ptr, L link)
@@ -377,6 +373,7 @@ class ControllerBuilder {
     return Controller<typename B::Link>{std::move(geometry), ptr, link_builder.resolve_link(native_methods::AUTDLinkGet(ptr))};
   }
 
+#ifdef AUTD3_ASYNC_API
   /**
    * @brief Open controller
    *
@@ -385,13 +382,12 @@ class ControllerBuilder {
    * @return Controller
    */
   template <link_builder B>
-  [[nodiscard]] std::future<Controller<typename B::Link>> open_with_async(B&& link_builder) {
-    return std::async(std::launch::deferred, [this, builder = std::forward<B>(link_builder)]() -> Controller<typename B::Link> {
-      auto ptr = validate(AUTDControllerOpenWith(_ptr, builder.ptr()));
-      geometry::Geometry geometry(AUTDGeometry(ptr));
-      return Controller<typename B::Link>{std::move(geometry), ptr, builder.resolve_link(native_methods::AUTDLinkGet(ptr))};
-    });
+  [[nodiscard]] coro::task<Controller<typename B::Link>> open_with_async(B&& link_builder) {
+    auto ptr = validate(AUTDControllerOpenWith(_ptr, link_builder.ptr()));
+    geometry::Geometry geometry(AUTDGeometry(ptr));
+    co_return Controller<typename B::Link>{std::move(geometry), ptr, link_builder.resolve_link(native_methods::AUTDLinkGet(ptr))};
   }
+#endif
 
   ControllerBuilder() : _ptr(native_methods::AUTDControllerBuilder()) {}
 

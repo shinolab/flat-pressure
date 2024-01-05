@@ -3,7 +3,7 @@
 // Created Date: 15/09/2023
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/01/2024
+// Last Modified: 05/01/2024
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -14,13 +14,14 @@
 #include "autd3.hpp"
 
 template <typename T>
-inline void group_by_device_test(autd3::Controller<T>& autd) {
+inline coro::task<void> group_by_device_test(autd3::Controller<T>& autd) {
   auto silencer = autd3::ConfigureSilencer::default_();
-  autd.send_async(silencer).get();
+  co_await autd.send_async(silencer);
 
   const autd3::Vector3 center = autd.geometry().center() + autd3::Vector3(0.0, 0.0, 150.0);
 
-  autd.group([](const autd3::Device& dev) -> std::optional<const char*> {
+  co_await autd
+      .group([](const autd3::Device& dev) -> std::optional<const char*> {
         if (dev.idx() == 0) {
           return "null";
         } else if (dev.idx() == 1) {
@@ -31,14 +32,13 @@ inline void group_by_device_test(autd3::Controller<T>& autd) {
       })
       .set("null", autd3::modulation::Static(), autd3::gain::Null())
       .set("focus", autd3::modulation::Sine(150), autd3::gain::Focus(center))
-      .send_async()
-      .get();
+      .send_async();
 }
 
 template <typename T>
-inline void group_by_transducer_test(autd3::Controller<T>& autd) {
+inline coro::task<void> group_by_transducer_test(autd3::Controller<T>& autd) {
   auto silencer = autd3::ConfigureSilencer::default_();
-  autd.send_async(silencer).get();
+  co_await autd.send_async(silencer);
 
   const autd3::Vector3 center = autd.geometry().center() + autd3::Vector3(0.0, 0.0, 150.0);
 
@@ -54,5 +54,5 @@ inline void group_by_transducer_test(autd3::Controller<T>& autd) {
                      .set("null", g2);
 
   autd3::modulation::Sine m(150);
-  autd.send_async(m, g).get();
+  co_await autd.send_async(m, g);
 }

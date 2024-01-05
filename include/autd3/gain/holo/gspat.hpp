@@ -31,7 +31,7 @@ namespace autd3::gain::holo {
 template <backend B>
 class GSPAT final : public Holo<GSPAT<B>>, public IntoCache<GSPAT<B>>, public IntoTransform<GSPAT<B>> {
  public:
-  explicit GSPAT(std::shared_ptr<B> backend) : Holo<GSPAT>(), _backend(std::move(backend)) {}
+  explicit GSPAT(std::shared_ptr<B> holo_backend) : Holo<GSPAT>(), _backend(std::move(holo_backend)) {}
 
   AUTD3_DEF_PARAM(GSPAT, uint32_t, repeat)
 

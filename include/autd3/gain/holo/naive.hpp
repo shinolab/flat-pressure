@@ -27,7 +27,7 @@ namespace autd3::gain::holo {
 template <backend B>
 class Naive final : public Holo<Naive<B>>, public IntoCache<Naive<B>>, public IntoTransform<Naive<B>> {
  public:
-  explicit Naive(std::shared_ptr<B> backend) : Holo<Naive>(), _backend(std::move(backend)) {}
+  explicit Naive(std::shared_ptr<B> holo_backend) : Holo<Naive>(), _backend(std::move(holo_backend)) {}
 
   [[nodiscard]] internal::native_methods::GainPtr gain_ptr(const internal::geometry::Geometry&) const override {
     auto ptr = this->_backend->naive(reinterpret_cast<const double*>(this->_foci.data()), reinterpret_cast<const double*>(this->_amps.data()),

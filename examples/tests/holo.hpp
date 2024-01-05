@@ -3,7 +3,7 @@
 // Created Date: 13/05/2022
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/01/2024
+// Last Modified: 05/01/2024
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2022-2023 Shun Suzuki. All rights reserved.
@@ -22,9 +22,9 @@
 #include "autd3/gain/holo.hpp"
 
 template <typename L>
-inline void holo_test(autd3::Controller<L>& autd) {
+inline coro::task<void> holo_test(autd3::Controller<L>& autd) {
   auto silencer = autd3::ConfigureSilencer::default_();
-  autd.send_async(silencer);
+  co_await autd.send_async(silencer);
 
   autd3::modulation::Sine m(150);  // 150Hz AM
 
@@ -45,46 +45,40 @@ inline void holo_test(autd3::Controller<L>& autd) {
   size_t idx;
   getline(std::cin, in);
   std::stringstream s(in);
-  if (const auto empty = in == "\n"; !(s >> idx) || idx >= 6 || empty) idx = 2;
+  if (const auto is_empty = in == "\n"; !(s >> idx) || idx >= 6 || is_empty) idx = 2;
 
   auto backend = std::make_shared<autd3::gain::holo::NalgebraBackend>();
   auto amp = 5e3 * autd3::gain::holo::Pascal;
   switch (idx) {
     case 0:
-      autd.send_async(m, autd3::gain::holo::SDP(backend)
-                             .add_focus(center + autd3::Vector3(30.0, 0.0, 0.0), amp)
-                             .add_focus(center - autd3::Vector3(30.0, 0.0, 0.0), amp))
-          .get();
+      co_await autd.send_async(m, autd3::gain::holo::SDP(backend)
+                                      .add_focus(center + autd3::Vector3(30.0, 0.0, 0.0), amp)
+                                      .add_focus(center - autd3::Vector3(30.0, 0.0, 0.0), amp));
       break;
     case 1:
-      autd.send_async(m, autd3::gain::holo::GS(backend)
-                             .add_focus(center + autd3::Vector3(30.0, 0.0, 0.0), amp)
-                             .add_focus(center - autd3::Vector3(30.0, 0.0, 0.0), amp))
-          .get();
+      co_await autd.send_async(m, autd3::gain::holo::GS(backend)
+                                      .add_focus(center + autd3::Vector3(30.0, 0.0, 0.0), amp)
+                                      .add_focus(center - autd3::Vector3(30.0, 0.0, 0.0), amp));
       break;
     case 2:
-      autd.send_async(m, autd3::gain::holo::GSPAT(backend)
-                             .add_focus(center + autd3::Vector3(30.0, 0.0, 0.0), amp)
-                             .add_focus(center - autd3::Vector3(30.0, 0.0, 0.0), amp))
-          .get();
+      co_await autd.send_async(m, autd3::gain::holo::GSPAT(backend)
+                                      .add_focus(center + autd3::Vector3(30.0, 0.0, 0.0), amp)
+                                      .add_focus(center - autd3::Vector3(30.0, 0.0, 0.0), amp));
       break;
     case 3:
-      autd.send_async(m, autd3::gain::holo::Naive(backend)
-                             .add_focus(center + autd3::Vector3(30.0, 0.0, 0.0), amp)
-                             .add_focus(center - autd3::Vector3(30.0, 0.0, 0.0), amp))
-          .get();
+      co_await autd.send_async(m, autd3::gain::holo::Naive(backend)
+                                      .add_focus(center + autd3::Vector3(30.0, 0.0, 0.0), amp)
+                                      .add_focus(center - autd3::Vector3(30.0, 0.0, 0.0), amp));
       break;
     case 4:
-      autd.send_async(m, autd3::gain::holo::LM(backend)
-                             .add_focus(center + autd3::Vector3(30.0, 0.0, 0.0), amp)
-                             .add_focus(center - autd3::Vector3(30.0, 0.0, 0.0), amp))
-          .get();
+      co_await autd.send_async(m, autd3::gain::holo::LM(backend)
+                                      .add_focus(center + autd3::Vector3(30.0, 0.0, 0.0), amp)
+                                      .add_focus(center - autd3::Vector3(30.0, 0.0, 0.0), amp));
       break;
     case 5:
-      autd.send_async(m, autd3::gain::holo::Greedy()
-                             .add_focus(center + autd3::Vector3(30.0, 0.0, 0.0), amp)
-                             .add_focus(center - autd3::Vector3(30.0, 0.0, 0.0), amp))
-          .get();
+      co_await autd.send_async(m, autd3::gain::holo::Greedy()
+                                      .add_focus(center + autd3::Vector3(30.0, 0.0, 0.0), amp)
+                                      .add_focus(center - autd3::Vector3(30.0, 0.0, 0.0), amp));
       break;
     default:
       break;

@@ -30,7 +30,7 @@ namespace autd3::gain::holo {
 template <backend B>
 class GS final : public Holo<GS<B>>, public IntoCache<GS<B>>, public IntoTransform<GS<B>> {
  public:
-  explicit GS(std::shared_ptr<B> backend) : Holo<GS>(), _backend(std::move(backend)) {}
+  explicit GS(std::shared_ptr<B> holo_backend) : Holo<GS>(), _backend(std::move(holo_backend)) {}
 
   AUTD3_DEF_PARAM(GS, uint32_t, repeat)
 

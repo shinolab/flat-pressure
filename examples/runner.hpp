@@ -3,7 +3,7 @@
 // Created Date: 16/05/2022
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/01/2024
+// Last Modified: 05/01/2024
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2022-2023 Shun Suzuki. All rights reserved.
@@ -32,8 +32,8 @@
 #include "tests/transtest.hpp"
 
 template <typename L>
-inline int run(autd3::Controller<L>& autd) {
-  using F = std::function<void(autd3::Controller<L>&)>;
+inline coro::task<int> run(autd3::Controller<L>& autd) {
+  using F = std::function<coro::task<void>(autd3::Controller<L>&)>;
   std::vector<std::pair<F, std::string>> tests = {std::pair(F{focus_test<L>}, "Single focus test"),
                                                   std::pair(F{bessel_test<L>}, "Bessel beam test"),
                                                   std::pair(F{plane_test<L>}, "Plane wave test"),
@@ -48,7 +48,7 @@ inline int run(autd3::Controller<L>& autd) {
 
   if (autd.geometry().num_devices() >= 2) tests.emplace_back(F{group_by_device_test<L>}, "Group (by Device) test");
 
-  const auto firm_infos = autd.firmware_infos_async().get();
+  const auto firm_infos = co_await autd.firmware_infos_async();
   std::cout << "======== AUTD3 firmware information ========" << std::endl;
   std::copy(firm_infos.begin(), firm_infos.end(), std::ostream_iterator<autd3::FirmwareInfo>(std::cout, "\n"));
   std::cout << "============================================" << std::endl;
@@ -64,18 +64,18 @@ inline int run(autd3::Controller<L>& autd) {
     size_t idx;
     getline(std::cin, in);
     std::stringstream s(in);
-    if (const auto empty = in == "\n"; !(s >> idx) || idx >= tests.size() || empty) break;
+    if (const auto is_empty = in == "\n"; !(s >> idx) || idx >= tests.size() || is_empty) break;
 
-    tests[idx].first(autd);
+    co_await tests[idx].first(autd);
 
     std::cout << "press any key to finish..." << std::endl;
     std::cin.ignore();
 
     std::cout << "finish." << std::endl;
-    autd.send_async(autd3::ConfigureSilencer::default_(), autd3::gain::Null()).get();
+    co_await autd.send_async(autd3::gain::Null(), autd3::ConfigureSilencer::default_());
   }
 
-  autd.close_async().get();
+  co_await autd.close_async();
 
-  return 0;
+  co_return 0;
 }

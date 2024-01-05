@@ -3,7 +3,7 @@
 // Created Date: 27/09/2023
 // Author: Shun Suzuki
 // -----
-// Last Modified: 02/12/2023
+// Last Modified: 05/01/2024
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -71,11 +71,13 @@ class Simulator final {
 
   static Builder builder(const uint16_t port) { return Builder(port); }
 
-  void update_geometry(const internal::geometry::Geometry& geometry) const { validate(AUTDLinkSimulatorUpdateGeometry(_ptr, geometry.ptr())); }
-
-  [[nodiscard]] std::future<void> update_geometry_async(const internal::geometry::Geometry& geometry) const {
-    return std::async(std::launch::async, [this, geometry] { return update_geometry(geometry); });
+  bool update_geometry(const internal::geometry::Geometry& geometry) const {
+    return validate(AUTDLinkSimulatorUpdateGeometry(_ptr, geometry.ptr())) == internal::native_methods::AUTD3_TRUE;
   }
+
+#ifdef AUTD3_ASYNC_API
+  [[nodiscard]] coro::task<bool> update_geometry_async(const internal::geometry::Geometry& geometry) const { co_return update_geometry(geometry); }
+#endif
 };
 
 }  // namespace autd3::link

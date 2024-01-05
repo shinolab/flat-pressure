@@ -32,7 +32,7 @@ namespace autd3::gain::holo {
 template <backend B>
 class SDP final : public Holo<SDP<B>>, public IntoCache<SDP<B>>, public IntoTransform<SDP<B>> {
  public:
-  explicit SDP(std::shared_ptr<B> backend) : Holo<SDP>(), _backend(std::move(backend)) {}
+  explicit SDP(std::shared_ptr<B> holo_backend) : Holo<SDP>(), _backend(std::move(holo_backend)) {}
 
   AUTD3_DEF_PARAM(SDP, double, alpha)
   AUTD3_DEF_PARAM(SDP, uint32_t, repeat)

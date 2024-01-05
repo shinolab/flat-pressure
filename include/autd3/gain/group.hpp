@@ -85,15 +85,15 @@ class Group final : public internal::Gain, public IntoCache<Group<F>>, public In
       });
       map = AUTDGainGroupMapSet(map, static_cast<uint32_t>(dev.idx()), m.data());
     }
-    std::vector<int32_t> keys;
-    std::vector<internal::native_methods::GainPtr> values;
+    std::vector<int32_t> gain_keys;
+    std::vector<internal::native_methods::GainPtr> gain_ptrs;
     for (auto& kv : _map) {
       if (!keymap.contains(kv.first)) throw internal::AUTDException("Unknown group key");
-      keys.emplace_back(keymap[kv.first]);
-      values.emplace_back(kv.second->gain_ptr(geometry));
+      gain_keys.emplace_back(keymap[kv.first]);
+      gain_ptrs.emplace_back(kv.second->gain_ptr(geometry));
     }
 
-    return AUTDGainGroup(map, keys.data(), values.data(), static_cast<uint32_t>(keys.size()));
+    return AUTDGainGroup(map, gain_keys.data(), gain_ptrs.data(), static_cast<uint32_t>(gain_keys.size()));
   }
 
  private:

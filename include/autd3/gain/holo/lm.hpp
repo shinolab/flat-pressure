@@ -36,7 +36,7 @@ namespace autd3::gain::holo {
 template <backend B>
 class LM final : public Holo<LM<B>>, public IntoCache<LM<B>>, public IntoTransform<LM<B>> {
  public:
-  explicit LM(std::shared_ptr<B> backend) : Holo<LM>(), _backend(std::move(backend)) {}
+  explicit LM(std::shared_ptr<B> holo_backend) : Holo<LM>(), _backend(std::move(holo_backend)) {}
 
   AUTD3_DEF_PARAM(LM, double, eps1)
   AUTD3_DEF_PARAM(LM, double, eps2)

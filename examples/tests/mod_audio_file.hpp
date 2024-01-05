@@ -3,7 +3,7 @@
 // Created Date: 16/05/2022
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/01/2024
+// Last Modified: 05/01/2024
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2022-2023 Shun Suzuki. All rights reserved.
@@ -19,9 +19,9 @@
 namespace fs = std::filesystem;
 
 template <typename L>
-inline void mod_audio_file_test(autd3::Controller<L>& autd) {
+inline coro::task<void> mod_audio_file_test(autd3::Controller<L>& autd) {
   auto silencer = autd3::ConfigureSilencer::default_();
-  autd.send_async(silencer).get();
+  co_await autd.send_async(silencer);
 
   const fs::path path = fs::path(AUTD3_RESOURCE_PATH).append("sin150.wav");
   autd3::modulation::audio_file::Wav m(path);
@@ -30,5 +30,5 @@ inline void mod_audio_file_test(autd3::Controller<L>& autd) {
 
   autd3::gain::Focus g(center);
 
-  autd.send_async(m, g).get();
+  co_await autd.send_async(m, g);
 }
