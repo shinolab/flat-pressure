@@ -3,7 +3,7 @@
 // Created Date: 13/09/2023
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/12/2023
+// Last Modified: 05/01/2024
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -58,7 +58,7 @@ class Cache final : public internal::Gain {
                            [this](const internal::native_methods::GainPtr acc, const internal::geometry::Device& dev) {
                              return AUTDGainCustomSet(acc, static_cast<uint32_t>(dev.idx()),
                                                       reinterpret_cast<internal::native_methods::Drive*>(_cache->at(dev.idx()).data()),
-                                                      _cache->at(dev.idx()).size());
+                                                      static_cast<uint32_t>(_cache->at(dev.idx()).size()));
                            });
   }
 

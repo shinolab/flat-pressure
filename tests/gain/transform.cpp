@@ -3,7 +3,7 @@
 // Created Date: 26/09/2023
 // Author: Shun Suzuki
 // -----
-// Last Modified: 02/12/2023
+// Last Modified: 05/01/2024
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -18,16 +18,15 @@
 TEST(Gain, Transform) {
   auto autd = create_controller();
 
-  ASSERT_TRUE(autd.send_async(autd3::gain::Uniform(0x80)
-                                  .with_phase(autd3::internal::Phase(128))
-                                  .with_transform([](const autd3::internal::geometry::Device& dev, const autd3::internal::geometry::Transducer&,
-                                                     const autd3::internal::Drive d) -> autd3::internal::Drive {
-                                    if (dev.idx() == 0) {
-                                      return autd3::internal::Drive{autd3::internal::Phase(d.phase.value() + 32), d.intensity};
-                                    }
-                                    return autd3::internal::Drive{autd3::internal::Phase(d.phase.value() - 32), d.intensity};
-                                  }))
-                  .get());
+  ASSERT_TRUE(autd.send(autd3::gain::Uniform(0x80)
+                            .with_phase(autd3::internal::Phase(128))
+                            .with_transform([](const autd3::internal::geometry::Device& dev, const autd3::internal::geometry::Transducer&,
+                                               const autd3::internal::Drive d) -> autd3::internal::Drive {
+                              if (dev.idx() == 0) {
+                                return autd3::internal::Drive{autd3::internal::Phase(d.phase.value() + 32), d.intensity};
+                              }
+                              return autd3::internal::Drive{autd3::internal::Phase(d.phase.value() - 32), d.intensity};
+                            })));
 
   {
     auto [intensities, phases] = autd.link().intensities_and_phases(0, 0);
@@ -47,14 +46,13 @@ TEST(Gain, TransformCheckOnlyForEnabled) {
   autd.geometry()[0].set_enable(false);
 
   std::vector cnt(autd.geometry().num_devices(), false);
-  ASSERT_TRUE(autd.send_async(autd3::gain::Uniform(0x80)
-                                  .with_phase(autd3::internal::Phase(0x90))
-                                  .with_transform([&cnt](const autd3::internal::geometry::Device& dev, const autd3::internal::geometry::Transducer&,
-                                                         const autd3::internal::Drive d) -> autd3::internal::Drive {
-                                    cnt[dev.idx()] = true;
-                                    return d;
-                                  }))
-                  .get());
+  ASSERT_TRUE(autd.send(autd3::gain::Uniform(0x80)
+                            .with_phase(autd3::internal::Phase(0x90))
+                            .with_transform([&cnt](const autd3::internal::geometry::Device& dev, const autd3::internal::geometry::Transducer&,
+                                                   const autd3::internal::Drive d) -> autd3::internal::Drive {
+                              cnt[dev.idx()] = true;
+                              return d;
+                            })));
 
   ASSERT_FALSE(cnt[0]);
   ASSERT_TRUE(cnt[1]);

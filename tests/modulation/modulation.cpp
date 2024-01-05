@@ -3,7 +3,7 @@
 // Created Date: 26/09/2023
 // Author: Shun Suzuki
 // -----
-// Last Modified: 01/12/2023
+// Last Modified: 05/01/2024
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -29,7 +29,7 @@ class BurstModulation final : public autd3::modulation::Modulation {
 TEST(Modulation, Modulation) {
   auto autd = create_controller();
 
-  ASSERT_TRUE(autd.send_async(BurstModulation()).get());
+  ASSERT_TRUE(autd.send(BurstModulation()));
 
   for (auto& dev : autd.geometry()) {
     auto mod = autd.link().modulation(dev.idx());

@@ -3,7 +3,7 @@
 // Created Date: 26/09/2023
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/01/2024
+// Last Modified: 05/01/2024
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -18,7 +18,7 @@
 TEST(Modulation, Square) {
   auto autd = create_controller();
 
-  ASSERT_TRUE(autd.send_async(autd3::modulation::Square(200).with_low(32).with_high(85).with_duty(0.1)).get());
+  ASSERT_TRUE(autd.send(autd3::modulation::Square(200).with_low(32).with_high(85).with_duty(0.1)));
 
   for (auto& dev : autd.geometry()) {
     auto mod = autd.link().modulation(dev.idx());
@@ -27,9 +27,7 @@ TEST(Modulation, Square) {
     ASSERT_EQ(5120, autd.link().modulation_frequency_division(dev.idx()));
   }
 
-  ASSERT_TRUE(
-      autd.send_async(autd3::modulation::Square(150).with_sampling_config(autd3::internal::SamplingConfiguration::from_frequency_division(10240)))
-          .get());
+  ASSERT_TRUE(autd.send(autd3::modulation::Square(150).with_sampling_config(autd3::internal::SamplingConfiguration::from_frequency_division(10240))));
 
   for (auto& dev : autd.geometry()) ASSERT_EQ(10240, autd.link().modulation_frequency_division(dev.idx()));
 }
@@ -37,7 +35,7 @@ TEST(Modulation, Square) {
 TEST(Modulation, SquareWithMode) {
   auto autd = create_controller();
 
-  ASSERT_TRUE(autd.send_async(autd3::modulation::Square(150).with_mode(autd3::internal::native_methods::SamplingMode::SizeOptimized)).get());
+  ASSERT_TRUE(autd.send(autd3::modulation::Square(150).with_mode(autd3::internal::native_methods::SamplingMode::SizeOptimized)));
 
   for (auto& dev : autd.geometry()) {
     auto mod = autd.link().modulation(dev.idx());
@@ -45,7 +43,7 @@ TEST(Modulation, SquareWithMode) {
     ASSERT_TRUE(std::ranges::equal(mod, mod_expect));
   }
 
-  ASSERT_THROW(autd.send_async(autd3::modulation::Square(100.1).with_mode(autd3::internal::native_methods::SamplingMode::ExactFrequency)).get(),
+  ASSERT_THROW(autd.send(autd3::modulation::Square(100.1).with_mode(autd3::internal::native_methods::SamplingMode::ExactFrequency)),
                autd3::internal::AUTDException);
-  ASSERT_TRUE(autd.send_async(autd3::modulation::Square(100.1).with_mode(autd3::internal::native_methods::SamplingMode::SizeOptimized)).get());
+  ASSERT_TRUE(autd.send(autd3::modulation::Square(100.1).with_mode(autd3::internal::native_methods::SamplingMode::SizeOptimized)));
 }

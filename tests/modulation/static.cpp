@@ -3,7 +3,7 @@
 // Created Date: 26/09/2023
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/01/2024
+// Last Modified: 05/01/2024
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -18,7 +18,7 @@
 TEST(Modulation, Static) {
   auto autd = create_controller();
 
-  ASSERT_TRUE(autd.send_async(autd3::modulation::Static().with_intensity(32)).get());
+  ASSERT_TRUE(autd.send(autd3::modulation::Static().with_intensity(32)));
 
   for (auto& dev : autd.geometry()) {
     auto mod = autd.link().modulation(dev.idx());

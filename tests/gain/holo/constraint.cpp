@@ -3,7 +3,7 @@
 // Created Date: 26/09/2023
 // Author: Shun Suzuki
 // -----
-// Last Modified: 28/11/2023
+// Last Modified: 05/01/2024
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -23,7 +23,7 @@ TEST(Gain_Holo, ConstraintUniform) {
                .add_focus(autd.geometry().center() + autd3::internal::Vector3(30, 0, 150), 5e3 * autd3::gain::holo::Pascal)
                .with_constraint(autd3::gain::holo::EmissionConstraint::uniform(0x80));
 
-  ASSERT_TRUE(autd.send_async(g).get());
+  ASSERT_TRUE(autd.send(g));
 
   for (auto& dev : autd.geometry()) {
     auto [intensities, phases] = autd.link().intensities_and_phases(dev.idx(), 0);
@@ -41,7 +41,7 @@ TEST(Gain_Holo, ConstraintNormalize) {
                .add_focus(autd.geometry().center() + autd3::internal::Vector3(30, 0, 150), 5e3 * autd3::gain::holo::Pascal)
                .with_constraint(autd3::gain::holo::EmissionConstraint::normalize());
 
-  ASSERT_TRUE(autd.send_async(g).get());
+  ASSERT_TRUE(autd.send(g));
 
   for (auto& dev : autd.geometry()) {
     auto [intensities, phases] = autd.link().intensities_and_phases(dev.idx(), 0);
@@ -59,7 +59,7 @@ TEST(Gain_Holo, ConstraintClamp) {
                .add_focus(autd.geometry().center() + autd3::internal::Vector3(30, 0, 150), 5e3 * autd3::gain::holo::Pascal)
                .with_constraint(autd3::gain::holo::EmissionConstraint::clamp(67, 85));
 
-  ASSERT_TRUE(autd.send_async(g).get());
+  ASSERT_TRUE(autd.send(g));
 
   for (auto& dev : autd.geometry()) {
     auto [intensities, phases] = autd.link().intensities_and_phases(dev.idx(), 0);
@@ -77,7 +77,7 @@ TEST(Gain_Holo, ConstraintDontCare) {
                .add_focus(autd.geometry().center() + autd3::internal::Vector3(30, 0, 150), 5e3 * autd3::gain::holo::Pascal)
                .with_constraint(autd3::gain::holo::EmissionConstraint::dont_care());
 
-  ASSERT_TRUE(autd.send_async(g).get());
+  ASSERT_TRUE(autd.send(g));
 
   for (auto& dev : autd.geometry()) {
     auto [intensities, phases] = autd.link().intensities_and_phases(dev.idx(), 0);

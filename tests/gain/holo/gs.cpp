@@ -3,7 +3,7 @@
 // Created Date: 26/09/2023
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/12/2023
+// Last Modified: 05/01/2024
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -19,8 +19,7 @@
 TEST(Gain_Holo, GS) {
   auto autd = autd3::internal::ControllerBuilder()
                   .add_device(autd3::internal::geometry::AUTD3(autd3::internal::Vector3::Zero()))
-                  .open_with_async(autd3::link::Audit::builder())
-                  .get();
+                  .open_with(autd3::link::Audit::builder());
 
   auto backend = std::make_shared<autd3::gain::holo::NalgebraBackend>();
   std::vector<double> p{-30};
@@ -33,7 +32,7 @@ TEST(Gain_Holo, GS) {
                .with_repeat(100)
                .with_constraint(autd3::gain::holo::EmissionConstraint::uniform(0x80));
 
-  ASSERT_TRUE(autd.send_async(g).get());
+  ASSERT_TRUE(autd.send(g));
 
   for (auto& dev : autd.geometry()) {
     auto [intensities, phases] = autd.link().intensities_and_phases(dev.idx(), 0);
@@ -49,8 +48,7 @@ TEST(Gain_Holo, GS) {
 TEST(Gain_Holo, GS_CUDA) {
   auto autd = autd3::internal::ControllerBuilder()
                   .add_device(autd3::internal::geometry::AUTD3(autd3::internal::Vector3::Zero()))
-                  .open_with_async(autd3::link::Audit::builder())
-                  .get();
+                  .open_with(autd3::link::Audit::builder());
 
   auto backend = std::make_shared<autd3::gain::holo::CUDABackend>();
   std::vector<double> p{-30};
@@ -63,7 +61,7 @@ TEST(Gain_Holo, GS_CUDA) {
                .with_repeat(100)
                .with_constraint(autd3::gain::holo::EmissionConstraint::uniform(0x80));
 
-  ASSERT_TRUE(autd.send_async(g).get());
+  ASSERT_TRUE(autd.send(g));
 
   for (auto& dev : autd.geometry()) {
     auto [intensities, phases] = autd.link().intensities_and_phases(dev.idx(), 0);

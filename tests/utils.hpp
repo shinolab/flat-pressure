@@ -3,7 +3,7 @@
 // Created Date: 26/09/2023
 // Author: Shun Suzuki
 // -----
-// Last Modified: 02/12/2023
+// Last Modified: 05/01/2024
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -15,11 +15,10 @@
 #include <autd3/link/audit.hpp>
 
 static inline autd3::internal::Controller<autd3::link::Audit> create_controller() {
-  return autd3::internal::ControllerBuilder()
-      .add_device(autd3::internal::geometry::AUTD3(autd3::internal::Vector3::Zero()))
-      .add_device(autd3::internal::geometry::AUTD3(autd3::internal::Vector3::Zero()))
-      .open_with_async(autd3::link::Audit::builder())
-      .get();
+  return coro::sync_wait(autd3::internal::ControllerBuilder()
+                             .add_device(autd3::internal::geometry::AUTD3(autd3::internal::Vector3::Zero()))
+                             .add_device(autd3::internal::geometry::AUTD3(autd3::internal::Vector3::Zero()))
+                             .open_with_async(autd3::link::Audit::builder()));
 }
 
 #define ASSERT_NEAR_VECTOR3(val1, val2, abs_error) \

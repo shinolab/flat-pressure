@@ -3,7 +3,7 @@
 // Created Date: 26/09/2023
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/01/2024
+// Last Modified: 05/01/2024
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -21,7 +21,7 @@
 TEST(STMTest, FocusSTM) {
   auto autd = create_controller();
 
-  ASSERT_TRUE(autd.send_async(autd3::internal::ConfigureSilencer::disable()).get());
+  ASSERT_TRUE(autd.send(autd3::internal::ConfigureSilencer::disable()));
 
   constexpr double radius = 30.0;
   constexpr int size = 2;
@@ -32,7 +32,7 @@ TEST(STMTest, FocusSTM) {
         return autd3::internal::ControlPoint{center + autd3::internal::Vector3(radius * cos(theta), radius * sin(theta), 0),
                                              autd3::internal::EmitIntensity::maximum()};
       }));
-  ASSERT_TRUE(autd.send_async(stm).get());
+  ASSERT_TRUE(autd.send(stm));
   for (const auto& dev : autd.geometry()) {
     ASSERT_FALSE(autd.link().is_stm_gain_mode(dev.idx()));
   }
@@ -53,7 +53,7 @@ TEST(STMTest, FocusSTM) {
   }
 
   stm.with_start_idx(0);
-  ASSERT_TRUE(autd.send_async(stm).get());
+  ASSERT_TRUE(autd.send(stm));
   ASSERT_EQ(0, stm.start_idx());
   ASSERT_EQ(std::nullopt, stm.finish_idx());
   for (const auto& dev : autd.geometry()) {
@@ -63,7 +63,7 @@ TEST(STMTest, FocusSTM) {
 
   stm.with_start_idx(std::nullopt);
   stm.with_finish_idx(0);
-  ASSERT_TRUE(autd.send_async(stm).get());
+  ASSERT_TRUE(autd.send(stm));
   ASSERT_EQ(std::nullopt, stm.start_idx());
   ASSERT_EQ(0, stm.finish_idx());
   for (const auto& dev : autd.geometry()) {
@@ -74,7 +74,7 @@ TEST(STMTest, FocusSTM) {
   stm = autd3::internal::FocusSTM::from_sampling_config(autd3::internal::SamplingConfiguration::from_frequency_division(512))
             .add_focus(center)
             .add_focus(center);
-  ASSERT_TRUE(autd.send_async(stm).get());
+  ASSERT_TRUE(autd.send(stm));
   ASSERT_EQ(20000.0, stm.frequency());
   ASSERT_EQ(2 * 20000.0, stm.sampling_config().frequency());
   ASSERT_EQ(512u, stm.sampling_config().frequency_division());
@@ -99,10 +99,9 @@ TEST(STMTest, GainSTM) {
   auto autd = autd3::internal::ControllerBuilder()
                   .add_device(autd3::internal::geometry::AUTD3(autd3::internal::Vector3::Zero()))
                   .add_device(autd3::internal::geometry::AUTD3(autd3::internal::Vector3::Zero()))
-                  .open_with_async(autd3::link::Audit::builder())
-                  .get();
+                  .open_with(autd3::link::Audit::builder());
 
-  ASSERT_TRUE(autd.send_async(autd3::internal::ConfigureSilencer::disable()).get());
+  ASSERT_TRUE(autd.send(autd3::internal::ConfigureSilencer::disable()));
 
   constexpr double radius = 30.0;
   constexpr int size = 2;
@@ -112,7 +111,7 @@ TEST(STMTest, GainSTM) {
         const double theta = 2 * autd3::internal::pi * i / size;
         return autd3::gain::Focus(center + autd3::internal::Vector3(radius * cos(theta), radius * sin(theta), 0));
       }));
-  ASSERT_TRUE(autd.send_async(stm).get());
+  ASSERT_TRUE(autd.send(stm));
   for (const auto& dev : autd.geometry()) {
     ASSERT_TRUE(autd.link().is_stm_gain_mode(dev.idx()));
   }
@@ -133,7 +132,7 @@ TEST(STMTest, GainSTM) {
   }
 
   stm.with_start_idx(0);
-  ASSERT_TRUE(autd.send_async(stm).get());
+  ASSERT_TRUE(autd.send(stm));
   ASSERT_EQ(0, stm.start_idx());
   ASSERT_EQ(std::nullopt, stm.finish_idx());
   for (const auto& dev : autd.geometry()) {
@@ -143,7 +142,7 @@ TEST(STMTest, GainSTM) {
 
   stm.with_start_idx(std::nullopt);
   stm.with_finish_idx(0);
-  ASSERT_TRUE(autd.send_async(stm).get());
+  ASSERT_TRUE(autd.send(stm));
   ASSERT_EQ(std::nullopt, stm.start_idx());
   ASSERT_EQ(0, stm.finish_idx());
   for (const auto& dev : autd.geometry()) {
@@ -154,7 +153,7 @@ TEST(STMTest, GainSTM) {
   stm = autd3::internal::GainSTM::from_sampling_config(autd3::internal::SamplingConfiguration::from_frequency_division(512))
             .add_gain(autd3::gain::Uniform(0x80))
             .add_gain(autd3::gain::Uniform(0x80));
-  ASSERT_TRUE(autd.send_async(stm).get());
+  ASSERT_TRUE(autd.send(stm));
   ASSERT_EQ(20000.0, stm.frequency());
   ASSERT_EQ(2 * 20000.0, stm.sampling_config().frequency());
   ASSERT_EQ(512u, stm.sampling_config().frequency_division());
@@ -175,7 +174,7 @@ TEST(STMTest, GainSTM) {
   }
 
   stm.with_mode(autd3::internal::native_methods::GainSTMMode::PhaseFull);
-  ASSERT_TRUE(autd.send_async(stm).get());
+  ASSERT_TRUE(autd.send(stm));
   for (const auto& dev : autd.geometry()) {
     ASSERT_EQ(2u, autd.link().stm_cycle(dev.idx()));
     auto [intensities, phases] = autd.link().intensities_and_phases(dev.idx(), 0);
@@ -188,7 +187,7 @@ TEST(STMTest, GainSTM) {
   }
 
   stm.with_mode(autd3::internal::native_methods::GainSTMMode::PhaseHalf);
-  ASSERT_TRUE(autd.send_async(stm).get());
+  ASSERT_TRUE(autd.send(stm));
   for (const auto& dev : autd.geometry()) {
     ASSERT_EQ(2u, autd.link().stm_cycle(dev.idx()));
     auto [intensities, phases] = autd.link().intensities_and_phases(dev.idx(), 0);

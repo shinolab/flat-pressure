@@ -3,7 +3,7 @@
 // Created Date: 26/09/2023
 // Author: Shun Suzuki
 // -----
-// Last Modified: 04/01/2024
+// Last Modified: 05/01/2024
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -18,7 +18,7 @@ TEST(Modulation, RawPCM) {
   auto autd = create_controller();
 
   const std::filesystem::path path = std::filesystem::path(AUTD3_RESOURCE_PATH).append("sin150.dat");
-  ASSERT_TRUE(autd.send_async(autd3::modulation::audio_file::RawPCM(path, 4000)).get());
+  ASSERT_TRUE(autd.send(autd3::modulation::audio_file::RawPCM(path, 4000)));
 
   for (auto& dev : autd.geometry()) {
     auto mod = autd.link().modulation(dev.idx());
@@ -30,8 +30,7 @@ TEST(Modulation, RawPCM) {
     ASSERT_EQ(5120, autd.link().modulation_frequency_division(dev.idx()));
   }
 
-  ASSERT_TRUE(autd.send_async(autd3::modulation::audio_file::RawPCM(path, 4000)
-                                  .with_sampling_config(autd3::internal::SamplingConfiguration::from_frequency_division(10240)))
-                  .get());
+  ASSERT_TRUE(autd.send(autd3::modulation::audio_file::RawPCM(path, 4000)
+                            .with_sampling_config(autd3::internal::SamplingConfiguration::from_frequency_division(10240))));
   for (auto& dev : autd.geometry()) ASSERT_EQ(10240, autd.link().modulation_frequency_division(dev.idx()));
 }
