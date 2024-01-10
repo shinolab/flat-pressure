@@ -3,7 +3,7 @@
 // Created Date: 12/10/2023
 // Author: Shun Suzuki
 // -----
-// Last Modified: 11/12/2023
+// Last Modified: 10/01/2024
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -43,7 +43,11 @@ struct T4010A1 {
   static constexpr internal::native_methods::Directivity directivity = internal::native_methods::Directivity::T4010A1;
 };
 
+class Visualizer;
+
 struct PlotRange {
+  friend class Visualizer;
+
   double x_start;
   double x_end;
   double y_start;
@@ -52,9 +56,24 @@ struct PlotRange {
   double z_end;
   double resolution;
 
+  PlotRange() = default;
   explicit PlotRange(const double x_start, const double x_end, const double y_start, const double y_end, const double z_start, const double z_end,
                      const double resolution = 1)
       : x_start(x_start), x_end(x_end), y_start(y_start), y_end(y_end), z_start(z_start), z_end(z_end), resolution(resolution) {}
+
+  std::vector<internal::Vector3> observe_points() {
+    const auto range = ptr();
+    const auto len = AUTDLinkVisualizerPlotRangeObservePointsLen(range);
+    std::vector<internal::Vector3> points;
+    points.resize(len);
+    AUTDLinkVisualizerPlotRangeObservePoints(range, reinterpret_cast<double*>(points.data()));
+    return points;
+  }
+
+ private:
+  [[nodiscard]] internal::native_methods::PlotRangePtr ptr() const {
+    return internal::native_methods::AUTDLinkVisualizerPlotRange(x_start, x_end, y_start, y_end, z_start, z_end, resolution);
+  }
 };
 
 struct PlotConfig {
@@ -259,10 +278,8 @@ class Visualizer final {
 
   void plot_field_of(const Config& config, const PlotRange& range, const internal::geometry::Geometry& geometry, const size_t idx) const {
     const auto config_ptr = get_plot_config(config);
-    const auto range_ptr = internal::native_methods::AUTDLinkVisualizerPlotRange(range.x_start, range.x_end, range.y_start, range.y_end,
-                                                                                 range.z_start, range.z_end, range.resolution);
     internal::native_methods::validate(
-        AUTDLinkVisualizerPlotFieldOf(_ptr, _backend, _directivity, config_ptr, range_ptr, geometry.ptr(), static_cast<uint32_t>(idx)));
+        AUTDLinkVisualizerPlotFieldOf(_ptr, _backend, _directivity, config_ptr, range.ptr(), geometry.ptr(), static_cast<uint32_t>(idx)));
   }
 
   void plot_field(const Config& config, const PlotRange& range, const internal::geometry::Geometry& geometry) const {

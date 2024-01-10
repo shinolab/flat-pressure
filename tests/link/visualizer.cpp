@@ -3,7 +3,7 @@
 // Created Date: 11/12/2023
 // Author: Shun Suzuki
 // -----
-// Last Modified: 05/01/2024
+// Last Modified: 10/01/2024
 // Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
 // -----
 // Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -42,6 +42,23 @@ void visualizer_test_with(autd3::internal::Controller<autd3::link::Visualizer>& 
   (void)autd.link().calc_field(points, autd.geometry());
 
   autd.close();
+}
+
+TEST(Link, PlotRange) {
+  auto plot_range = autd3::link::PlotRange();
+  plot_range.x_start = -20;
+  plot_range.x_end = 20;
+  plot_range.y_start = -30;
+  plot_range.y_end = 30;
+  plot_range.z_start = 0;
+  plot_range.z_end = 0;
+  plot_range.resolution = 1;
+
+  const auto points = plot_range.observe_points();
+  ASSERT_EQ(points.size(), 41 * 61);
+  ASSERT_EQ(points[0], autd3::internal::Vector3(-20, -30, 0));
+  ASSERT_EQ(points[1], autd3::internal::Vector3(-19, -30, 0));
+  ASSERT_EQ(points[points.size() - 1], autd3::internal::Vector3(20, 30, 0));
 }
 
 TEST(Link, Visualizer_Plotters) {
