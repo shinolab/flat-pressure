@@ -76,6 +76,10 @@ PlotRangePtr AUTDLinkVisualizerPlotRange(double x_min,
                                          double z_max,
                                          double resolution);
 
+[[nodiscard]] uint64_t AUTDLinkVisualizerPlotRangeObservePointsLen(PlotRangePtr range);
+
+void AUTDLinkVisualizerPlotRangeObservePoints(PlotRangePtr range, double *points);
+
 uint32_t AUTDLinkVisualizerPhasesOf(LinkPtr visualizer,
                                     Backend backend,
                                     Directivity directivity,
