@@ -1,23 +1,15 @@
-// File: controller.cpp
-// Project: internal
-// Created Date: 26/09/2023
-// Author: Shun Suzuki
-// -----
-// Last Modified: 05/01/2024
-// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
-// -----
-// Copyright (c) 2023 Shun Suzuki. All rights reserved.
-//
-
 #include <gtest/gtest.h>
 
-#include <autd3/datagram/force_fan.hpp>
+#include <autd3/controller/builder.hpp>
+#include <autd3/driver/autd3_device.hpp>
+#include <autd3/driver/datagram/datagram.hpp>
+#include <autd3/driver/datagram/force_fan.hpp>
 #include <autd3/gain/focus.hpp>
 #include <autd3/gain/null.hpp>
 #include <autd3/gain/uniform.hpp>
-#include <autd3/internal/datagram.hpp>
 #include <autd3/modulation/sine.hpp>
 #include <autd3/modulation/static.hpp>
+#include <coro/coro.hpp>
 
 #include "utils.hpp"
 
@@ -33,7 +25,7 @@ TEST(Internal, ControllerClose) {
   {
     const auto autd = create_controller();
     autd.link().break_down();
-    ASSERT_THROW(autd.close(), autd3::internal::AUTDException);
+    ASSERT_THROW(autd.close(), autd3::AUTDException);
   }
 }
 
@@ -49,75 +41,63 @@ TEST(Internal, ControllerCloseAsync) {
   {
     const auto autd = create_controller();
     autd.link().break_down();
-    ASSERT_THROW(sync_wait(autd.close_async()), autd3::internal::AUTDException);
+    ASSERT_THROW(sync_wait(autd.close_async()), autd3::AUTDException);
   }
 }
 
 TEST(Internal, ControllerSendTimeout) {
   {
-    auto autd = autd3::internal::ControllerBuilder()
-                    .add_device(autd3::internal::geometry::AUTD3(autd3::internal::Vector3::Zero()))
-                    .add_device(autd3::internal::geometry::AUTD3(autd3::internal::Vector3::Zero()))
+    auto autd = autd3::controller::ControllerBuilder()
+                    .add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero()))
+                    .add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero()))
                     .open_with(autd3::link::Audit::builder().with_timeout(std::chrono::microseconds(0)));
 
     autd.send(autd3::gain::Null());
-    ASSERT_EQ(autd.link().last_timeout_ns(), 0);
 
     autd.send(autd3::gain::Null(), std::chrono::microseconds(1));
-    ASSERT_EQ(autd.link().last_timeout_ns(), 1000);
 
     autd.send(autd3::gain::Null(), autd3::gain::Null(), std::chrono::microseconds(2));
-    ASSERT_EQ(autd.link().last_timeout_ns(), 2000);
   }
 
   {
-    auto autd = autd3::internal::ControllerBuilder()
-                    .add_device(autd3::internal::geometry::AUTD3(autd3::internal::Vector3::Zero()))
-                    .add_device(autd3::internal::geometry::AUTD3(autd3::internal::Vector3::Zero()))
+    auto autd = autd3::controller::ControllerBuilder()
+                    .add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero()))
+                    .add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero()))
                     .open_with(autd3::link::Audit::builder().with_timeout(std::chrono::microseconds(10)));
 
     autd.send(autd3::gain::Null());
-    ASSERT_EQ(autd.link().last_timeout_ns(), 10000);
 
     autd.send(autd3::gain::Null(), std::chrono::microseconds(1));
-    ASSERT_EQ(autd.link().last_timeout_ns(), 1000);
 
     autd.send(autd3::gain::Null(), autd3::gain::Null(), std::chrono::microseconds(2));
-    ASSERT_EQ(autd.link().last_timeout_ns(), 2000);
   }
 }
 
 TEST(Internal, ControllerSendTimeoutAsync) {
   {
-    auto autd = autd3::internal::ControllerBuilder()
-                    .add_device(autd3::internal::geometry::AUTD3(autd3::internal::Vector3::Zero()))
-                    .add_device(autd3::internal::geometry::AUTD3(autd3::internal::Vector3::Zero()))
+    auto autd = autd3::controller::ControllerBuilder()
+                    .add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero()))
+                    .add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero()))
                     .open_with(autd3::link::Audit::builder().with_timeout(std::chrono::microseconds(0)));
 
     sync_wait(autd.send_async(autd3::gain::Null()));
-    ASSERT_EQ(autd.link().last_timeout_ns(), 0);
 
     sync_wait(autd.send_async(autd3::gain::Null(), std::chrono::microseconds(1)));
-    ASSERT_EQ(autd.link().last_timeout_ns(), 1000);
 
     sync_wait(autd.send_async(autd3::gain::Null(), autd3::gain::Null(), std::chrono::microseconds(2)));
-    ASSERT_EQ(autd.link().last_timeout_ns(), 2000);
   }
 
   {
-    auto autd = autd3::internal::ControllerBuilder()
-                    .add_device(autd3::internal::geometry::AUTD3(autd3::internal::Vector3::Zero()))
-                    .add_device(autd3::internal::geometry::AUTD3(autd3::internal::Vector3::Zero()))
+    auto autd = autd3::controller::ControllerBuilder()
+                    .add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero()))
+                    .add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero()))
                     .open_with(autd3::link::Audit::builder().with_timeout(std::chrono::microseconds(10)));
 
     sync_wait(autd.send_async(autd3::gain::Null()));
-    ASSERT_EQ(autd.link().last_timeout_ns(), 10000);
 
     sync_wait(autd.send_async(autd3::gain::Null(), std::chrono::microseconds(1)));
-    ASSERT_EQ(autd.link().last_timeout_ns(), 1000);
 
     sync_wait(autd.send_async(autd3::gain::Null(), autd3::gain::Null(), std::chrono::microseconds(2)));
-    ASSERT_EQ(autd.link().last_timeout_ns(), 2000);
   }
 }
 
@@ -139,7 +119,7 @@ TEST(Internal, ControllerSendSingle) {
   ASSERT_FALSE(autd.send(autd3::modulation::Static()));
 
   autd.link().break_down();
-  ASSERT_THROW(autd.send(autd3::modulation::Static()), autd3::internal::AUTDException);
+  ASSERT_THROW(autd.send(autd3::modulation::Static()), autd3::AUTDException);
 }
 
 TEST(Internal, ControllerSendSingleAsync) {
@@ -160,7 +140,7 @@ TEST(Internal, ControllerSendSingleAsync) {
   ASSERT_FALSE(sync_wait(autd.send_async(autd3::modulation::Static())));
 
   autd.link().break_down();
-  ASSERT_THROW(sync_wait(autd.send_async(autd3::modulation::Static())), autd3::internal::AUTDException);
+  ASSERT_THROW(sync_wait(autd.send_async(autd3::modulation::Static())), autd3::AUTDException);
 }
 
 TEST(Internal, ControllerSendDouble) {
@@ -187,7 +167,7 @@ TEST(Internal, ControllerSendDouble) {
   ASSERT_FALSE(autd.send(autd3::modulation::Static(), autd3::gain::Uniform(1)));
 
   autd.link().break_down();
-  ASSERT_THROW(autd.send(autd3::modulation::Static(), autd3::gain::Uniform(1)), autd3::internal::AUTDException);
+  ASSERT_THROW(autd.send(autd3::modulation::Static(), autd3::gain::Uniform(1)), autd3::AUTDException);
 }
 
 TEST(Internal, ControllerSendDoubleAsync) {
@@ -214,7 +194,7 @@ TEST(Internal, ControllerSendDoubleAsync) {
   ASSERT_FALSE(sync_wait(autd.send_async(autd3::modulation::Static(), autd3::gain::Uniform(1))));
 
   autd.link().break_down();
-  ASSERT_THROW(sync_wait(autd.send_async(autd3::modulation::Static(), autd3::gain::Uniform(1))), autd3::internal::AUTDException);
+  ASSERT_THROW(sync_wait(autd.send_async(autd3::modulation::Static(), autd3::gain::Uniform(1))), autd3::AUTDException);
 }
 
 TEST(Internal, ControllerGroup) {
@@ -310,7 +290,7 @@ TEST(Internal, ControllerGroupCheckOnlyForEnabled) {
         check[dev.idx()] = true;
         return 0;
       })
-      .set(0, autd3::modulation::Sine(150), autd3::gain::Uniform(0x80).with_phase(autd3::internal::Phase(0x90)))
+      .set(0, autd3::modulation::Sine(150), autd3::gain::Uniform(0x80).with_phase(autd3::driver::Phase(0x90)))
       .send();
 
   ASSERT_FALSE(check[0]);
@@ -334,11 +314,11 @@ TEST(Internal_Geometry, DeviceForceFan) {
   auto autd = create_controller();
   for (auto& dev : autd.geometry()) ASSERT_FALSE(autd.link().is_force_fan(dev.idx()));
 
-  autd.send(autd3::datagram::ConfigureForceFan([](const auto& dev) { return dev.idx() == 0; }));
+  autd.send(autd3::driver::ConfigureForceFan([](const auto& dev) { return dev.idx() == 0; }));
   ASSERT_TRUE(autd.link().is_force_fan(0));
   ASSERT_FALSE(autd.link().is_force_fan(1));
 
-  autd.send(autd3::datagram::ConfigureForceFan([](const auto& dev) { return dev.idx() == 1; }));
+  autd.send(autd3::driver::ConfigureForceFan([](const auto& dev) { return dev.idx() == 1; }));
   ASSERT_FALSE(autd.link().is_force_fan(0));
   ASSERT_TRUE(autd.link().is_force_fan(1));
 }

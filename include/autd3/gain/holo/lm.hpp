@@ -1,25 +1,14 @@
-// File: lm.hpp
-// Project: holo
-// Created Date: 13/09/2023
-// Author: Shun Suzuki
-// -----
-// Last Modified: 02/12/2023
-// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
-// -----
-// Copyright (c) 2023 Shun Suzuki. All rights reserved.
-//
-
 #pragma once
 
 #include <memory>
 #include <vector>
 
+#include "autd3/driver/geometry/geometry.hpp"
 #include "autd3/gain/cache.hpp"
 #include "autd3/gain/holo/holo.hpp"
 #include "autd3/gain/transform.hpp"
-#include "autd3/internal/geometry/geometry.hpp"
-#include "autd3/internal/native_methods.hpp"
-#include "autd3/internal/utils.hpp"
+#include "autd3/native_methods.hpp"
+#include "autd3/native_methods/utils.hpp"
 
 namespace autd3::gain::holo {
 
@@ -36,7 +25,8 @@ namespace autd3::gain::holo {
 template <backend B>
 class LM final : public Holo<LM<B>>, public IntoCache<LM<B>>, public IntoTransform<LM<B>> {
  public:
-  explicit LM(std::shared_ptr<B> holo_backend) : Holo<LM>(), _backend(std::move(holo_backend)) {}
+  explicit LM(std::shared_ptr<B> holo_backend)
+      : Holo<LM>(EmissionConstraint::dont_care()), _eps1(1e-8), _eps2(1e-8), _tau(1e-3), _k_max(5), _backend(std::move(holo_backend)) {}
 
   AUTD3_DEF_PARAM(LM, double, eps1)
   AUTD3_DEF_PARAM(LM, double, eps2)
@@ -44,30 +34,18 @@ class LM final : public Holo<LM<B>>, public IntoCache<LM<B>>, public IntoTransfo
   AUTD3_DEF_PARAM(LM, uint32_t, k_max)
 
   void with_initial(std::vector<double> value) & { _initial = std::move(value); }
-
   [[nodiscard]] LM&& with_initial(std::vector<double> value) && {
     _initial = std::move(value);
     return std::move(*this);
   }
 
-  [[nodiscard]] internal::native_methods::GainPtr gain_ptr(const internal::geometry::Geometry&) const override {
-    auto ptr = this->_backend->lm(reinterpret_cast<const double*>(this->_foci.data()), reinterpret_cast<const double*>(this->_amps.data()),
-                                  this->_amps.size());
-    if (_eps1.has_value()) ptr = this->_backend->lm_with_eps1(ptr, _eps1.value());
-    if (_eps2.has_value()) ptr = this->_backend->lm_with_eps2(ptr, _eps2.value());
-    if (_tau.has_value()) ptr = this->_backend->lm_with_tau(ptr, _tau.value());
-    if (_k_max.has_value()) ptr = this->_backend->lm_with_k_max(ptr, _k_max.value());
-    if (!_initial.empty()) ptr = this->_backend->lm_with_initial(ptr, _initial.data(), _initial.size());
-    if (this->_constraint.has_value()) ptr = this->_backend->lm_with_constraint(ptr, this->_constraint.value());
-    return ptr;
+  [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry&) const override {
+    return this->_backend->lm(reinterpret_cast<const double*>(this->_foci.data()), reinterpret_cast<const double*>(this->_amps.data()),
+                              this->_amps.size(), _eps1, _eps2, _tau, _k_max, _initial.data(), _initial.size(), this->_constraint);
   }
 
  private:
   std::shared_ptr<B> _backend;
-  std::optional<double> _eps1;
-  std::optional<double> _eps2;
-  std::optional<double> _tau;
-  std::optional<uint32_t> _k_max;
   std::vector<double> _initial;
 };
 

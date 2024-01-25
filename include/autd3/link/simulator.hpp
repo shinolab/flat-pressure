@@ -1,25 +1,13 @@
-// File: simulator.hpp
-// Project: link
-// Created Date: 27/09/2023
-// Author: Shun Suzuki
-// -----
-// Last Modified: 05/01/2024
-// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
-// -----
-// Copyright (c) 2023 Shun Suzuki. All rights reserved.
-//
-
 #pragma once
 
 #include <chrono>
-#include <future>
 #include <string>
 
-#include "autd3/internal/geometry/geometry.hpp"
-#include "autd3/internal/native_methods.hpp"
-#include "autd3/internal/utils.hpp"
+#include "autd3/driver/geometry/geometry.hpp"
+#include "autd3/native_methods.hpp"
+#include "autd3/native_methods/utils.hpp"
 
-namespace autd3::internal {
+namespace autd3::controller {
 class ControllerBuilder;
 }
 
@@ -30,25 +18,25 @@ namespace autd3::link {
  *
  */
 class Simulator final {
-  internal::native_methods::LinkPtr _ptr;
+  native_methods::LinkPtr _ptr;
 
-  explicit Simulator(const internal::native_methods::LinkPtr ptr) : _ptr(ptr) {}
+  explicit Simulator(const native_methods::LinkPtr ptr) : _ptr(ptr) {}
 
  public:
   class Builder final {
     friend class Simulator;
-    friend class internal::ControllerBuilder;
+    friend class controller::ControllerBuilder;
 
-    internal::native_methods::LinkSimulatorBuilderPtr _ptr;
+    native_methods::LinkSimulatorBuilderPtr _ptr;
 
-    explicit Builder(const uint16_t port) : _ptr(internal::native_methods::AUTDLinkSimulator(port)) {}
+    explicit Builder(const uint16_t port) : _ptr(native_methods::AUTDLinkSimulator(port)) {}
 
-    [[nodiscard]] static Simulator resolve_link(const internal::native_methods::LinkPtr link) { return Simulator{link}; }
+    [[nodiscard]] static Simulator resolve_link(const native_methods::LinkPtr link) { return Simulator{link}; }
 
    public:
     using Link = Simulator;
 
-    [[nodiscard]] internal::native_methods::LinkBuilderPtr ptr() const { return AUTDLinkSimulatorIntoBuilder(_ptr); }
+    [[nodiscard]] native_methods::LinkBuilderPtr ptr() const { return AUTDLinkSimulatorIntoBuilder(_ptr); }
 
     /**
      * @brief Set server IP address
@@ -71,12 +59,12 @@ class Simulator final {
 
   static Builder builder(const uint16_t port) { return Builder(port); }
 
-  bool update_geometry(const internal::geometry::Geometry& geometry) const {
-    return validate(AUTDLinkSimulatorUpdateGeometry(_ptr, geometry.ptr())) == internal::native_methods::AUTD3_TRUE;
+  [[nodiscard]] bool update_geometry(const driver::geometry::Geometry& geometry) const {
+    return validate(AUTDLinkSimulatorUpdateGeometry(_ptr, geometry.ptr())) == native_methods::AUTD3_TRUE;
   }
 
 #ifdef AUTD3_ASYNC_API
-  [[nodiscard]] coro::task<bool> update_geometry_async(const internal::geometry::Geometry& geometry) const { co_return update_geometry(geometry); }
+  [[nodiscard]] coro::task<bool> update_geometry_async(const driver::geometry::Geometry& geometry) const { co_return update_geometry(geometry); }
 #endif
 };
 

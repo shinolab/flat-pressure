@@ -1,23 +1,14 @@
-// File: utils.hpp
-// Project: tests
-// Created Date: 26/09/2023
-// Author: Shun Suzuki
-// -----
-// Last Modified: 05/01/2024
-// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
-// -----
-// Copyright (c) 2023 Shun Suzuki. All rights reserved.
-//
-
 #pragma once
 
-#include <autd3/internal/controller.hpp>
+#include <autd3/controller/builder.hpp>
+#include <autd3/controller/controller.hpp>
+#include <autd3/driver/autd3_device.hpp>
 #include <autd3/link/audit.hpp>
 
-static inline autd3::internal::Controller<autd3::link::Audit> create_controller() {
-  return coro::sync_wait(autd3::internal::ControllerBuilder()
-                             .add_device(autd3::internal::geometry::AUTD3(autd3::internal::Vector3::Zero()))
-                             .add_device(autd3::internal::geometry::AUTD3(autd3::internal::Vector3::Zero()))
+static inline autd3::controller::Controller<autd3::link::Audit> create_controller() {
+  return coro::sync_wait(autd3::controller::ControllerBuilder()
+                             .add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero()))
+                             .add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero()))
                              .open_with_async(autd3::link::Audit::builder()));
 }
 

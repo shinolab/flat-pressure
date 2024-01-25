@@ -1,19 +1,10 @@
-// File: stm.cpp
-// Project: internal
-// Created Date: 26/09/2023
-// Author: Shun Suzuki
-// -----
-// Last Modified: 05/01/2024
-// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
-// -----
-// Copyright (c) 2023 Shun Suzuki. All rights reserved.
-//
-
 #include <gtest/gtest.h>
 
+#include <autd3/driver/datagram/silencer.hpp>
+#include <autd3/driver/datagram/stm/focus.hpp>
+#include <autd3/driver/datagram/stm/gain.hpp>
 #include <autd3/gain/focus.hpp>
 #include <autd3/gain/uniform.hpp>
-#include <autd3/internal/stm.hpp>
 #include <ranges>
 
 #include "utils.hpp"
@@ -21,16 +12,16 @@
 TEST(STMTest, FocusSTM) {
   auto autd = create_controller();
 
-  ASSERT_TRUE(autd.send(autd3::internal::ConfigureSilencer::disable()));
+  ASSERT_TRUE(autd.send(autd3::driver::ConfigureSilencer::disable()));
 
   constexpr double radius = 30.0;
   constexpr int size = 2;
-  autd3::internal::Vector3 center = autd.geometry().center() + autd3::internal::Vector3(0, 0, 150);
-  auto stm = autd3::internal::FocusSTM::from_freq(1).add_foci_from_iter(
+  autd3::driver::Vector3 center = autd.geometry().center() + autd3::driver::Vector3(0, 0, 150);
+  auto stm = autd3::driver::FocusSTM::from_freq(1).add_foci_from_iter(
       std::views::iota(0) | std::views::take(size) | std::views::transform([&](auto i) {
-        const double theta = 2 * autd3::internal::pi * i / size;
-        return autd3::internal::ControlPoint{center + autd3::internal::Vector3(radius * cos(theta), radius * sin(theta), 0),
-                                             autd3::internal::EmitIntensity::maximum()};
+        const double theta = 2 * autd3::driver::pi * i / size;
+        return autd3::driver::ControlPoint{center + autd3::driver::Vector3(radius * cos(theta), radius * sin(theta), 0),
+                                           autd3::driver::EmitIntensity::maximum()};
       }));
   ASSERT_TRUE(autd.send(stm));
   for (const auto& dev : autd.geometry()) {
@@ -71,7 +62,7 @@ TEST(STMTest, FocusSTM) {
     ASSERT_EQ(0, autd.link().stm_finish_idx(dev.idx()));
   }
 
-  stm = autd3::internal::FocusSTM::from_sampling_config(autd3::internal::SamplingConfiguration::from_frequency_division(512))
+  stm = autd3::driver::FocusSTM::from_sampling_config(autd3::driver::SamplingConfiguration::from_frequency_division(512))
             .add_focus(center)
             .add_focus(center);
   ASSERT_TRUE(autd.send(stm));
@@ -96,20 +87,20 @@ TEST(STMTest, FocusSTM) {
 }
 
 TEST(STMTest, GainSTM) {
-  auto autd = autd3::internal::ControllerBuilder()
-                  .add_device(autd3::internal::geometry::AUTD3(autd3::internal::Vector3::Zero()))
-                  .add_device(autd3::internal::geometry::AUTD3(autd3::internal::Vector3::Zero()))
+  auto autd = autd3::controller::ControllerBuilder()
+                  .add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero()))
+                  .add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero()))
                   .open_with(autd3::link::Audit::builder());
 
-  ASSERT_TRUE(autd.send(autd3::internal::ConfigureSilencer::disable()));
+  ASSERT_TRUE(autd.send(autd3::driver::ConfigureSilencer::disable()));
 
   constexpr double radius = 30.0;
   constexpr int size = 2;
-  autd3::internal::Vector3 center = autd.geometry().center() + autd3::internal::Vector3(0, 0, 150);
-  auto stm = autd3::internal::GainSTM::from_freq(1).add_gains_from_iter(
+  autd3::driver::Vector3 center = autd.geometry().center() + autd3::driver::Vector3(0, 0, 150);
+  auto stm = autd3::driver::GainSTM::from_freq(1).add_gains_from_iter(
       std::views::iota(0) | std::views::take(size) | std::views::transform([&](auto i) {
-        const double theta = 2 * autd3::internal::pi * i / size;
-        return autd3::gain::Focus(center + autd3::internal::Vector3(radius * cos(theta), radius * sin(theta), 0));
+        const double theta = 2 * autd3::driver::pi * i / size;
+        return autd3::gain::Focus(center + autd3::driver::Vector3(radius * cos(theta), radius * sin(theta), 0));
       }));
   ASSERT_TRUE(autd.send(stm));
   for (const auto& dev : autd.geometry()) {
@@ -150,7 +141,7 @@ TEST(STMTest, GainSTM) {
     ASSERT_EQ(0, autd.link().stm_finish_idx(dev.idx()));
   }
 
-  stm = autd3::internal::GainSTM::from_sampling_config(autd3::internal::SamplingConfiguration::from_frequency_division(512))
+  stm = autd3::driver::GainSTM::from_sampling_config(autd3::driver::SamplingConfiguration::from_frequency_division(512))
             .add_gain(autd3::gain::Uniform(0x80))
             .add_gain(autd3::gain::Uniform(0x80));
   ASSERT_TRUE(autd.send(stm));
@@ -173,7 +164,7 @@ TEST(STMTest, GainSTM) {
     ASSERT_TRUE(std::ranges::all_of(phases, [](auto p) { return p == 0; }));
   }
 
-  stm.with_mode(autd3::internal::native_methods::GainSTMMode::PhaseFull);
+  stm.with_mode(autd3::native_methods::GainSTMMode::PhaseFull);
   ASSERT_TRUE(autd.send(stm));
   for (const auto& dev : autd.geometry()) {
     ASSERT_EQ(2u, autd.link().stm_cycle(dev.idx()));
@@ -186,7 +177,7 @@ TEST(STMTest, GainSTM) {
     ASSERT_TRUE(std::ranges::all_of(phases, [](auto p) { return p == 0; }));
   }
 
-  stm.with_mode(autd3::internal::native_methods::GainSTMMode::PhaseHalf);
+  stm.with_mode(autd3::native_methods::GainSTMMode::PhaseHalf);
   ASSERT_TRUE(autd.send(stm));
   for (const auto& dev : autd.geometry()) {
     ASSERT_EQ(2u, autd.link().stm_cycle(dev.idx()));

@@ -1,21 +1,11 @@
-// File: soem.cpp
-// Project: examples
-// Created Date: 16/05/2022
-// Author: Shun Suzuki
-// -----
-// Last Modified: 05/01/2024
-// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
-// -----
-// Copyright (c) 2022-2023 Shun Suzuki. All rights reserved.
-//
-
-#include "autd3/link/soem.hpp"
-
 #include <iostream>
 
 #include "autd3.hpp"
+#include "autd3/link/soem.hpp"
 #include "runner.hpp"
 #include "util.hpp"
+
+void on_err(const char* msg) { std::cerr << "[SOEM Err]" << msg << std::endl; }
 
 [[noreturn]] void on_lost(const char* msg) {
   std::cerr << "Link is lost\n";
@@ -31,7 +21,7 @@
 coro::task<int> main_() {
   auto autd = co_await autd3::ControllerBuilder()
                   .add_device(autd3::AUTD3(autd3::Vector3::Zero()))
-                  .open_with_async(autd3::link::SOEM::builder().with_on_lost(&on_lost));
+                  .open_with_async(autd3::link::SOEM::builder().with_on_err(&on_err).with_on_lost(&on_lost));
   auto res = co_await run(autd);
   co_return res;
 }

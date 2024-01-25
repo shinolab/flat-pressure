@@ -1,18 +1,7 @@
-// File: device.cpp
-// Project: geometry
-// Created Date: 26/09/2023
-// Author: Shun Suzuki
-// -----
-// Last Modified: 06/12/2023
-// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
-// -----
-// Copyright (c) 2023 Shun Suzuki. All rights reserved.
-//
-
 #include <gtest/gtest.h>
 
-#include <autd3/internal/datagram.hpp>
-#include <autd3/internal/geometry/device.hpp>
+#include <autd3/driver/datagram/datagram.hpp>
+#include <autd3/driver/geometry/device.hpp>
 #include <ranges>
 
 #include "utils.hpp"
@@ -54,7 +43,7 @@ TEST(Internal_Geometry, DeviceNumTransducers) {
 
 TEST(Internal_Geometry, DeviceCenter) {
   for (auto autd = create_controller(); auto& dev : autd.geometry()) {
-    ASSERT_NEAR_VECTOR3(dev.center(), autd3::internal::Vector3(86.62522088353406, 66.7132530125621, 0), 1e-6);
+    ASSERT_NEAR_VECTOR3(dev.center(), autd3::driver::Vector3(86.62522088353406, 66.7132530125621, 0), 1e-6);
   }
 }
 
@@ -72,7 +61,7 @@ TEST(Internal_Geometry, DeviceTranslate) {
   for (auto autd = create_controller(); const auto& dev : autd.geometry()) {
     auto original_pos_view = dev.transducers() | std::views::transform([](const auto& tr) { return tr.position(); });
     std::vector original_pos(original_pos_view.begin(), original_pos_view.end());
-    autd3::internal::Vector3 t(1, 2, 3);
+    autd3::driver::Vector3 t(1, 2, 3);
     dev.translate(t);
     std::ranges::for_each(dev.transducers(), [&t, &original_pos](auto& tr) { ASSERT_EQ(tr.position(), original_pos[tr.idx()] + t); });
   }
@@ -80,7 +69,7 @@ TEST(Internal_Geometry, DeviceTranslate) {
 
 TEST(Internal_Geometry, DeviceRotate) {
   for (auto autd = create_controller(); const auto& dev : autd.geometry()) {
-    autd3::internal::Quaternion r(0.7071067811865476, 0, 0, 0.7071067811865476);
+    autd3::driver::Quaternion r(0.7071067811865476, 0, 0, 0.7071067811865476);
     dev.rotate(r);
     std::ranges::for_each(dev.transducers(), [&r](auto& tr) { ASSERT_EQ(tr.rotation(), r); });
   }
@@ -90,12 +79,12 @@ TEST(Internal_Geometry, DeviceAffine) {
   for (auto autd = create_controller(); const auto& dev : autd.geometry()) {
     auto original_pos_view = dev.transducers() | std::views::transform([](const auto& tr) { return tr.position(); });
     std::vector original_pos(original_pos_view.begin(), original_pos_view.end());
-    autd3::internal::Vector3 t(1, 2, 3);
-    autd3::internal::Quaternion r(0.7071067811865476, 0, 0, 0.7071067811865476);
+    autd3::driver::Vector3 t(1, 2, 3);
+    autd3::driver::Quaternion r(0.7071067811865476, 0, 0, 0.7071067811865476);
     dev.affine(t, r);
     std::ranges::for_each(dev.transducers(), [&r, &t, &original_pos](auto& tr) {
       auto op = original_pos[tr.idx()];
-      autd3::internal::Vector3 expected = autd3::internal::Vector3(-op.y(), op.x(), op.z()) + t;
+      autd3::driver::Vector3 expected = autd3::driver::Vector3(-op.y(), op.x(), op.z()) + t;
       ASSERT_DOUBLE_EQ(tr.position().x(), expected.x());
       ASSERT_DOUBLE_EQ(tr.position().y(), expected.y());
       ASSERT_DOUBLE_EQ(tr.position().z(), expected.z());

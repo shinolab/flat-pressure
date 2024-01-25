@@ -1,14 +1,3 @@
-// File: group.cpp
-// Project: gain
-// Created Date: 26/09/2023
-// Author: Shun Suzuki
-// -----
-// Last Modified: 05/01/2024
-// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
-// -----
-// Copyright (c) 2023 Shun Suzuki. All rights reserved.
-//
-
 #include <gtest/gtest.h>
 
 #include <autd3/gain/group.hpp>
@@ -26,7 +15,7 @@ TEST(Gain, Group) {
                           if (tr.position().x() < cx) return "uniform";
                           return "null";
                         })
-                            .set("uniform", autd3::gain::Uniform(0x80).with_phase(autd3::internal::Phase(0x90)))
+                            .set("uniform", autd3::gain::Uniform(0x80).with_phase(autd3::driver::Phase(0x90)))
                             .set("null", autd3::gain::Null())));
   for (auto& dev : autd.geometry()) {
     auto [intensities, phases] = autd.link().intensities_and_phases(dev.idx(), 0);
@@ -44,7 +33,7 @@ TEST(Gain, Group) {
   ASSERT_TRUE(autd.send(autd3::gain::Group([cx](const auto&, const auto& tr) -> std::optional<const char*> {
                           if (tr.position().x() < cx) return "uniform";
                           return std::nullopt;
-                        }).set("uniform", autd3::gain::Uniform(0x81).with_phase(autd3::internal::Phase(0x91)))));
+                        }).set("uniform", autd3::gain::Uniform(0x81).with_phase(autd3::driver::Phase(0x91)))));
   for (auto& dev : autd.geometry()) {
     auto [intensities, phases] = autd.link().intensities_and_phases(dev.idx(), 0);
     for (auto& tr : dev) {
@@ -65,9 +54,9 @@ TEST(Gain, GroupUnkownKey) {
   bool caught_err = false;
   try {
     autd.send(autd3::gain::Group([](const auto&, const auto&) -> std::optional<const char*> { return "null"; })
-                  .set("uniform", autd3::gain::Uniform(0x80).with_phase(autd3::internal::Phase(0x90)))
+                  .set("uniform", autd3::gain::Uniform(0x80).with_phase(autd3::driver::Phase(0x90)))
                   .set("null", autd3::gain::Null()));
-  } catch (autd3::internal::AUTDException& e) {
+  } catch (autd3::AUTDException& e) {
     caught_err = true;
     ASSERT_STREQ("Unknown group key", e.what());
   }
@@ -81,7 +70,7 @@ TEST(Gain, GroupUnspecifiedKey) {
   bool caught_err = false;
   try {
     autd.send(autd3::gain::Group([](const auto&, const auto&) -> std::optional<const char*> { return "null"; }));
-  } catch (autd3::internal::AUTDException& e) {
+  } catch (autd3::AUTDException& e) {
     caught_err = true;
     ASSERT_STREQ("Unspecified group key", e.what());
   }
@@ -97,7 +86,7 @@ TEST(Gain, GroupCheckOnlyForEnabled) {
   ASSERT_TRUE(autd.send(autd3::gain::Group([&check](const auto& dev, const auto&) -> std::optional<int> {
                           check[dev.idx()] = true;
                           return 0;
-                        }).set(0, autd3::gain::Uniform(0x80).with_phase(autd3::internal::Phase(0x90)))));
+                        }).set(0, autd3::gain::Uniform(0x80).with_phase(autd3::driver::Phase(0x90)))));
 
   ASSERT_FALSE(check[0]);
   ASSERT_TRUE(check[1]);

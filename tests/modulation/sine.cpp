@@ -1,14 +1,3 @@
-// File: sine.cpp
-// Project: modulation
-// Created Date: 26/09/2023
-// Author: Shun Suzuki
-// -----
-// Last Modified: 05/01/2024
-// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
-// -----
-// Copyright (c) 2023 Shun Suzuki. All rights reserved.
-//
-
 #include <gtest/gtest.h>
 
 #include <autd3/modulation/sine.hpp>
@@ -19,9 +8,9 @@ TEST(Modulation, Sine) {
   auto autd = create_controller();
 
   ASSERT_TRUE(autd.send(autd3::modulation::Sine(150)
-                            .with_intensity(autd3::internal::EmitIntensity::maximum() / 2)
-                            .with_offset(autd3::internal::EmitIntensity::maximum() / 4)
-                            .with_phase(autd3::internal::pi / 2)));
+                            .with_intensity(autd3::driver::EmitIntensity::maximum() / 2)
+                            .with_offset(autd3::driver::EmitIntensity::maximum() / 4)
+                            .with_phase(autd3::driver::Phase::from_rad(autd3::driver::pi / 2))));
 
   for (auto& dev : autd.geometry()) {
     auto mod = autd.link().modulation(dev.idx());
@@ -32,14 +21,14 @@ TEST(Modulation, Sine) {
     ASSERT_EQ(5120, autd.link().modulation_frequency_division(dev.idx()));
   }
 
-  ASSERT_TRUE(autd.send(autd3::modulation::Sine(150).with_sampling_config(autd3::internal::SamplingConfiguration::from_frequency_division(10240))));
+  ASSERT_TRUE(autd.send(autd3::modulation::Sine(150).with_sampling_config(autd3::driver::SamplingConfiguration::from_frequency_division(10240))));
   for (auto& dev : autd.geometry()) ASSERT_EQ(10240, autd.link().modulation_frequency_division(dev.idx()));
 }
 
 TEST(Modulation, SineWithMode) {
   auto autd = create_controller();
 
-  ASSERT_TRUE(autd.send(autd3::modulation::Sine(150).with_mode(autd3::internal::native_methods::SamplingMode::SizeOptimized)));
+  ASSERT_TRUE(autd.send(autd3::modulation::Sine(150).with_mode(autd3::native_methods::SamplingMode::SizeOptimized)));
 
   for (auto& dev : autd.geometry()) {
     auto mod = autd.link().modulation(dev.idx());
@@ -48,7 +37,16 @@ TEST(Modulation, SineWithMode) {
     ASSERT_TRUE(std::ranges::equal(mod, mod_expect));
   }
 
-  ASSERT_THROW(autd.send(autd3::modulation::Sine(100.1).with_mode(autd3::internal::native_methods::SamplingMode::ExactFrequency)),
-               autd3::internal::AUTDException);
-  ASSERT_TRUE(autd.send(autd3::modulation::Sine(100.1).with_mode(autd3::internal::native_methods::SamplingMode::SizeOptimized)));
+  ASSERT_THROW(autd.send(autd3::modulation::Sine(100.1).with_mode(autd3::native_methods::SamplingMode::ExactFrequency)), autd3::AUTDException);
+  ASSERT_TRUE(autd.send(autd3::modulation::Sine(100.1).with_mode(autd3::native_methods::SamplingMode::SizeOptimized)));
+}
+
+TEST(Modulation, SineDefault) {
+  const auto m = autd3::modulation::Sine(150);
+  ASSERT_EQ(m.intensity().value(), autd3::native_methods::AUTDModulationSineDefaultIntensity());
+  ASSERT_EQ(m.offset().value(), autd3::native_methods::AUTDModulationSineDefaultOffset());
+  ASSERT_EQ(m.phase().value(), autd3::native_methods::AUTDModulationSineDefaultPhase());
+  ASSERT_EQ(m.mode(), autd3::native_methods::AUTDModulationSineDefaultMode());
+  ASSERT_TRUE(autd3::native_methods::AUTDSamplingConfigEq(static_cast<autd3::native_methods::SamplingConfiguration>(m.sampling_config()),
+                                                          autd3::native_methods::AUTDModulationSineDefaultSamplingConfig()));
 }

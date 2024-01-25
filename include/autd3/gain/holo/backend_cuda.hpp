@@ -1,22 +1,10 @@
-// File: backend_cuda.hpp
-// Project: gain
-// Created Date: 08/06/2023
-// Author: Shun Suzuki
-// -----
-// Last Modified: 11/12/2023
-// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
-// -----
-// Copyright (c) 2023 Shun Suzuki. All rights reserved.
-//
-
 #pragma once
 
 #include "autd3/gain/holo/backend.hpp"
 #include "autd3/gain/holo/constraint.hpp"
-#include "autd3/internal/exception.hpp"
-#include "autd3/internal/native_methods.hpp"
-#include "autd3/internal/native_methods/autd3capi-backend-cuda.h"
-#include "autd3/internal/utils.hpp"
+#include "autd3/native_methods.hpp"
+#include "autd3/native_methods/autd3capi-backend-cuda.h"
+#include "autd3/native_methods/utils.hpp"
 
 namespace autd3::gain::holo {
 
@@ -25,7 +13,7 @@ namespace autd3::gain::holo {
  */
 class CUDABackend final : public Backend {
  public:
-  CUDABackend() { _ptr = internal::native_methods::validate(internal::native_methods::AUTDCUDABackend()); }
+  CUDABackend() { _ptr = validate(native_methods::AUTDCUDABackend()); }
   ~CUDABackend() override {
     if (_ptr._0 != nullptr) {
       AUTDCUDABackendDelete(_ptr);
@@ -37,90 +25,26 @@ class CUDABackend final : public Backend {
   CUDABackend(CUDABackend&& obj) = default;
   CUDABackend& operator=(CUDABackend&& obj) = default;
 
-  internal::native_methods::GainPtr sdp(const double* foci, const double* amps, const uint64_t size) const override {
-    return AUTDGainHoloCUDASDP(this->_ptr, foci, amps, size);
+  [[nodiscard]] native_methods::GainPtr sdp(const double* foci, const double* amps, const uint64_t size, const double alpha, const double lambda,
+                                            const uint32_t repeat, const EmissionConstraint constraint) const override {
+    return AUTDGainHoloCUDASDP(_ptr, foci, amps, size, alpha, lambda, repeat, constraint.ptr());
   }
-
-  [[nodiscard]] internal::native_methods::GainPtr sdp_with_alpha(const internal::native_methods::GainPtr ptr, const double v) const override {
-    return AUTDGainHoloCUDASDPWithAlpha(ptr, v);
+  [[nodiscard]] native_methods::GainPtr gs(const double* foci, const double* amps, const uint64_t size, const uint32_t repeat,
+                                           const EmissionConstraint constraint) const override {
+    return AUTDGainHoloCUDAGS(_ptr, foci, amps, size, repeat, constraint.ptr());
   }
-
-  [[nodiscard]] internal::native_methods::GainPtr sdp_with_repeat(const internal::native_methods::GainPtr ptr, const uint32_t v) const override {
-    return AUTDGainHoloCUDASDPWithRepeat(ptr, v);
+  [[nodiscard]] native_methods::GainPtr gspat(const double* foci, const double* amps, const uint64_t size, const uint32_t repeat,
+                                              const EmissionConstraint constraint) const override {
+    return AUTDGainHoloCUDAGSPAT(_ptr, foci, amps, size, repeat, constraint.ptr());
   }
-
-  [[nodiscard]] internal::native_methods::GainPtr sdp_with_lambda(const internal::native_methods::GainPtr ptr, const double v) const override {
-    return AUTDGainHoloCUDASDPWithLambda(ptr, v);
+  [[nodiscard]] native_methods::GainPtr naive(const double* foci, const double* amps, const uint64_t size,
+                                              const EmissionConstraint constraint) const override {
+    return AUTDGainHoloCUDANaive(_ptr, foci, amps, size, constraint.ptr());
   }
-
-  [[nodiscard]] internal::native_methods::GainPtr sdp_with_constraint(const internal::native_methods::GainPtr ptr,
-                                                                      const EmissionConstraint v) const override {
-    return AUTDGainHoloCUDASDPWithConstraint(ptr, v.ptr());
-  }
-
-  internal::native_methods::GainPtr gs(const double* foci, const double* amps, const uint64_t size) const override {
-    return AUTDGainHoloCUDAGS(this->_ptr, foci, amps, size);
-  }
-
-  [[nodiscard]] internal::native_methods::GainPtr gs_with_repeat(const internal::native_methods::GainPtr ptr, const uint32_t v) const override {
-    return AUTDGainHoloCUDAGSWithRepeat(ptr, v);
-  }
-
-  [[nodiscard]] internal::native_methods::GainPtr gs_with_constraint(const internal::native_methods::GainPtr ptr,
-                                                                     const EmissionConstraint v) const override {
-    return AUTDGainHoloCUDAGSWithConstraint(ptr, v.ptr());
-  }
-
-  internal::native_methods::GainPtr gspat(const double* foci, const double* amps, const uint64_t size) const override {
-    return AUTDGainHoloCUDAGS(this->_ptr, foci, amps, size);
-  }
-
-  [[nodiscard]] internal::native_methods::GainPtr gspat_with_repeat(const internal::native_methods::GainPtr ptr, const uint32_t v) const override {
-    return AUTDGainHoloCUDAGSWithRepeat(ptr, v);
-  }
-
-  [[nodiscard]] internal::native_methods::GainPtr gspat_with_constraint(const internal::native_methods::GainPtr ptr,
-                                                                        const EmissionConstraint v) const override {
-    return AUTDGainHoloCUDAGSWithConstraint(ptr, v.ptr());
-  }
-
-  internal::native_methods::GainPtr naive(const double* foci, const double* amps, const uint64_t size) const override {
-    return AUTDGainHoloCUDANaive(this->_ptr, foci, amps, size);
-  }
-
-  [[nodiscard]] internal::native_methods::GainPtr naive_with_constraint(const internal::native_methods::GainPtr ptr,
-                                                                        const EmissionConstraint v) const override {
-    return AUTDGainHoloCUDANaiveWithConstraint(ptr, v.ptr());
-  }
-
-  internal::native_methods::GainPtr lm(const double* foci, const double* amps, const uint64_t size) const override {
-    return AUTDGainHoloCUDALM(this->_ptr, foci, amps, size);
-  }
-
-  [[nodiscard]] internal::native_methods::GainPtr lm_with_eps1(const internal::native_methods::GainPtr ptr, const double v) const override {
-    return AUTDGainHoloCUDALMWithEps1(ptr, v);
-  }
-
-  [[nodiscard]] internal::native_methods::GainPtr lm_with_eps2(const internal::native_methods::GainPtr ptr, const double v) const override {
-    return AUTDGainHoloCUDALMWithEps2(ptr, v);
-  }
-
-  [[nodiscard]] internal::native_methods::GainPtr lm_with_tau(const internal::native_methods::GainPtr ptr, const double v) const override {
-    return AUTDGainHoloCUDALMWithTau(ptr, v);
-  }
-
-  [[nodiscard]] internal::native_methods::GainPtr lm_with_k_max(const internal::native_methods::GainPtr ptr, const uint32_t v) const override {
-    return AUTDGainHoloCUDALMWithKMax(ptr, v);
-  }
-
-  internal::native_methods::GainPtr lm_with_initial(const internal::native_methods::GainPtr ptr, const double* v,
-                                                    const uint64_t size) const override {
-    return AUTDGainHoloCUDALMWithInitial(ptr, v, size);
-  }
-
-  [[nodiscard]] internal::native_methods::GainPtr lm_with_constraint(const internal::native_methods::GainPtr ptr,
-                                                                     const EmissionConstraint v) const override {
-    return AUTDGainHoloCUDALMWithConstraint(ptr, v.ptr());
+  [[nodiscard]] native_methods::GainPtr lm(const double* foci, const double* amps, const uint64_t size, const double eps1, const double eps2,
+                                           const double tau, const uint32_t k_max, const double* initial, const uint64_t initial_size,
+                                           const EmissionConstraint constraint) const override {
+    return AUTDGainHoloCUDALM(_ptr, foci, amps, size, eps1, eps2, tau, k_max, constraint.ptr(), initial, initial_size);
   }
 };
 

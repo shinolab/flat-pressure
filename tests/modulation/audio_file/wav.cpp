@@ -1,14 +1,3 @@
-// File: wav.cpp
-// Project: audio_file
-// Created Date: 26/09/2023
-// Author: Shun Suzuki
-// -----
-// Last Modified: 05/01/2024
-// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
-// -----
-// Copyright (c) 2023 Shun Suzuki. All rights reserved.
-//
-
 #include <gtest/gtest.h>
 
 #include "autd3/modulation/audio_file.hpp"
@@ -30,7 +19,14 @@ TEST(Modulation, Wav) {
     ASSERT_EQ(5120, autd.link().modulation_frequency_division(dev.idx()));
   }
 
-  ASSERT_TRUE(autd.send(
-      autd3::modulation::audio_file::Wav(path).with_sampling_config(autd3::internal::SamplingConfiguration::from_frequency_division(10240))));
+  ASSERT_TRUE(
+      autd.send(autd3::modulation::audio_file::Wav(path).with_sampling_config(autd3::driver::SamplingConfiguration::from_frequency_division(10240))));
   for (auto& dev : autd.geometry()) ASSERT_EQ(10240, autd.link().modulation_frequency_division(dev.idx()));
+}
+
+TEST(Modulation, WavDefault) {
+  const std::filesystem::path path = std::filesystem::path(AUTD3_RESOURCE_PATH).append("sin150.wav");
+  const auto m = autd3::modulation::audio_file::Wav(path);
+  ASSERT_TRUE(autd3::native_methods::AUTDSamplingConfigEq(static_cast<autd3::native_methods::SamplingConfiguration>(m.sampling_config()),
+                                                          autd3::native_methods::AUTDModulationWavDefaultSamplingConfig()));
 }

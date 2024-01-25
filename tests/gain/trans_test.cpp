@@ -1,14 +1,3 @@
-// File: trans_test.cpp
-// Project: gain
-// Created Date: 26/09/2023
-// Author: Shun Suzuki
-// -----
-// Last Modified: 05/01/2024
-// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
-// -----
-// Copyright (c) 2023 Shun Suzuki. All rights reserved.
-//
-
 #include <gtest/gtest.h>
 
 #include <autd3/gain/trans_test.hpp>
@@ -20,9 +9,9 @@ TEST(Gain, TransTest) {
   auto autd = create_controller();
 
   ASSERT_TRUE(autd.send(autd3::gain::TransducerTest(
-      [](const autd3::internal::geometry::Device& dev, const autd3::internal::geometry::Transducer& tr) -> std::optional<autd3::internal::Drive> {
-        if (dev.idx() == 0 && tr.idx() == 0) return autd3::internal::Drive(autd3::internal::Phase(0x90), 0x80);
-        if (dev.idx() == 1 && tr.idx() == 248) return autd3::internal::Drive(autd3::internal::Phase(0x91), 0x81);
+      [](const autd3::driver::geometry::Device& dev, const autd3::driver::geometry::Transducer& tr) -> std::optional<autd3::driver::Drive> {
+        if (dev.idx() == 0 && tr.idx() == 0) return autd3::driver::Drive(autd3::driver::Phase(0x90), 0x80);
+        if (dev.idx() == 1 && tr.idx() == 248) return autd3::driver::Drive(autd3::driver::Phase(0x91), 0x81);
         return std::nullopt;
       })));
 

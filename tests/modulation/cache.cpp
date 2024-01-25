@@ -1,14 +1,3 @@
-// File: cache.cpp
-// Project: modulation
-// Created Date: 26/09/2023
-// Author: Shun Suzuki
-// -----
-// Last Modified: 05/01/2024
-// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
-// -----
-// Copyright (c) 2023 Shun Suzuki. All rights reserved.
-//
-
 #include <gtest/gtest.h>
 
 #include <autd3/modulation/modulation.hpp>
@@ -20,16 +9,16 @@ TEST(Modulation, Cache) {
   auto autd1 = create_controller();
   auto autd2 = create_controller();
 
-  const auto m1 = autd3::modulation::Static().with_intensity(0x80);
-  const auto m2 = autd3::modulation::Static().with_intensity(0x80).with_cache();
+  const auto m1 = autd3::modulation::Static::with_intensity(0x80);
+  const auto m2 = autd3::modulation::Static::with_intensity(0x80).with_cache();
 
   ASSERT_TRUE(autd1.send(m1));
   ASSERT_TRUE(autd2.send(m2));
 
-  ASSERT_TRUE(std::ranges::all_of(m2.buffer(), [](auto d) { return d == autd3::internal::EmitIntensity(0x80); }));
-  for (const auto& m : m2) ASSERT_EQ(autd3::internal::EmitIntensity(0x80), m);
-  std::for_each(m2.cbegin(), m2.cend(), [](const auto& m) { ASSERT_EQ(autd3::internal::EmitIntensity(0x80), m); });
-  for (size_t i = 0; i < m2.size(); i++) ASSERT_EQ(autd3::internal::EmitIntensity(0x80), m2[i]);
+  ASSERT_TRUE(std::ranges::all_of(m2.buffer(), [](auto d) { return d == autd3::driver::EmitIntensity(0x80); }));
+  for (const auto& m : m2) ASSERT_EQ(autd3::driver::EmitIntensity(0x80), m);
+  std::for_each(m2.cbegin(), m2.cend(), [](const auto& m) { ASSERT_EQ(autd3::driver::EmitIntensity(0x80), m); });
+  for (size_t i = 0; i < m2.size(); i++) ASSERT_EQ(autd3::driver::EmitIntensity(0x80), m2[i]);
   for (auto& dev : autd1.geometry()) {
     auto mod = autd2.link().modulation(dev.idx());
     auto mod_expect = autd1.link().modulation(dev.idx());
@@ -40,13 +29,13 @@ TEST(Modulation, Cache) {
 
 class ForModulationCacheTest final : public autd3::modulation::Modulation, public autd3::modulation::IntoCache<ForModulationCacheTest> {
  public:
-  [[nodiscard]] std::vector<autd3::internal::EmitIntensity> calc() const override {
+  [[nodiscard]] std::vector<autd3::driver::EmitIntensity> calc() const override {
     ++*_cnt;
-    return {autd3::internal::EmitIntensity::maximum(), autd3::internal::EmitIntensity::maximum()};
+    return {autd3::driver::EmitIntensity::maximum(), autd3::driver::EmitIntensity::maximum()};
   }
 
   explicit ForModulationCacheTest(size_t* cnt) noexcept
-      : Modulation(autd3::internal::SamplingConfiguration::from_frequency_division(5120)), _cnt(cnt) {}
+      : Modulation(autd3::driver::SamplingConfiguration::from_frequency_division(5120)), _cnt(cnt) {}
 
  private:
   size_t* _cnt;

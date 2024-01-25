@@ -1,14 +1,3 @@
-// File: transform.cpp
-// Project: gain
-// Created Date: 26/09/2023
-// Author: Shun Suzuki
-// -----
-// Last Modified: 05/01/2024
-// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
-// -----
-// Copyright (c) 2023 Shun Suzuki. All rights reserved.
-//
-
 #include <gtest/gtest.h>
 
 #include <autd3/gain/uniform.hpp>
@@ -19,13 +8,13 @@ TEST(Gain, Transform) {
   auto autd = create_controller();
 
   ASSERT_TRUE(autd.send(autd3::gain::Uniform(0x80)
-                            .with_phase(autd3::internal::Phase(128))
-                            .with_transform([](const autd3::internal::geometry::Device& dev, const autd3::internal::geometry::Transducer&,
-                                               const autd3::internal::Drive d) -> autd3::internal::Drive {
+                            .with_phase(autd3::driver::Phase(128))
+                            .with_transform([](const autd3::driver::geometry::Device& dev, const autd3::driver::geometry::Transducer&,
+                                               const autd3::driver::Drive d) -> autd3::driver::Drive {
                               if (dev.idx() == 0) {
-                                return autd3::internal::Drive{autd3::internal::Phase(d.phase.value() + 32), d.intensity};
+                                return autd3::driver::Drive{autd3::driver::Phase(d.phase.value() + 32), d.intensity};
                               }
-                              return autd3::internal::Drive{autd3::internal::Phase(d.phase.value() - 32), d.intensity};
+                              return autd3::driver::Drive{autd3::driver::Phase(d.phase.value() - 32), d.intensity};
                             })));
 
   {
@@ -47,9 +36,9 @@ TEST(Gain, TransformCheckOnlyForEnabled) {
 
   std::vector cnt(autd.geometry().num_devices(), false);
   ASSERT_TRUE(autd.send(autd3::gain::Uniform(0x80)
-                            .with_phase(autd3::internal::Phase(0x90))
-                            .with_transform([&cnt](const autd3::internal::geometry::Device& dev, const autd3::internal::geometry::Transducer&,
-                                                   const autd3::internal::Drive d) -> autd3::internal::Drive {
+                            .with_phase(autd3::driver::Phase(0x90))
+                            .with_transform([&cnt](const autd3::driver::geometry::Device& dev, const autd3::driver::geometry::Transducer&,
+                                                   const autd3::driver::Drive d) -> autd3::driver::Drive {
                               cnt[dev.idx()] = true;
                               return d;
                             })));

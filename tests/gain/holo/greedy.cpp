@@ -1,31 +1,22 @@
-// File: greedy.cpp
-// Project: holo
-// Created Date: 26/09/2023
-// Author: Shun Suzuki
-// -----
-// Last Modified: 05/01/2024
-// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
-// -----
-// Copyright (c) 2023 Shun Suzuki. All rights reserved.
-//
-
 #include <gtest/gtest.h>
 
-#include <autd3/internal/controller.hpp>
+#include <autd3/controller/builder.hpp>
+#include <autd3/controller/controller.hpp>
+#include <autd3/driver/autd3_device.hpp>
 #include <autd3/link/audit.hpp>
 
 #include "autd3/gain/holo.hpp"
 
 TEST(Gain_Holo, Greedy) {
-  auto autd = autd3::internal::ControllerBuilder()
-                  .add_device(autd3::internal::geometry::AUTD3(autd3::internal::Vector3::Zero()))
+  auto autd = autd3::controller::ControllerBuilder()
+                  .add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero()))
                   .open_with(autd3::link::Audit::builder());
 
   std::vector<double> p{-30};
   auto g = autd3::gain::holo::Greedy()
-               .add_focus(autd.geometry().center() + autd3::internal::Vector3(30, 0, 150), 5e3 * autd3::gain::holo::Pascal)
+               .add_focus(autd.geometry().center() + autd3::driver::Vector3(30, 0, 150), 5e3 * autd3::gain::holo::Pascal)
                .add_foci_from_iter(p | std::ranges::views::transform([&](auto x) {
-                                     autd3::internal::Vector3 p = autd.geometry().center() + autd3::internal::Vector3(x, 0, 150);
+                                     autd3::driver::Vector3 p = autd.geometry().center() + autd3::driver::Vector3(x, 0, 150);
                                      return std::make_pair(p, 5e3 * autd3::gain::holo::Pascal);
                                    }))
                .with_phase_div(16)
@@ -38,4 +29,10 @@ TEST(Gain_Holo, Greedy) {
     ASSERT_TRUE(std::ranges::all_of(intensities, [](auto d) { return d == 0x80; }));
     ASSERT_TRUE(std::ranges::any_of(phases, [](auto p) { return p != 0; }));
   }
+}
+
+TEST(Gain_Holo, GreedyDefault) {
+  auto g = autd3::gain::holo::Greedy();
+  ASSERT_EQ(g.phase_div(), autd3::native_methods::AUTDGainHoloGreedyDefaultPhaseDiv());
+  ASSERT_TRUE(autd3::native_methods::AUTDGainHoloConstraintEq(g.constraint().ptr(), autd3::native_methods::AUTDGainHoloGreedyDefaultConstraint()));
 }

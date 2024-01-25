@@ -1,23 +1,12 @@
-// File: naive.hpp
-// Project: holo
-// Created Date: 13/09/2023
-// Author: Shun Suzuki
-// -----
-// Last Modified: 02/12/2023
-// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
-// -----
-// Copyright (c) 2023 Shun Suzuki. All rights reserved.
-//
-
 #pragma once
 
 #include <memory>
 
+#include "autd3/driver/geometry/geometry.hpp"
 #include "autd3/gain/cache.hpp"
 #include "autd3/gain/holo/holo.hpp"
 #include "autd3/gain/transform.hpp"
-#include "autd3/internal/geometry/geometry.hpp"
-#include "autd3/internal/native_methods.hpp"
+#include "autd3/native_methods.hpp"
 
 namespace autd3::gain::holo {
 
@@ -27,13 +16,11 @@ namespace autd3::gain::holo {
 template <backend B>
 class Naive final : public Holo<Naive<B>>, public IntoCache<Naive<B>>, public IntoTransform<Naive<B>> {
  public:
-  explicit Naive(std::shared_ptr<B> holo_backend) : Holo<Naive>(), _backend(std::move(holo_backend)) {}
+  explicit Naive(std::shared_ptr<B> holo_backend) : Holo<Naive>(EmissionConstraint::dont_care()), _backend(std::move(holo_backend)) {}
 
-  [[nodiscard]] internal::native_methods::GainPtr gain_ptr(const internal::geometry::Geometry&) const override {
-    auto ptr = this->_backend->naive(reinterpret_cast<const double*>(this->_foci.data()), reinterpret_cast<const double*>(this->_amps.data()),
-                                     this->_amps.size());
-    if (this->_constraint.has_value()) ptr = this->_backend->naive_with_constraint(ptr, this->_constraint.value());
-    return ptr;
+  [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry&) const override {
+    return this->_backend->naive(reinterpret_cast<const double*>(this->_foci.data()), reinterpret_cast<const double*>(this->_amps.data()),
+                                 this->_amps.size(), this->_constraint);
   }
 
  private:

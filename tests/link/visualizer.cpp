@@ -1,25 +1,16 @@
-// File: visualizer.cpp
-// Project: link
-// Created Date: 11/12/2023
-// Author: Shun Suzuki
-// -----
-// Last Modified: 10/01/2024
-// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
-// -----
-// Copyright (c) 2023 Shun Suzuki. All rights reserved.
-//
-
 #include <gtest/gtest.h>
 
+#include <autd3/controller/builder.hpp>
+#include <autd3/controller/controller.hpp>
+#include <autd3/driver/autd3_device.hpp>
 #include <autd3/gain/uniform.hpp>
-#include <autd3/internal/controller.hpp>
 #include <autd3/link/visualizer.hpp>
 #include <autd3/modulation/static.hpp>
 
-void visualizer_test_with(autd3::internal::Controller<autd3::link::Visualizer>& autd, autd3::link::Config config) {
-  autd3::internal::Vector3 center = autd.geometry().center() + autd3::internal::Vector3(0, 0, 150);
+void visualizer_test_with(autd3::controller::Controller<autd3::link::Visualizer>& autd, autd3::link::Config config) {
+  autd3::driver::Vector3 center = autd.geometry().center() + autd3::driver::Vector3(0, 0, 150);
 
-  auto g = autd3::gain::Uniform(0x80).with_phase(autd3::internal::Phase(0x81));
+  auto g = autd3::gain::Uniform(0x80).with_phase(autd3::driver::Phase(0x81));
   auto m = autd3::modulation::Static().with_intensity(0x82);
 
   autd.send(m, g);
@@ -38,7 +29,7 @@ void visualizer_test_with(autd3::internal::Controller<autd3::link::Visualizer>& 
   ASSERT_EQ(modulation.size(), 2);
   ASSERT_TRUE(std::ranges::all_of(modulation, [](auto m) { return m == 0x82; }));
 
-  std::vector<autd3::internal::Vector3> points{center};
+  std::vector<autd3::driver::Vector3> points{center};
   (void)autd.link().calc_field(points, autd.geometry());
 
   autd.close();
@@ -56,22 +47,22 @@ TEST(Link, PlotRange) {
 
   const auto points = plot_range.observe_points();
   ASSERT_EQ(points.size(), 41 * 61);
-  ASSERT_EQ(points[0], autd3::internal::Vector3(-20, -30, 0));
-  ASSERT_EQ(points[1], autd3::internal::Vector3(-19, -30, 0));
-  ASSERT_EQ(points[points.size() - 1], autd3::internal::Vector3(20, 30, 0));
+  ASSERT_EQ(points[0], autd3::driver::Vector3(-20, -30, 0));
+  ASSERT_EQ(points[1], autd3::driver::Vector3(-19, -30, 0));
+  ASSERT_EQ(points[points.size() - 1], autd3::driver::Vector3(20, 30, 0));
 }
 
 TEST(Link, Visualizer_Plotters) {
   {
     auto autd =
-        autd3::internal::ControllerBuilder()
-            .add_device(autd3::internal::geometry::AUTD3(autd3::internal::Vector3::Zero()))
+        autd3::controller::ControllerBuilder()
+            .add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero()))
             .open_with(autd3::link::Visualizer::builder().with_backend<autd3::link::PlottersBackend>().with_directivity<autd3::link::Sphere>());
     visualizer_test_with(autd, autd3::link::PlotConfig());
   }
   {
-    auto autd = autd3::internal::ControllerBuilder()
-                    .add_device(autd3::internal::geometry::AUTD3(autd3::internal::Vector3::Zero()))
+    auto autd = autd3::controller::ControllerBuilder()
+                    .add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero()))
                     .open_with(autd3::link::Visualizer::plotters().with_directivity<autd3::link::T4010A1>());
     auto config = autd3::link::PlotConfig();
     config.fname = "test.png";
@@ -88,14 +79,14 @@ TEST(Link, Visualizer_Plotters) {
 
 TEST(Link, Visualizer_Python) {
   {
-    auto autd = autd3::internal::ControllerBuilder()
-                    .add_device(autd3::internal::geometry::AUTD3(autd3::internal::Vector3::Zero()))
+    auto autd = autd3::controller::ControllerBuilder()
+                    .add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero()))
                     .open_with(autd3::link::Visualizer::builder().with_backend<autd3::link::PythonBackend>().with_directivity<autd3::link::Sphere>());
     visualizer_test_with(autd, autd3::link::PyPlotConfig());
   }
   {
-    auto autd = autd3::internal::ControllerBuilder()
-                    .add_device(autd3::internal::geometry::AUTD3(autd3::internal::Vector3::Zero()))
+    auto autd = autd3::controller::ControllerBuilder()
+                    .add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero()))
                     .open_with(autd3::link::Visualizer::python().with_directivity<autd3::link::T4010A1>());
     auto config = autd3::link::PyPlotConfig();
     config.fname = "test.png";
@@ -114,22 +105,22 @@ TEST(Link, Visualizer_Python) {
 
 TEST(Link, Visualizer_Null) {
   {
-    auto autd = autd3::internal::ControllerBuilder()
-                    .add_device(autd3::internal::geometry::AUTD3(autd3::internal::Vector3::Zero()))
+    auto autd = autd3::controller::ControllerBuilder()
+                    .add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero()))
                     .open_with(autd3::link::Visualizer::builder().with_backend<autd3::link::NullBackend>().with_directivity<autd3::link::Sphere>());
     visualizer_test_with(autd, autd3::link::NullPlotConfig());
   }
   {
-    auto autd = autd3::internal::ControllerBuilder()
-                    .add_device(autd3::internal::geometry::AUTD3(autd3::internal::Vector3::Zero()))
+    auto autd = autd3::controller::ControllerBuilder()
+                    .add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero()))
                     .open_with(autd3::link::Visualizer::null().with_directivity<autd3::link::T4010A1>());
     visualizer_test_with(autd, autd3::link::NullPlotConfig());
   }
 }
 
 TEST(Link, VisualizerInvalidConfig) {
-  auto autd = autd3::internal::ControllerBuilder()
-                  .add_device(autd3::internal::geometry::AUTD3(autd3::internal::Vector3::Zero()))
+  auto autd = autd3::controller::ControllerBuilder()
+                  .add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero()))
                   .open_with(autd3::link::Visualizer::plotters());
-  ASSERT_THROW(autd.link().plot_modulation(autd3::link::NullPlotConfig()), autd3::internal::AUTDException);
+  ASSERT_THROW(autd.link().plot_modulation(autd3::link::NullPlotConfig()), autd3::AUTDException);
 }

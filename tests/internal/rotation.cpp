@@ -1,38 +1,29 @@
-// File: rotation.cpp
-// Project: internal
-// Created Date: 26/11/2023
-// Author: Shun Suzuki
-// -----
-// Last Modified: 05/01/2024
-// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
-// -----
-// Copyright (c) 2023 Shun Suzuki. All rights reserved.
-//
-
 #include <gtest/gtest.h>
 
-#include <autd3/internal/controller.hpp>
-#include <autd3/internal/geometry/rotation.hpp>
+#include <autd3/controller/builder.hpp>
+#include <autd3/controller/controller.hpp>
+#include <autd3/driver/autd3_device.hpp>
+#include <autd3/driver/geometry/rotation.hpp>
 #include <autd3/link/audit.hpp>
 #include <numbers>
 
 #include "utils.hpp"
 
 TEST(Internal, Angle) {
-  ASSERT_NEAR((90.0 * autd3::internal::geometry::deg).to_radian(), std::numbers::pi / 2, 1e-6);
-  ASSERT_NEAR((std::numbers::pi / 2 * autd3::internal::geometry::rad).to_radian(), std::numbers::pi / 2, 1e-6);
+  ASSERT_NEAR((90.0 * autd3::driver::geometry::deg).to_radian(), std::numbers::pi / 2, 1e-6);
+  ASSERT_NEAR((std::numbers::pi / 2 * autd3::driver::geometry::rad).to_radian(), std::numbers::pi / 2, 1e-6);
 }
 
-static inline autd3::internal::Controller<autd3::link::Audit> open_with_rotation(const autd3::internal::Quaternion& q) {
-  return autd3::internal::ControllerBuilder()
-      .add_device(autd3::internal::geometry::AUTD3(autd3::internal::Vector3::Zero()).with_rotation(q))
+static autd3::controller::Controller<autd3::link::Audit> open_with_rotation(const autd3::driver::Quaternion& q) {
+  return autd3::controller::ControllerBuilder()
+      .add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero()).with_rotation(q))
       .open_with(autd3::link::Audit::builder());
 }
 
 TEST(Internal, WithRotation) {
-  using autd3::internal::Vector3;
-  using autd3::internal::geometry::deg;
-  using autd3::internal::geometry::EulerAngles;
+  using autd3::driver::Vector3;
+  using autd3::driver::geometry::deg;
+  using autd3::driver::geometry::EulerAngles;
 
   {
     const auto autd = open_with_rotation(EulerAngles::from_zyz(90.0 * deg, 0.0 * deg, 0.0 * deg));

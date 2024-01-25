@@ -1,14 +1,3 @@
-// File: remote_twincat.cpp
-// Project: examples
-// Created Date: 12/05/2022
-// Author: Shun Suzuki
-// -----
-// Last Modified: 05/01/2024
-// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
-// -----
-// Copyright (c) 2022-2023 Shun Suzuki. All rights reserved.
-//
-
 #include "autd3.hpp"
 #include "autd3/link/twincat.hpp"
 #include "runner.hpp"

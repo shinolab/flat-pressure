@@ -1,48 +1,31 @@
-// File: focus.hpp
-// Project: gain
-// Created Date: 13/09/2023
-// Author: Shun Suzuki
-// -----
-// Last Modified: 02/12/2023
-// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
-// -----
-// Copyright (c) 2023 Shun Suzuki. All rights reserved.
-//
-
 #pragma once
 
 #include <algorithm>
-#include <optional>
 
+#include "autd3/def.hpp"
+#include "autd3/driver/common/emit_intensity.hpp"
+#include "autd3/driver/datagram/gain.hpp"
+#include "autd3/driver/geometry/geometry.hpp"
 #include "autd3/gain/cache.hpp"
 #include "autd3/gain/transform.hpp"
-#include "autd3/internal/def.hpp"
-#include "autd3/internal/emit_intensity.hpp"
-#include "autd3/internal/gain.hpp"
-#include "autd3/internal/geometry/geometry.hpp"
-#include "autd3/internal/native_methods.hpp"
-#include "autd3/internal/utils.hpp"
+#include "autd3/native_methods.hpp"
+#include "autd3/native_methods/utils.hpp"
 
 namespace autd3::gain {
 
 /**
  * @brief Gain to produce single focal point
  */
-class Focus final : public internal::Gain, public IntoCache<Focus>, public IntoTransform<Focus> {
+class Focus final : public driver::Gain, public IntoCache<Focus>, public IntoTransform<Focus> {
  public:
-  explicit Focus(internal::Vector3 p) : _p(std::move(p)) {}
+  explicit Focus(driver::Vector3 p) : _pos(std::move(p)), _intensity(driver::EmitIntensity::maximum()) {}
 
+  AUTD3_DEF_PROP(driver::Vector3, pos)
   AUTD3_DEF_PARAM_INTENSITY(Focus, intensity)
 
-  [[nodiscard]] internal::native_methods::GainPtr gain_ptr(const internal::geometry::Geometry&) const override {
-    auto ptr = internal::native_methods::AUTDGainFocus(_p.x(), _p.y(), _p.z());
-    if (_intensity.has_value()) ptr = AUTDGainFocusWithIntensity(ptr, _intensity.value().value());
-    return ptr;
+  [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry&) const override {
+    return native_methods::AUTDGainFocus(_pos.x(), _pos.y(), _pos.z(), _intensity.value());
   }
-
- private:
-  internal::Vector3 _p;
-  std::optional<internal::EmitIntensity> _intensity;
 };
 
 }  // namespace autd3::gain

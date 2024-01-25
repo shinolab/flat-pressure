@@ -1,38 +1,26 @@
-// File: soem.hpp
-// Project: link
-// Created Date: 29/05/2023
-// Author: Shun Suzuki
-// -----
-// Last Modified: 01/12/2023
-// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
-// -----
-// Copyright (c) 2023 Shun Suzuki. All rights reserved.
-//
-
 #pragma once
 
 #include <chrono>
 #include <string>
 #include <vector>
 
-#include "autd3/internal/native_methods.hpp"
-#include "autd3/internal/utils.hpp"
+#include "autd3/native_methods.hpp"
+#include "autd3/native_methods/utils.hpp"
 
-namespace autd3::internal {
+namespace autd3::controller {
 class ControllerBuilder;
 }
 
 namespace autd3::link {
 
-using internal::native_methods::SyncMode;
+using native_methods::SyncMode;
 
 class EtherCATAdapter {
   std::string _desc;
   std::string _name;
 
  public:
-  EtherCATAdapter(const std::string& desc, const std::string& name)
-      : _desc(desc), _name(name) {}
+  EtherCATAdapter(const std::string desc, const std::string name) : _desc(std::move(desc)), _name(std::move(name)) {}
 
   [[nodiscard]] const std::string& desc() const { return _desc; }
   [[nodiscard]] const std::string& name() const { return _name; }
@@ -50,22 +38,18 @@ class SOEM {
  public:
   class Builder final {
     friend class SOEM;
-    friend class internal::ControllerBuilder;
+    friend class controller::ControllerBuilder;
 
-    internal::native_methods::LinkSOEMBuilderPtr _ptr;
+    native_methods::LinkSOEMBuilderPtr _ptr;
 
-    Builder() : _ptr(internal::native_methods::AUTDLinkSOEM()) {}
+    Builder() : _ptr(native_methods::AUTDLinkSOEM()) {}
 
-    [[nodiscard]] static SOEM resolve_link(internal::native_methods::LinkPtr) {
-      return SOEM{};
-    }
+    [[nodiscard]] static SOEM resolve_link(native_methods::LinkPtr) { return SOEM{}; }
 
    public:
     using Link = SOEM;
 
-    [[nodiscard]] internal::native_methods::LinkBuilderPtr ptr() const {
-      return AUTDLinkSOEMIntoBuilder(_ptr);
-    }
+    [[nodiscard]] native_methods::LinkBuilderPtr ptr() const { return AUTDLinkSOEMIntoBuilder(_ptr); }
 
     /**
      * @brief Set network interface name
@@ -140,8 +124,7 @@ class SOEM {
      * @param value
      * @return Builder
      */
-    Builder with_timer_strategy(
-        const internal::native_methods::TimerStrategy value) {
+    Builder with_timer_strategy(const native_methods::TimerStrategy value) {
       _ptr = AUTDLinkSOEMWithTimerStrategy(_ptr, value);
       return *this;
     }
@@ -167,19 +150,15 @@ class SOEM {
      * @return Builder
      */
     template <typename Rep, typename Period>
-    Builder with_state_check_interval(
-        const std::chrono::duration<Rep, Period> value) {
-      const auto ms =
-          std::chrono::duration_cast<std::chrono::milliseconds>(value).count();
-      _ptr =
-          AUTDLinkSOEMWithStateCheckInterval(_ptr, static_cast<uint32_t>(ms));
+    Builder with_state_check_interval(const std::chrono::duration<Rep, Period> value) {
+      const auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(value).count();
+      _ptr = AUTDLinkSOEMWithStateCheckInterval(_ptr, static_cast<uint32_t>(ms));
       return *this;
     }
 
     template <typename Rep, typename Period>
     Builder with_timeout(const std::chrono::duration<Rep, Period> timeout) {
-      const auto ns =
-          std::chrono::duration_cast<std::chrono::nanoseconds>(timeout).count();
+      const auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(timeout).count();
       _ptr = AUTDLinkSOEMWithTimeout(_ptr, static_cast<uint64_t>(ns));
       return *this;
     }
@@ -188,17 +167,16 @@ class SOEM {
   static Builder builder() { return {}; }
 
   static std::vector<EtherCATAdapter> enumerate_adapters() {
-    const auto handle = internal::native_methods::AUTDAdapterPointer();
-    const auto len = internal::native_methods::AUTDAdapterGetSize(handle);
+    const auto handle = native_methods::AUTDAdapterPointer();
+    const auto len = AUTDAdapterGetSize(handle);
     std::vector<EtherCATAdapter> adapters;
     for (uint32_t i = 0; i < len; i++) {
       char sb_desc[128];
       char sb_name[128];
-      internal::native_methods::AUTDAdapterGetAdapter(handle, i, sb_desc,
-                                                      sb_name);
+      AUTDAdapterGetAdapter(handle, i, sb_desc, sb_name);
       adapters.emplace_back(std::string(sb_desc), std::string(sb_name));
     }
-    internal::native_methods::AUTDAdapterPointerDelete(handle);
+    AUTDAdapterPointerDelete(handle);
     return adapters;
   }
 };
@@ -212,31 +190,22 @@ class RemoteSOEM final {
  public:
   class Builder final {
     friend class RemoteSOEM;
-    friend class internal::ControllerBuilder;
+    friend class controller::ControllerBuilder;
 
-    internal::native_methods::LinkRemoteSOEMBuilderPtr _ptr;
+    native_methods::LinkRemoteSOEMBuilderPtr _ptr;
 
-    explicit Builder(const std::string& addr) {
-      _ptr =
-          validate(internal::native_methods::AUTDLinkRemoteSOEM(addr.c_str()));
-    }
+    explicit Builder(const std::string& addr) { _ptr = validate(native_methods::AUTDLinkRemoteSOEM(addr.c_str())); }
 
-    [[nodiscard]] static RemoteSOEM resolve_link(
-        internal::native_methods::LinkPtr) {
-      return RemoteSOEM{};
-    }
+    [[nodiscard]] static RemoteSOEM resolve_link(native_methods::LinkPtr) { return RemoteSOEM{}; }
 
    public:
     using Link = RemoteSOEM;
 
-    [[nodiscard]] internal::native_methods::LinkBuilderPtr ptr() const {
-      return AUTDLinkRemoteSOEMIntoBuilder(_ptr);
-    }
+    [[nodiscard]] native_methods::LinkBuilderPtr ptr() const { return AUTDLinkRemoteSOEMIntoBuilder(_ptr); }
 
     template <typename Rep, typename Period>
     Builder with_timeout(const std::chrono::duration<Rep, Period> timeout) {
-      const auto ns =
-          std::chrono::duration_cast<std::chrono::nanoseconds>(timeout).count();
+      const auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(timeout).count();
       _ptr = AUTDLinkRemoteSOEMWithTimeout(_ptr, static_cast<uint64_t>(ns));
       return std::move(*this);
     }

@@ -1,17 +1,5 @@
-// File: simulator.cpp
-// Project: examples
-// Created Date: 13/09/2023
-// Author: Shun Suzuki
-// -----
-// Last Modified: 05/01/2024
-// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
-// -----
-// Copyright (c) 2023 Shun Suzuki. All rights reserved.
-//
-
-#include "autd3/link/simulator.hpp"
-
 #include "autd3.hpp"
+#include "autd3/link/simulator.hpp"
 #include "runner.hpp"
 #include "util.hpp"
 

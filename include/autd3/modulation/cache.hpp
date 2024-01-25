@@ -1,64 +1,65 @@
-// File: cache.hpp
-// Project: modulation
-// Created Date: 13/09/2023
-// Author: Shun Suzuki
-// -----
-// Last Modified: 05/12/2023
-// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
-// -----
-// Copyright (c) 2023 Shun Suzuki. All rights reserved.
-//
-
 #pragma once
 
 #include <memory>
 
-#include "autd3/internal/emit_intensity.hpp"
-#include "autd3/internal/modulation.hpp"
-#include "autd3/internal/native_methods.hpp"
+#include "autd3/driver/common/emit_intensity.hpp"
+#include "autd3/driver/datagram/modulation.hpp"
+#include "autd3/native_methods.hpp"
 
 namespace autd3::modulation {
 
 /**
  * @brief Modulation to cache the result of calculation
  */
-class Cache final : public internal::Modulation {
+template <class M>
+class Cache final : public driver::Modulation {
  public:
-  template <class M>
-  explicit Cache(M&& m) {
-    auto cache = validate(internal::native_methods::AUTDModulationWithCache(m.modulation_ptr()));
-    _buffer.resize(internal::native_methods::AUTDModulationCacheGetBufferLen(cache), internal::EmitIntensity::minimum());
-    AUTDModulationCacheGetBuffer(cache, reinterpret_cast<uint8_t*>(_buffer.data()));
-    _cache = std::shared_ptr<internal::native_methods::CachePtr>(
-        new internal::native_methods::CachePtr(cache), [](const internal::native_methods::CachePtr* ptr) { AUTDModulationCacheDelete(*ptr); });
-  }
+  explicit Cache(M m) : _m(std::move(m)), _cache(std::make_shared<std::vector<driver::EmitIntensity>>()) {}
   Cache(const Cache& v) = default;
   Cache& operator=(const Cache& obj) = delete;
   Cache(Cache&& obj) noexcept = default;
   Cache& operator=(Cache&& obj) noexcept = delete;
   ~Cache() noexcept override = default;  // LCOV_EXCL_LINE
 
-  [[nodiscard]] internal::native_methods::ModulationPtr modulation_ptr() const override { return AUTDModulationCacheIntoModulation(*_cache); }
+  const std::vector<driver::EmitIntensity>& calc() const { return init(); }
 
-  [[nodiscard]] const std::vector<internal::EmitIntensity>& buffer() const { return _buffer; }
+  [[nodiscard]] native_methods::ModulationPtr modulation_ptr() const override {
+    const auto buf = calc();
+    return AUTDModulationCustom(static_cast<native_methods::SamplingConfiguration>(_sampling_config.value()),
+                                reinterpret_cast<const uint8_t*>(buf.data()), static_cast<uint64_t>(buf.size()));
+  }
 
-  [[nodiscard]] std::vector<internal::EmitIntensity>::const_iterator cbegin() const noexcept { return _buffer.cbegin(); }
-  [[nodiscard]] std::vector<internal::EmitIntensity>::const_iterator cend() const noexcept { return _buffer.cend(); }
-  [[nodiscard]] std::vector<internal::EmitIntensity>::const_iterator begin() const noexcept { return _buffer.begin(); }
-  [[nodiscard]] std::vector<internal::EmitIntensity>::const_iterator end() const noexcept { return _buffer.end(); }
+  [[nodiscard]] const std::vector<driver::EmitIntensity>& buffer() const { return *_cache; }
 
-  [[nodiscard]] const internal::EmitIntensity& operator[](const size_t i) const { return _buffer[i]; }
+  [[nodiscard]] std::vector<driver::EmitIntensity>::const_iterator cbegin() const noexcept { return _cache->cbegin(); }
+  [[nodiscard]] std::vector<driver::EmitIntensity>::const_iterator cend() const noexcept { return _cache->cend(); }
+  [[nodiscard]] std::vector<driver::EmitIntensity>::const_iterator begin() const noexcept { return _cache->begin(); }
+  [[nodiscard]] std::vector<driver::EmitIntensity>::const_iterator end() const noexcept { return _cache->end(); }
+
+  [[nodiscard]] const driver::EmitIntensity& operator[](const size_t i) const { return _cache->at(i); }
 
  private:
-  std::shared_ptr<internal::native_methods::CachePtr> _cache;
-  std::vector<internal::EmitIntensity> _buffer;
+  const std::vector<driver::EmitIntensity>& init() const {
+    if (_cache->size() == 0) {
+      const auto res = native_methods::AUTDModulationCalc(_m.modulation_ptr());
+      const auto ptr = validate(res);
+      _cache->resize(res.result_len, driver::EmitIntensity(0));
+      _sampling_config = driver::SamplingConfiguration::from_frequency_division(res.freq_div);
+      native_methods::AUTDModulationCalcGetResult(ptr, reinterpret_cast<uint8_t*>(_cache->data()));
+    }
+    return *_cache;
+  }
+
+  M _m;
+  mutable std::shared_ptr<std::vector<driver::EmitIntensity>> _cache;
+  mutable std::optional<driver::SamplingConfiguration> _sampling_config;
 };
 
 template <class M>
 class IntoCache {
  public:
-  [[nodiscard]] Cache with_cache() & { return Cache(*static_cast<M*>(this)); }
-  [[nodiscard]] Cache with_cache() && { return Cache(std::move(*static_cast<M*>(this))); }
+  [[nodiscard]] Cache<M> with_cache() & { return Cache(*static_cast<M*>(this)); }
+  [[nodiscard]] Cache<M> with_cache() && { return Cache(std::move(*static_cast<M*>(this))); }
 };
 
 }  // namespace autd3::modulation

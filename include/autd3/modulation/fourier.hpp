@@ -1,23 +1,12 @@
-// File: fourier.hpp
-// Project: modulation
-// Created Date: 13/09/2023
-// Author: Shun Suzuki
-// -----
-// Last Modified: 05/12/2023
-// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
-// -----
-// Copyright (c) 2023 Shun Suzuki. All rights reserved.
-//
-
 #pragma once
 
 #include <numeric>
 
-#include "autd3/internal/native_methods.hpp"
 #include "autd3/modulation/cache.hpp"
 #include "autd3/modulation/radiation_pressure.hpp"
 #include "autd3/modulation/sine.hpp"
 #include "autd3/modulation/transform.hpp"
+#include "autd3/native_methods.hpp"
 
 namespace autd3::modulation {
 
@@ -27,7 +16,7 @@ concept fourier_sine_range = std::ranges::viewable_range<R> && std::same_as<std:
 /**
  * @brief Multi-frequency sine wave modulation
  */
-class Fourier final : public internal::Modulation, public IntoCache<Fourier>, public IntoTransform<Fourier>, public IntoRadiationPressure<Fourier> {
+class Fourier final : public driver::Modulation, public IntoCache<Fourier>, public IntoTransform<Fourier>, public IntoRadiationPressure<Fourier> {
  public:
   explicit Fourier(Sine component) { _components.emplace_back(std::move(component)); }
 
@@ -77,11 +66,10 @@ class Fourier final : public internal::Modulation, public IntoCache<Fourier>, pu
     return m;
   }  // LCOV_EXCL_LINE
 
-  [[nodiscard]] internal::native_methods::ModulationPtr modulation_ptr() const override {
-    return std::accumulate(_components.begin() + 1, _components.end(), AUTDModulationFourier(_components[0].modulation_ptr()),
-                           [](const internal::native_methods::ModulationPtr ptr, const Sine& sine) {
-                             return AUTDModulationFourierAddComponent(ptr, sine.modulation_ptr());
-                           });
+  [[nodiscard]] native_methods::ModulationPtr modulation_ptr() const override {
+    return std::accumulate(
+        _components.begin() + 1, _components.end(), AUTDModulationFourier(_components[0].modulation_ptr()),
+        [](const native_methods::ModulationPtr ptr, const Sine& sine) { return AUTDModulationFourierAddComponent(ptr, sine.modulation_ptr()); });
   }
 
  private:

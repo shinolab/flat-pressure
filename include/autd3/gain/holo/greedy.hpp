@@ -1,25 +1,14 @@
-// File: greedy.hpp
-// Project: holo
-// Created Date: 13/09/2023
-// Author: Shun Suzuki
-// -----
-// Last Modified: 02/12/2023
-// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
-// -----
-// Copyright (c) 2023 Shun Suzuki. All rights reserved.
-//
-
 #pragma once
 
 #include <vector>
 
+#include "autd3/driver/geometry/geometry.hpp"
 #include "autd3/gain/cache.hpp"
 #include "autd3/gain/holo/constraint.hpp"
 #include "autd3/gain/holo/holo.hpp"
 #include "autd3/gain/transform.hpp"
-#include "autd3/internal/geometry/geometry.hpp"
-#include "autd3/internal/native_methods.hpp"
-#include "autd3/internal/utils.hpp"
+#include "autd3/native_methods.hpp"
+#include "autd3/native_methods/utils.hpp"
 
 namespace autd3::gain::holo {
 
@@ -31,20 +20,14 @@ namespace autd3::gain::holo {
  */
 class Greedy final : public Holo<Greedy>, public IntoCache<Greedy>, public IntoTransform<Greedy> {
  public:
-  Greedy() : Holo() {}
+  Greedy() : Holo(EmissionConstraint::uniform(driver::EmitIntensity::maximum())), _phase_div(16) {}
 
-  AUTD3_DEF_PARAM(Greedy, uint32_t, phase_div)
+  AUTD3_DEF_PARAM(Greedy, uint8_t, phase_div)
 
-  [[nodiscard]] internal::native_methods::GainPtr gain_ptr(const internal::geometry::Geometry&) const override {
-    auto ptr = internal::native_methods::AUTDGainHoloGreedy(reinterpret_cast<const double*>(this->_foci.data()),
-                                                            reinterpret_cast<const double*>(this->_amps.data()), this->_amps.size());
-    if (_phase_div.has_value()) ptr = AUTDGainHoloGreedyWithPhaseDiv(ptr, _phase_div.value());
-    if (this->_constraint.has_value()) ptr = AUTDGainHoloGreedyWithConstraint(ptr, this->_constraint.value().ptr());
-    return ptr;
+  [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry&) const override {
+    return AUTDGainHoloGreedy(reinterpret_cast<const double*>(this->_foci.data()), reinterpret_cast<const double*>(this->_amps.data()),
+                              this->_amps.size(), _phase_div, _constraint.ptr());
   }
-
- private:
-  std::optional<uint32_t> _phase_div;
 };
 
 }  // namespace autd3::gain::holo

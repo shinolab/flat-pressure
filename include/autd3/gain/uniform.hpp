@@ -1,47 +1,30 @@
-// File: uniform.hpp
-// Project: gain
-// Created Date: 13/09/2023
-// Author: Shun Suzuki
-// -----
-// Last Modified: 02/12/2023
-// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
-// -----
-// Copyright (c) 2023 Shun Suzuki. All rights reserved.
-//
-
 #pragma once
 
 #include <algorithm>
-#include <optional>
 
+#include "autd3/driver/common/emit_intensity.hpp"
+#include "autd3/driver/datagram/gain.hpp"
+#include "autd3/driver/geometry/geometry.hpp"
 #include "autd3/gain/cache.hpp"
 #include "autd3/gain/transform.hpp"
-#include "autd3/internal/emit_intensity.hpp"
-#include "autd3/internal/gain.hpp"
-#include "autd3/internal/geometry/geometry.hpp"
-#include "autd3/internal/native_methods.hpp"
-#include "autd3/internal/utils.hpp"
+#include "autd3/native_methods.hpp"
+#include "autd3/native_methods/utils.hpp"
 
 namespace autd3::gain {
 
 /**
  * @brief Gain to set intensity and phase uniformly
  */
-class Uniform final : public internal::Gain, public IntoCache<Uniform>, public IntoTransform<Uniform> {
+class Uniform final : public driver::Gain, public IntoCache<Uniform>, public IntoTransform<Uniform> {
  public:
-  explicit Uniform(const uint8_t intensity) : _intensity(internal::EmitIntensity(intensity)) {}
-  explicit Uniform(const internal::EmitIntensity intensity) : _intensity(intensity) {}
+  explicit Uniform(const uint8_t intensity) : _intensity(driver::EmitIntensity(intensity)), _phase(driver::Phase(0)) {}
+  explicit Uniform(const driver::EmitIntensity intensity) : _intensity(intensity), _phase(driver::Phase(0)) {}
 
-  AUTD3_DEF_PARAM(Uniform, internal::Phase, phase)
+  AUTD3_DEF_PROP(driver::EmitIntensity, intensity)
+  AUTD3_DEF_PARAM(Uniform, driver::Phase, phase)
 
-  [[nodiscard]] internal::native_methods::GainPtr gain_ptr(const internal::geometry::Geometry&) const override {
-    auto ptr = internal::native_methods::AUTDGainUniform(_intensity.value());
-    if (_phase.has_value()) ptr = AUTDGainUniformWithPhase(ptr, _phase.value().value());
-    return ptr;
+  [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry&) const override {
+    return native_methods::AUTDGainUniform(_intensity.value(), _phase.value());
   }
-
- private:
-  internal::EmitIntensity _intensity;
-  std::optional<internal::Phase> _phase;
 };
 }  // namespace autd3::gain

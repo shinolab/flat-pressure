@@ -1,47 +1,36 @@
-// File: audit.hpp
-// Project: link
-// Created Date: 26/09/2023
-// Author: Shun Suzuki
-// -----
-// Last Modified: 03/01/2024
-// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
-// -----
-// Copyright (c) 2023 Shun Suzuki. All rights reserved.
-//
-
 #pragma once
 
 #include <chrono>
 #include <utility>
 
-#include "autd3/internal/native_methods.hpp"
+#include "autd3/native_methods.hpp"
 
-namespace autd3::internal {
+namespace autd3::controller {
 class ControllerBuilder;
 }
 
 namespace autd3::link {
 
 class Audit final {
-  internal::native_methods::LinkPtr _ptr;
+  native_methods::LinkPtr _ptr;
 
-  explicit Audit(const internal::native_methods::LinkPtr ptr) : _ptr(ptr) {}
+  explicit Audit(const native_methods::LinkPtr ptr) : _ptr(ptr) {}
 
  public:
   class Builder final {
     friend class Audit;
-    friend class internal::ControllerBuilder;
+    friend class controller::ControllerBuilder;
 
-    internal::native_methods::LinkAuditBuilderPtr _ptr;
+    native_methods::LinkAuditBuilderPtr _ptr;
 
-    Builder() : _ptr(internal::native_methods::AUTDLinkAudit()) {}
+    Builder() : _ptr(native_methods::AUTDLinkAudit()) {}
 
-    [[nodiscard]] static Audit resolve_link(const internal::native_methods::LinkPtr link) { return Audit{link}; }
+    [[nodiscard]] static Audit resolve_link(const native_methods::LinkPtr link) { return Audit{link}; }
 
    public:
     using Link = Audit;
 
-    [[nodiscard]] internal::native_methods::LinkBuilderPtr ptr() const { return AUTDLinkAuditIntoBuilder(_ptr); }
+    [[nodiscard]] native_methods::LinkBuilderPtr ptr() const { return AUTDLinkAuditIntoBuilder(_ptr); }
 
     template <typename Rep, typename Period>
     Builder with_timeout(const std::chrono::duration<Rep, Period> timeout) {
@@ -58,8 +47,6 @@ class Audit final {
   [[nodiscard]] bool is_open() const { return AUTDLinkAuditIsOpen(_ptr); }
 
   [[nodiscard]] bool is_force_fan(const size_t idx) const { return AUTDLinkAuditFpgaIsForceFan(_ptr, static_cast<std::uint32_t>(idx)); }
-
-  [[nodiscard]] std::uint64_t last_timeout_ns() const { return AUTDLinkAuditLastTimeoutNs(_ptr); }
 
   void up() const { AUTDLinkAuditUp(_ptr); }
 

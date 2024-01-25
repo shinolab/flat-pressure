@@ -1,0 +1,151 @@
+#pragma once
+
+#include <chrono>
+#include <memory>
+#include <ranges>
+
+#include "autd3/driver/common/sampling_config.hpp"
+#include "autd3/driver/datagram/datagram.hpp"
+#include "autd3/driver/datagram/gain.hpp"
+#include "autd3/driver/datagram/stm/stm.hpp"
+#include "autd3/native_methods.hpp"
+
+namespace autd3::driver {
+template <class R>
+concept gain_range = std::ranges::viewable_range<R> && gain<std::ranges::range_value_t<R>>;
+
+/**
+ * @brief GainSTM is an STM for moving Gain.
+ * @details The sampling timing is determined by hardware, thus the sampling
+ * time is precise. GainSTM has following restrictions:
+ * - The maximum number of sampling Gain is 2048.
+ * - The sampling frequency is
+ * [autd3::native_methods::FPGA_CLK_FREQ]/N, where `N` is a 32-bit
+ * unsigned integer and must be at 4096.
+ */
+class GainSTM final : public STM {
+ public:
+  GainSTM() = delete;
+  GainSTM(const GainSTM& obj) = default;
+  GainSTM& operator=(const GainSTM& obj) = default;
+  GainSTM(GainSTM&& obj) = default;
+  GainSTM& operator=(GainSTM&& obj) = default;
+  ~GainSTM() override = default;  // LCOV_EXCL_LINE
+
+  /**
+   * @brief Constructor
+   *
+   * @param freq STM frequency
+   */
+  static GainSTM from_freq(const double freq) { return GainSTM(freq, std::nullopt, std::nullopt); }
+
+  /**
+   * @brief Constructor
+   *
+   * @param config Sampling configuration
+   * @return GainSTM
+   */
+  static GainSTM from_sampling_config(const SamplingConfiguration config) { return GainSTM(std::nullopt, std::nullopt, config); }
+
+  template <typename Rep, typename Period>
+  static GainSTM from_period(const std::chrono::duration<Rep, Period> period) {
+    return GainSTM(std::nullopt, std::nullopt, std::nullopt, std::chrono::duration_cast<std::chrono::nanoseconds>(period));
+  }
+
+  [[nodiscard]] native_methods::DatagramPtr ptr(const geometry::Geometry& geometry) const {
+    const auto mode = _mode.has_value() ? _mode.value() : native_methods::GainSTMMode::PhaseIntensityFull;
+    std::vector<native_methods::GainPtr> gains;
+    gains.reserve(_gains.size());
+    std::ranges::transform(_gains, std::back_inserter(gains), [&](const auto& gain) { return gain->gain_ptr(geometry); });
+    return validate(AUTDSTMGain(props(), gains.data(), static_cast<uint32_t>(gains.size()), mode));
+  }
+
+  /**
+   * @brief Add Gain to the GainSTM
+   *
+   * @tparam G Gain
+   * @param gain gain
+   * @return GainSTM
+   */
+  template <gain G>
+  void add_gain(G&& gain) & {
+    _gains.emplace_back(std::make_shared<std::remove_reference_t<G>>(std::forward<G>(gain)));
+  }
+
+  /**
+   * @brief Add Gain to the GainSTM
+   *
+   * @tparam G Gain
+   * @param gain gain
+   * @return GainSTM
+   */
+  template <gain G>
+  [[nodiscard]] GainSTM&& add_gain(G&& gain) && {
+    _gains.emplace_back(std::make_shared<std::remove_reference_t<G>>(std::forward<G>(gain)));
+    return std::move(*this);
+  }
+
+  /**
+   * @brief Add Gains to the GainSTM
+   *
+   * @tparam R Iterator
+   * @param iter gain iterator
+   */
+  template <gain_range R>
+  void add_gains_from_iter(R&& iter) & {
+    for (auto e : iter)
+      _gains.emplace_back(std::make_shared<std::remove_reference_t<std::ranges::range_value_t<R>>>(std::forward<std::ranges::range_value_t<R>>(e)));
+  }
+
+  /**
+   * @brief Add Gains to the GainSTM
+   *
+   * @tparam R Iterator
+   * @param iter gain iterator
+   * @return GainSTM
+   */
+  template <gain_range R>
+  GainSTM add_gains_from_iter(R&& iter) && {
+    for (auto e : iter)
+      _gains.emplace_back(std::make_shared<std::remove_reference_t<std::ranges::range_value_t<R>>>(std::forward<std::ranges::range_value_t<R>>(e)));
+    return std::move(*this);
+  }
+
+  [[nodiscard]] double frequency() const { return frequency_from_size(_gains.size()); }
+  [[nodiscard]] std::chrono::nanoseconds period() const { return period_from_size(_gains.size()); }
+  [[nodiscard]] SamplingConfiguration sampling_config() const { return sampling_config_from_size(_gains.size()); }
+
+  void with_mode(const native_methods::GainSTMMode mode) & { _mode = mode; }
+  [[nodiscard]] GainSTM&& with_mode(const native_methods::GainSTMMode mode) && {
+    _mode = mode;
+    return std::move(*this);
+  }
+
+  void with_start_idx(const std::optional<uint16_t> start_idx) & {
+    _start_idx = start_idx.has_value() ? static_cast<int32_t>(start_idx.value()) : -1;
+  }
+
+  [[nodiscard]] GainSTM&& with_start_idx(const std::optional<uint16_t> start_idx) && {
+    _start_idx = start_idx.has_value() ? static_cast<int32_t>(start_idx.value()) : -1;
+    return std::move(*this);
+  }
+
+  void with_finish_idx(const std::optional<uint16_t> finish_idx) & {
+    _finish_idx = finish_idx.has_value() ? static_cast<int32_t>(finish_idx.value()) : -1;
+  }
+
+  [[nodiscard]] GainSTM&& with_finish_idx(const std::optional<uint16_t> finish_idx) && {
+    _finish_idx = finish_idx.has_value() ? static_cast<int32_t>(finish_idx.value()) : -1;
+    return std::move(*this);
+  }
+
+ private:
+  explicit GainSTM(const std::optional<double> freq, const std::optional<std::chrono::nanoseconds> period,
+                   const std::optional<SamplingConfiguration> config)
+      : STM(freq, period, config) {}
+
+  std::vector<std::shared_ptr<Gain>> _gains;
+  std::optional<native_methods::GainSTMMode> _mode;
+};
+
+}  // namespace autd3::driver

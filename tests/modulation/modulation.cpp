@@ -1,14 +1,3 @@
-// File: modulation.cpp
-// Project: modulation
-// Created Date: 26/09/2023
-// Author: Shun Suzuki
-// -----
-// Last Modified: 05/01/2024
-// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
-// -----
-// Copyright (c) 2023 Shun Suzuki. All rights reserved.
-//
-
 #include <gtest/gtest.h>
 
 #include <autd3/modulation/modulation.hpp>
@@ -17,13 +6,13 @@
 
 class BurstModulation final : public autd3::modulation::Modulation {
  public:
-  [[nodiscard]] std::vector<autd3::internal::EmitIntensity> calc() const override {
-    std::vector buffer(10, autd3::internal::EmitIntensity::minimum());
-    buffer[0] = autd3::internal::EmitIntensity::maximum();
+  [[nodiscard]] std::vector<autd3::driver::EmitIntensity> calc() const override {
+    std::vector buffer(10, autd3::driver::EmitIntensity::minimum());
+    buffer[0] = autd3::driver::EmitIntensity::maximum();
     return buffer;
   }
 
-  explicit BurstModulation() noexcept : Modulation(autd3::internal::SamplingConfiguration::from_frequency_division(5120)) {}
+  explicit BurstModulation() noexcept : Modulation(autd3::driver::SamplingConfiguration::from_frequency_division(5120)) {}
 };
 
 TEST(Modulation, Modulation) {

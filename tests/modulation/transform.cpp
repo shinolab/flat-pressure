@@ -1,14 +1,3 @@
-// File: transform.cpp
-// Project: modulation
-// Created Date: 26/09/2023
-// Author: Shun Suzuki
-// -----
-// Last Modified: 05/01/2024
-// Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
-// -----
-// Copyright (c) 2023 Shun Suzuki. All rights reserved.
-//
-
 #include <gtest/gtest.h>
 
 #include <autd3/modulation/sine.hpp>
@@ -21,7 +10,7 @@ TEST(Modulation, Transform) {
 
   ASSERT_TRUE(autd1.send(autd3::modulation::Sine(150)));
   ASSERT_TRUE(autd2.send(autd3::modulation::Sine(150).with_transform(
-      [](size_t, const autd3::internal::EmitIntensity v) { return autd3::internal::EmitIntensity(v.value() / 2); })));
+      [](size_t, const autd3::driver::EmitIntensity v) { return autd3::driver::EmitIntensity(v.value() / 2); })));
 
   for (auto& dev : autd1.geometry()) {
     auto mod_expect = autd1.link().modulation(dev.idx());
