@@ -33,10 +33,12 @@ TEST(Gain_Holo, GSPAT) {
 }
 
 TEST(Gain_Holo, GSPATDefault) {
+  auto autd = autd3::controller::ControllerBuilder()
+                  .add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero()))
+                  .open_with(autd3::link::Audit::builder());
   auto backend = std::make_shared<autd3::gain::holo::NalgebraBackend>();
   auto g = autd3::gain::holo::GSPAT(std::move(backend));
-  ASSERT_EQ(g.repeat(), autd3::native_methods::AUTDGainHoloGSPATDefaultRepeat());
-  ASSERT_TRUE(autd3::native_methods::AUTDGainHoloConstraintEq(g.constraint().ptr(), autd3::native_methods::AUTDGainHoloGSPATDefaultConstraint()));
+  ASSERT_TRUE(autd3::native_methods::AUTDGainGSPATIsDefault(g.gain_ptr(autd.geometry())));
 }
 
 #ifdef RUN_BACKEND_CUDA

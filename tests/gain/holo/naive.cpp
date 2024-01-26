@@ -32,9 +32,12 @@ TEST(Gain_Holo, Naive) {
 }
 
 TEST(Gain_Holo, NaiveDefault) {
+  auto autd = autd3::controller::ControllerBuilder()
+                  .add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero()))
+                  .open_with(autd3::link::Audit::builder());
   auto backend = std::make_shared<autd3::gain::holo::NalgebraBackend>();
   auto g = autd3::gain::holo::Naive(std::move(backend));
-  ASSERT_TRUE(autd3::native_methods::AUTDGainHoloConstraintEq(g.constraint().ptr(), autd3::native_methods::AUTDGainHoloNaiveDefaultConstraint()));
+  ASSERT_TRUE(autd3::native_methods::AUTDGainNaiveIsDefault(g.gain_ptr(autd.geometry())));
 }
 
 #ifdef RUN_BACKEND_CUDA

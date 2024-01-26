@@ -43,10 +43,5 @@ TEST(Modulation, SineWithMode) {
 
 TEST(Modulation, SineDefault) {
   const auto m = autd3::modulation::Sine(150);
-  ASSERT_EQ(m.intensity().value(), autd3::native_methods::AUTDModulationSineDefaultIntensity());
-  ASSERT_EQ(m.offset().value(), autd3::native_methods::AUTDModulationSineDefaultOffset());
-  ASSERT_EQ(m.phase().value(), autd3::native_methods::AUTDModulationSineDefaultPhase());
-  ASSERT_EQ(m.mode(), autd3::native_methods::AUTDModulationSineDefaultMode());
-  ASSERT_TRUE(autd3::native_methods::AUTDSamplingConfigEq(static_cast<autd3::native_methods::SamplingConfiguration>(m.sampling_config()),
-                                                          autd3::native_methods::AUTDModulationSineDefaultSamplingConfig()));
+  ASSERT_TRUE(AUTDModulationSineIsDefault(m.modulation_ptr()));
 }

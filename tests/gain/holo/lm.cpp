@@ -37,13 +37,12 @@ TEST(Gain_Holo, LM) {
 }
 
 TEST(Gain_Holo, LMDefault) {
+  auto autd = autd3::controller::ControllerBuilder()
+                  .add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero()))
+                  .open_with(autd3::link::Audit::builder());
   auto backend = std::make_shared<autd3::gain::holo::NalgebraBackend>();
   auto g = autd3::gain::holo::LM(std::move(backend));
-  ASSERT_EQ(g.eps1(), autd3::native_methods::AUTDGainHoloLMDefaultEps1());
-  ASSERT_EQ(g.eps2(), autd3::native_methods::AUTDGainHoloLMDefaultEps2());
-  ASSERT_EQ(g.tau(), autd3::native_methods::AUTDGainHoloLMDefaultTau());
-  ASSERT_EQ(g.k_max(), autd3::native_methods::AUTDGainHoloLMDefaultKMax());
-  ASSERT_TRUE(autd3::native_methods::AUTDGainHoloConstraintEq(g.constraint().ptr(), autd3::native_methods::AUTDGainHoloLMDefaultConstraint()));
+  ASSERT_TRUE(autd3::native_methods::AUTDGainLMIsDefault(g.gain_ptr(autd.geometry())));
 }
 
 #ifdef RUN_BACKEND_CUDA

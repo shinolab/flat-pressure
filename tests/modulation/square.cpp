@@ -38,10 +38,5 @@ TEST(Modulation, SquareWithMode) {
 
 TEST(Modulation, SquareDefault) {
   const auto m = autd3::modulation::Square(150);
-  ASSERT_EQ(m.low().value(), autd3::native_methods::AUTDModulationSquareDefaultLow());
-  ASSERT_EQ(m.high().value(), autd3::native_methods::AUTDModulationSquareDefaultHigh());
-  ASSERT_EQ(m.duty(), autd3::native_methods::AUTDModulationSquareDefaultDuty());
-  ASSERT_EQ(m.mode(), autd3::native_methods::AUTDModulationSquareDefaultMode());
-  ASSERT_TRUE(autd3::native_methods::AUTDSamplingConfigEq(static_cast<autd3::native_methods::SamplingConfiguration>(m.sampling_config()),
-                                                          autd3::native_methods::AUTDModulationSquareDefaultSamplingConfig()));
+  ASSERT_TRUE(AUTDModulationSquareIsDefault(m.modulation_ptr()));
 }

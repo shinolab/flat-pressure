@@ -133,7 +133,7 @@ ResultI32 AUTDLinkVisualizerPlotModulation(LinkPtr visualizer,
 
 [[nodiscard]] LinkBuilderPtr AUTDLinkVisualizerT4010A1Null(bool use_gpu, int32_t gpu_idx);
 
-[[nodiscard]] NullPlotConfigPtr AUTDLinkVisualizerNullPlotConfigDefault();
+[[nodiscard]] NullPlotConfigPtr AUTDLinkVisualizerNullPlotConfig();
 
 [[nodiscard]] LinkBuilderPtr AUTDLinkVisualizerSpherePlotters(bool use_gpu, int32_t gpu_idx);
 
@@ -150,21 +150,7 @@ ResultPlotConfig AUTDLinkVisualizerPlotConfig(uint32_t width,
                                               CMap cmap,
                                               const char *fname);
 
-[[nodiscard]] uint32_t AUTDLinkVisualizerPlotConfigDefaultFigSizeWidth();
-
-[[nodiscard]] uint32_t AUTDLinkVisualizerPlotConfigDefaultFigSizeHeight();
-
-[[nodiscard]] double AUTDLinkVisualizerPlotConfigDefaultCBarSize();
-
-[[nodiscard]] uint32_t AUTDLinkVisualizerPlotConfigDefaultFontSize();
-
-[[nodiscard]] uint32_t AUTDLinkVisualizerPlotConfigDefaultLabelAreaSize();
-
-[[nodiscard]] uint32_t AUTDLinkVisualizerPlotConfigDefaultMargin();
-
-[[nodiscard]] double AUTDLinkVisualizerPlotConfigDefaultTicksStep();
-
-[[nodiscard]] CMap AUTDLinkVisualizerPlotConfigDefaultCMap();
+[[nodiscard]] bool AUTDLinkVisualizerPlotConfigIsDefault(PlotConfigPtr config);
 
 [[nodiscard]] LinkBuilderPtr AUTDLinkVisualizerSpherePython(bool use_gpu, int32_t gpu_idx);
 
@@ -183,25 +169,7 @@ ResultPyPlotConfig AUTDLinkVisualizerPyPlotConfig(int32_t width,
                                                   bool show,
                                                   const char *fname);
 
-[[nodiscard]] int32_t AUTDLinkVisualizerPyPlotConfigDefaultFigSizeWidth();
-
-[[nodiscard]] int32_t AUTDLinkVisualizerPyPlotConfigDefaultFigSizeHeight();
-
-[[nodiscard]] int32_t AUTDLinkVisualizerPyPlotConfigDefaultDPI();
-
-[[nodiscard]] uint32_t AUTDLinkVisualizerPyPlotConfigDefaultCBarPosition(char *cbar);
-
-[[nodiscard]] uint32_t AUTDLinkVisualizerPyPlotConfigDefaultCBarSize(char *cbar);
-
-[[nodiscard]] uint32_t AUTDLinkVisualizerPyPlotConfigDefaultCBarPad(char *cbar);
-
-[[nodiscard]] int32_t AUTDLinkVisualizerPyPlotConfigDefaultFontSize();
-
-[[nodiscard]] double AUTDLinkVisualizerPyPlotConfigDefaultTicksStep();
-
-[[nodiscard]] uint32_t AUTDLinkVisualizerPyPlotConfigDefaultCMap(char *cmap);
-
-[[nodiscard]] bool AUTDLinkVisualizerPyPlotConfigDefaultShow();
+[[nodiscard]] bool AUTDLinkVisualizerPyPlotConfigIsDefault(PyPlotConfigPtr config);
 
 } // extern "C"
 

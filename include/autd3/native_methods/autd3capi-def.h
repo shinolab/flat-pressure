@@ -139,8 +139,6 @@ void AUTDGetErr(void* src, char *dst);
 
 [[nodiscard]] uint64_t AUTDSamplingConfigPeriod(SamplingConfiguration config);
 
-[[nodiscard]] bool AUTDSamplingConfigEq(SamplingConfiguration a, SamplingConfiguration b);
-
 } // extern "C"
 
 } // namespace autd3::native_methods

@@ -25,8 +25,7 @@ TEST(Modulation, RawPCM) {
 }
 
 TEST(Modulation, RawPCMDefault) {
-  const std::filesystem::path path = std::filesystem::path(AUTD3_RESOURCE_PATH).append("sin150.dat");
-  const auto m = autd3::modulation::audio_file::RawPCM(path, 4000);
-  ASSERT_TRUE(autd3::native_methods::AUTDSamplingConfigEq(static_cast<autd3::native_methods::SamplingConfiguration>(m.sampling_config()),
-                                                          autd3::native_methods::AUTDModulationRawPCMDefaultSamplingConfig()));
+  const auto m = autd3::modulation::audio_file::RawPCM(std::filesystem::path(""), 4000);
+  ASSERT_TRUE(AUTDModulationRawPCMIsDefault(m.modulation_ptr()));
+  ;
 }

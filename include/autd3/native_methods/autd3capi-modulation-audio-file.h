@@ -10,14 +10,14 @@ extern "C" {
 
 [[nodiscard]] ResultModulation AUTDModulationWav(const char *path, SamplingConfiguration config);
 
-[[nodiscard]] SamplingConfiguration AUTDModulationWavDefaultSamplingConfig();
+[[nodiscard]] bool AUTDModulationWavIsDefault(ModulationPtr wav);
 
 [[nodiscard]]
 ResultModulation AUTDModulationRawPCM(const char *path,
                                       uint32_t sample_rate,
                                       SamplingConfiguration config);
 
-[[nodiscard]] SamplingConfiguration AUTDModulationRawPCMDefaultSamplingConfig();
+[[nodiscard]] bool AUTDModulationRawPCMIsDefault(ModulationPtr rawpcm);
 
 } // extern "C"
 

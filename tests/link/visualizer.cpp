@@ -124,3 +124,11 @@ TEST(Link, VisualizerInvalidConfig) {
                   .open_with(autd3::link::Visualizer::plotters());
   ASSERT_THROW(autd.link().plot_modulation(autd3::link::NullPlotConfig()), autd3::AUTDException);
 }
+
+TEST(Link, VisualizerPlotConfigDefault) {
+  ASSERT_TRUE(autd3::native_methods::AUTDLinkVisualizerPlotConfigIsDefault(autd3::link::PlotConfig()._raw_ptr()));
+}
+
+TEST(Link, VisualizerPyPlotConfigDefault) {
+  ASSERT_TRUE(autd3::native_methods::AUTDLinkVisualizerPyPlotConfigIsDefault(autd3::link::PyPlotConfig()._raw_ptr()));
+}

@@ -17,6 +17,7 @@ TEST(Gain, Bessel) {
 }
 
 TEST(Gain, BesselDefault) {
-  auto g = autd3::gain::Bessel(autd3::driver::Vector3::Zero(), autd3::driver::Vector3::UnitZ(), 0);
-  ASSERT_EQ(g.intensity().value(), autd3::native_methods::AUTDGainBesselDefaultIntensity());
+  auto autd = create_controller();
+  const auto g = autd3::gain::Bessel(autd3::driver::Vector3::Zero(), autd3::driver::Vector3::UnitZ(), 0);
+  ASSERT_TRUE(autd3::native_methods::AUTDGainBesselIsDefault(g.gain_ptr(autd.geometry())));
 }

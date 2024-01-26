@@ -73,7 +73,12 @@ struct PlotConfig {
   uint32_t margin = 10;
   double ticks_step = 10;
   CMap cmap = CMap::Jet;
-  std::string fname;
+  std::string fname = "";
+
+  native_methods::PlotConfigPtr _raw_ptr() const {
+    return validate(native_methods::AUTDLinkVisualizerPlotConfig(figsize.first, figsize.second, cbar_size, font_size, label_area_size, margin,
+                                                                 ticks_step, cmap, fname.c_str()));
+  }
 };
 
 struct PyPlotConfig {
@@ -86,7 +91,12 @@ struct PyPlotConfig {
   double ticks_step = 10;
   std::string cmap = "jet";
   bool show = false;
-  std::string fname;
+  std::string fname = "fig.png";
+
+  native_methods::PyPlotConfigPtr _raw_ptr() const {
+    return validate(native_methods::AUTDLinkVisualizerPyPlotConfig(figsize.first, figsize.second, dpi, cbar_position.c_str(), cbar_size.c_str(),
+                                                                   cbar_pad.c_str(), fontsize, ticks_step, cmap.c_str(), show, fname.c_str()));
+  }
 };
 
 struct NullPlotConfig {};
@@ -104,21 +114,15 @@ class Visualizer final {
 
   [[nodiscard]] native_methods::ConfigPtr get_plot_config(Config config) const {
     if (_backend == native_methods::Backend::Plotters && std::holds_alternative<PlotConfig>(config)) {
-      const auto& [figsize, cbar_size, font_size, label_area_size, margin, ticks_step, cmap, fname] = std::get<PlotConfig>(config);
-      auto ptr = validate(native_methods::AUTDLinkVisualizerPlotConfig(figsize.first, figsize.second, cbar_size, font_size, label_area_size, margin,
-                                                                       ticks_step, cmap, fname.c_str()));
-      return native_methods::ConfigPtr{ptr._0};
+      return native_methods::ConfigPtr{std::get<PlotConfig>(config)._raw_ptr()._0};
     }
 
     if (_backend == native_methods::Backend::Python && std::holds_alternative<PyPlotConfig>(config)) {
-      const auto& [figsize, dpi, cbar_position, cbar_size, cbar_pad, fontsize, ticks_step, cmap, show, fname] = std::get<PyPlotConfig>(config);
-      auto ptr = validate(native_methods::AUTDLinkVisualizerPyPlotConfig(figsize.first, figsize.second, dpi, cbar_position.c_str(), cbar_size.c_str(),
-                                                                         cbar_pad.c_str(), fontsize, ticks_step, cmap.c_str(), show, fname.c_str()));
-      return native_methods::ConfigPtr{ptr._0};
+      return native_methods::ConfigPtr{std::get<PyPlotConfig>(config)._raw_ptr()._0};
     }
 
     if (_backend == native_methods::Backend::Null && std::holds_alternative<NullPlotConfig>(config))
-      return native_methods::ConfigPtr{native_methods::AUTDLinkVisualizerNullPlotConfigDefault()._0};
+      return native_methods::ConfigPtr{native_methods::AUTDLinkVisualizerNullPlotConfig()._0};
 
     throw AUTDException("Invalid plot config type.");
   }

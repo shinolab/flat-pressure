@@ -19,5 +19,5 @@ TEST(Modulation, Static) {
 
 TEST(Modulation, StaticDefault) {
   const auto m = autd3::modulation::Static();
-  ASSERT_EQ(m.intensity().value(), autd3::native_methods::AUTDModulationStaticDefaultIntensity());
+  ASSERT_TRUE(AUTDModulationStaticIsDefault(m.modulation_ptr()));
 }

@@ -34,8 +34,6 @@ extern "C" {
 
 [[nodiscard]] EmissionConstraintPtr AUTDGainHoloConstraintClamp(uint8_t min_v, uint8_t max_v);
 
-[[nodiscard]] bool AUTDGainHoloConstraintEq(EmissionConstraintPtr a, EmissionConstraintPtr b);
-
 [[nodiscard]]
 GainPtr AUTDGainHoloGreedy(const double *points,
                            const double *amps,
@@ -43,9 +41,7 @@ GainPtr AUTDGainHoloGreedy(const double *points,
                            uint8_t div,
                            EmissionConstraintPtr constraint);
 
-[[nodiscard]] EmissionConstraintPtr AUTDGainHoloGreedyDefaultConstraint();
-
-[[nodiscard]] uint8_t AUTDGainHoloGreedyDefaultPhaseDiv();
+[[nodiscard]] bool AUTDGainGreedyIsDefault(GainPtr greedy);
 
 [[nodiscard]]
 GainPtr AUTDGainHoloGS(BackendPtr backend,
@@ -55,9 +51,7 @@ GainPtr AUTDGainHoloGS(BackendPtr backend,
                        uint32_t repeat,
                        EmissionConstraintPtr constraint);
 
-[[nodiscard]] EmissionConstraintPtr AUTDGainHoloGSDefaultConstraint();
-
-[[nodiscard]] uint32_t AUTDGainHoloGSDefaultRepeat();
+[[nodiscard]] bool AUTDGainGSIsDefault(GainPtr gs);
 
 [[nodiscard]]
 GainPtr AUTDGainHoloGSPAT(BackendPtr backend,
@@ -67,9 +61,7 @@ GainPtr AUTDGainHoloGSPAT(BackendPtr backend,
                           uint32_t repeat,
                           EmissionConstraintPtr constraint);
 
-[[nodiscard]] EmissionConstraintPtr AUTDGainHoloGSPATDefaultConstraint();
-
-[[nodiscard]] uint32_t AUTDGainHoloGSPATDefaultRepeat();
+[[nodiscard]] bool AUTDGainGSPATIsDefault(GainPtr gs);
 
 [[nodiscard]]
 GainPtr AUTDGainHoloLM(BackendPtr backend,
@@ -84,15 +76,7 @@ GainPtr AUTDGainHoloLM(BackendPtr backend,
                        uint64_t initial_len,
                        EmissionConstraintPtr constraint);
 
-[[nodiscard]] EmissionConstraintPtr AUTDGainHoloLMDefaultConstraint();
-
-[[nodiscard]] double AUTDGainHoloLMDefaultEps1();
-
-[[nodiscard]] double AUTDGainHoloLMDefaultEps2();
-
-[[nodiscard]] double AUTDGainHoloLMDefaultTau();
-
-[[nodiscard]] uint32_t AUTDGainHoloLMDefaultKMax();
+[[nodiscard]] bool AUTDGainLMIsDefault(GainPtr gs);
 
 [[nodiscard]]
 GainPtr AUTDGainHoloNaive(BackendPtr backend,
@@ -101,7 +85,7 @@ GainPtr AUTDGainHoloNaive(BackendPtr backend,
                           uint64_t size,
                           EmissionConstraintPtr constraint);
 
-[[nodiscard]] EmissionConstraintPtr AUTDGainHoloNaiveDefaultConstraint();
+[[nodiscard]] bool AUTDGainNaiveIsDefault(GainPtr gs);
 
 [[nodiscard]] BackendPtr AUTDNalgebraBackend();
 
@@ -117,13 +101,7 @@ GainPtr AUTDGainHoloSDP(BackendPtr backend,
                         uint32_t repeat,
                         EmissionConstraintPtr constraint);
 
-[[nodiscard]] EmissionConstraintPtr AUTDGainHoloSDPDefaultConstraint();
-
-[[nodiscard]] double AUTDGainHoloSDPDefaultAlpha();
-
-[[nodiscard]] double AUTDGainHoloSDPDefaultLambda();
-
-[[nodiscard]] uint32_t AUTDGainHoloSDPDefaultRepeat();
+[[nodiscard]] bool AUTDGainSDPIsDefault(GainPtr gs);
 
 } // extern "C"
 

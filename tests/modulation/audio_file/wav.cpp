@@ -25,8 +25,6 @@ TEST(Modulation, Wav) {
 }
 
 TEST(Modulation, WavDefault) {
-  const std::filesystem::path path = std::filesystem::path(AUTD3_RESOURCE_PATH).append("sin150.wav");
-  const auto m = autd3::modulation::audio_file::Wav(path);
-  ASSERT_TRUE(autd3::native_methods::AUTDSamplingConfigEq(static_cast<autd3::native_methods::SamplingConfiguration>(m.sampling_config()),
-                                                          autd3::native_methods::AUTDModulationWavDefaultSamplingConfig()));
+  const auto m = autd3::modulation::audio_file::Wav(std::filesystem::path(""));
+  ASSERT_TRUE(AUTDModulationWavIsDefault(m.modulation_ptr()));
 }

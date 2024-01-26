@@ -137,7 +137,7 @@ ResultDatagram AUTDDatagramSilencerFixedCompletionSteps(uint16_t value_intensity
                                                         uint16_t value_phase,
                                                         bool strict_mode);
 
-[[nodiscard]] bool AUTDDatagramSilencerFixedCompletionStepsDefaultStrictMode();
+[[nodiscard]] bool AUTDDatagramSilencerFixedCompletionStepsIsDefault(DatagramPtr silencer);
 
 [[nodiscard]]
 ResultI32 AUTDControllerSend(ControllerPtr cnt,
@@ -177,7 +177,7 @@ GainPtr AUTDGainBessel(double x,
                        double theta_z,
                        uint8_t intensity);
 
-[[nodiscard]] uint8_t AUTDGainBesselDefaultIntensity();
+[[nodiscard]] bool AUTDGainBesselIsDefault(GainPtr bessel);
 
 [[nodiscard]] GainPtr AUTDGainCustom();
 
@@ -189,7 +189,7 @@ GainPtr AUTDGainCustomSet(GainPtr custom,
 
 [[nodiscard]] GainPtr AUTDGainFocus(double x, double y, double z, uint8_t intensity);
 
-[[nodiscard]] uint8_t AUTDGainFocusDefaultIntensity();
+[[nodiscard]] bool AUTDGainFocusIsDefault(GainPtr focus);
 
 [[nodiscard]]
 GroupGainMapPtr AUTDGainGroupCreateMap(const uint32_t *device_indices_ptr,
@@ -215,15 +215,13 @@ GainPtr AUTDGainPlane(double nx,
                       uint8_t intensity,
                       uint8_t phase);
 
-[[nodiscard]] uint8_t AUTDGainPlaneDefaultIntensity();
-
-[[nodiscard]] uint8_t AUTDGainPlaneDefaultPhase();
+[[nodiscard]] bool AUTDGainPlanelIsDefault(GainPtr plane);
 
 [[nodiscard]] GainPtr AUTDGainTransducerTest(void* f, ContextPtr context, GeometryPtr geometry);
 
 [[nodiscard]] GainPtr AUTDGainUniform(uint8_t intensity, uint8_t phase);
 
-[[nodiscard]] uint8_t AUTDGainUniformDefaultPhase();
+[[nodiscard]] bool AUTDGainUniformIsDefault(GainPtr uniform);
 
 [[nodiscard]] GeometryPtr AUTDGeometry(ControllerPtr cnt);
 
@@ -396,15 +394,7 @@ ModulationPtr AUTDModulationSine(double freq,
                                  uint8_t phase,
                                  SamplingMode mode);
 
-[[nodiscard]] SamplingConfiguration AUTDModulationSineDefaultSamplingConfig();
-
-[[nodiscard]] uint8_t AUTDModulationSineDefaultIntensity();
-
-[[nodiscard]] uint8_t AUTDModulationSineDefaultPhase();
-
-[[nodiscard]] uint8_t AUTDModulationSineDefaultOffset();
-
-[[nodiscard]] SamplingMode AUTDModulationSineDefaultMode();
+[[nodiscard]] bool AUTDModulationSineIsDefault(ModulationPtr sine);
 
 [[nodiscard]]
 ModulationPtr AUTDModulationSquare(double freq,
@@ -414,19 +404,11 @@ ModulationPtr AUTDModulationSquare(double freq,
                                    double duty,
                                    SamplingMode mode);
 
-[[nodiscard]] uint8_t AUTDModulationSquareDefaultLow();
-
-[[nodiscard]] uint8_t AUTDModulationSquareDefaultHigh();
-
-[[nodiscard]] double AUTDModulationSquareDefaultDuty();
-
-[[nodiscard]] SamplingConfiguration AUTDModulationSquareDefaultSamplingConfig();
-
-[[nodiscard]] SamplingMode AUTDModulationSquareDefaultMode();
+[[nodiscard]] bool AUTDModulationSquareIsDefault(ModulationPtr square);
 
 [[nodiscard]] ModulationPtr AUTDModulationStatic(uint8_t intensity);
 
-[[nodiscard]] uint8_t AUTDModulationStaticDefaultIntensity();
+[[nodiscard]] bool AUTDModulationStaticIsDefault(ModulationPtr s);
 
 [[nodiscard]] ModulationPtr AUTDModulationWithTransform(ModulationPtr m, void* f, void* context);
 

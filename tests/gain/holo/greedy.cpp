@@ -32,7 +32,9 @@ TEST(Gain_Holo, Greedy) {
 }
 
 TEST(Gain_Holo, GreedyDefault) {
+  auto autd = autd3::controller::ControllerBuilder()
+                  .add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero()))
+                  .open_with(autd3::link::Audit::builder());
   auto g = autd3::gain::holo::Greedy();
-  ASSERT_EQ(g.phase_div(), autd3::native_methods::AUTDGainHoloGreedyDefaultPhaseDiv());
-  ASSERT_TRUE(autd3::native_methods::AUTDGainHoloConstraintEq(g.constraint().ptr(), autd3::native_methods::AUTDGainHoloGreedyDefaultConstraint()));
+  ASSERT_TRUE(autd3::native_methods::AUTDGainGreedyIsDefault(g.gain_ptr(autd.geometry())));
 }

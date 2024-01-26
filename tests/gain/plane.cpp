@@ -17,7 +17,7 @@ TEST(Gain, Plane) {
 }
 
 TEST(Gain, PlaneDefault) {
+  auto autd = create_controller();
   auto g = autd3::gain::Plane(autd3::driver::Vector3::UnitZ());
-  ASSERT_EQ(g.intensity().value(), autd3::native_methods::AUTDGainPlaneDefaultIntensity());
-  ASSERT_EQ(g.phase().value(), autd3::native_methods::AUTDGainPlaneDefaultPhase());
+  ASSERT_TRUE(autd3::native_methods::AUTDGainPlanelIsDefault(g.gain_ptr(autd.geometry())));
 }

@@ -17,6 +17,7 @@ TEST(Gain, Uniform) {
 }
 
 TEST(Gain, UniformDefault) {
+  auto autd = create_controller();
   auto g = autd3::gain::Uniform(0x00);
-  ASSERT_EQ(g.phase().value(), autd3::native_methods::AUTDGainUniformDefaultPhase());
+  ASSERT_TRUE(autd3::native_methods::AUTDGainUniformIsDefault(g.gain_ptr(autd.geometry())));
 }
