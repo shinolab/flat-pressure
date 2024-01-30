@@ -6,6 +6,12 @@
 
 namespace autd3::native_methods {
 
+enum class Status : uint8_t {
+  Error = 0,
+  StateChanged = 1,
+  Lost = 2,
+};
+
 enum class SyncMode : uint8_t {
   FreeRun = 0,
   DC = 1,
@@ -66,10 +72,9 @@ LinkSOEMBuilderPtr AUTDLinkSOEMWithStateCheckInterval(LinkSOEMBuilderPtr soem,
                                                       uint32_t interval_ms);
 
 [[nodiscard]]
-LinkSOEMBuilderPtr AUTDLinkSOEMWithOnLost(LinkSOEMBuilderPtr soem,
-                                          void* on_lost_func);
-
-[[nodiscard]] LinkSOEMBuilderPtr AUTDLinkSOEMWithOnErr(LinkSOEMBuilderPtr soem, void* on_err_func);
+LinkSOEMBuilderPtr AUTDLinkSOEMWithErrHandler(LinkSOEMBuilderPtr soem,
+                                              void* handler,
+                                              void* context);
 
 [[nodiscard]]
 LinkSOEMBuilderPtr AUTDLinkSOEMWithTimeout(LinkSOEMBuilderPtr soem,

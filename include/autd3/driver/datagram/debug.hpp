@@ -22,7 +22,7 @@ class ConfigureDebugOutputIdx final {
   using native_f = uint8_t (*)(const void*, native_methods::GeometryPtr, uint32_t);
 
  public:
-  explicit ConfigureDebugOutputIdx(const F& f) : _f(f) {
+  explicit ConfigureDebugOutputIdx(F f) : _f(std::move(f)) {
     _f_native = +[](const void* context, const native_methods::GeometryPtr geometry_ptr, const uint32_t dev_idx) -> uint8_t {
       const geometry::Device dev(dev_idx, AUTDDevice(geometry_ptr, dev_idx));
       const auto* tr = static_cast<const ConfigureDebugOutputIdx*>(context)->_f(dev);
@@ -36,7 +36,7 @@ class ConfigureDebugOutputIdx final {
   }
 
  private:
-  const F& _f;
+  F _f;
   native_f _f_native;
 };
 

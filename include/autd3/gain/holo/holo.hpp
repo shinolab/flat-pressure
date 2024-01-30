@@ -51,7 +51,7 @@ class Holo : public driver::Gain {
     return std::move(*static_cast<H*>(this));
   }
 
-  EmissionConstraint constraint() const { return _constraint; }
+  [[nodiscard]] EmissionConstraint constraint() const { return _constraint; }
 
  protected:
   std::vector<driver::Vector3> _foci;

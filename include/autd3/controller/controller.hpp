@@ -173,8 +173,8 @@ class Controller {
    public:
     using key_type = typename std::invoke_result_t<F, const driver::geometry::Device&>::value_type;
 
-    explicit GroupGuard(const F& map, Controller& controller)
-        : _controller(controller), _map(map), _kv_map(native_methods::AUTDControllerGroupCreateKVMap()) {}
+    explicit GroupGuard(F map, Controller& controller)
+        : _controller(controller), _map(std::move(map)), _kv_map(native_methods::AUTDControllerGroupCreateKVMap()) {}
 
     template <driver::datagram D, typename Rep = uint64_t, typename Period = std::milli>
     GroupGuard set(const key_type key, D&& data, const std::optional<std::chrono::duration<Rep, Period>> timeout = std::nullopt) {
@@ -225,7 +225,7 @@ class Controller {
 
    private:
     Controller& _controller;
-    const F& _map;
+    F _map;
     native_methods::GroupKVMapPtr _kv_map;
     std::unordered_map<key_type, int32_t> _keymap;
     int32_t _k{0};

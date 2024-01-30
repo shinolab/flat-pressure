@@ -20,7 +20,7 @@ class Transform final : public driver::Modulation, public IntoCache<Transform<M,
   using transform_f = uint8_t (*)(const void*, uint32_t, uint8_t);
 
  public:
-  Transform(M m, const F& f) : _m(std::move(m)), _f(f) {
+  Transform(M m, F f) : _m(std::move(m)), _f(std::move(f)) {
     _f_native = +[](const void* context, const uint32_t i, const uint8_t d) -> uint8_t {
       return static_cast<const Transform*>(context)->_f(static_cast<size_t>(i), driver::EmitIntensity(d)).value();
     };
@@ -33,7 +33,7 @@ class Transform final : public driver::Modulation, public IntoCache<Transform<M,
 
  private:
   M _m;
-  const F& _f;
+  F _f;
   transform_f _f_native;
 };
 
@@ -41,12 +41,12 @@ template <class M>
 class IntoTransform {
  public:
   template <modulation_transform_f F>
-  [[nodiscard]] Transform<M, F> with_transform(const F& f) & {
-    return Transform(*static_cast<M*>(this), f);
+  [[nodiscard]] Transform<M, F> with_transform(F f) & {
+    return Transform(*static_cast<M*>(this), std::move(f));
   }
   template <modulation_transform_f F>
-  [[nodiscard]] Transform<M, F> with_transform(const F& f) && {
-    return Transform(std::move(*static_cast<M*>(this)), f);
+  [[nodiscard]] Transform<M, F> with_transform(F f) && {
+    return Transform(std::move(*static_cast<M*>(this)), std::move(f));
   }
 };
 

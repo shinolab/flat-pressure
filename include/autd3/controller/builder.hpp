@@ -53,9 +53,7 @@ class ControllerBuilder {
    */
   template <driver::link_builder B>
   [[nodiscard]] coro::task<Controller<typename B::Link>> open_with_async(B&& link_builder) {
-    auto ptr = validate(AUTDControllerOpenWith(_ptr, link_builder.ptr()));
-    driver::geometry::Geometry geometry(AUTDGeometry(ptr));
-    co_return Controller<typename B::Link>{std::move(geometry), ptr, link_builder.resolve_link(native_methods::AUTDLinkGet(ptr))};
+      co_return open_with(std::forward<B>(link_builder));
   }
 #endif
 

@@ -6,25 +6,13 @@
 #include <autd3/controller/controller.hpp>
 #include <autd3/link/soem.hpp>
 
-[[noreturn]] void test_soem_on_lost(const char* msg) {
-  std::cerr << msg;
-#ifdef __APPLE__
-  exit(-1);
-#else
-  std::quick_exit(-1);
-#endif
-}
-
-void test_soem_on_err(const char* msg) { std::cerr << msg; }
-
 TEST(Link, SOEM) {
   auto link = autd3::link::SOEM::builder()
                   .with_ifname("")
                   .with_buf_size(32)
                   .with_send_cycle(2)
                   .with_sync0_cycle(2)
-                  .with_on_lost(&test_soem_on_lost)
-                  .with_on_err(&test_soem_on_err)
+                  .with_err_handler([](const uint16_t slave, const autd3::link::Status status, const std::string& msg) {})
                   .with_timer_strategy(autd3::native_methods::TimerStrategy::Sleep)
                   .with_sync_mode(autd3::native_methods::SyncMode::FreeRun)
                   .with_state_check_interval(std::chrono::milliseconds(100))

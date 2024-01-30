@@ -4,7 +4,7 @@
  * Created Date: 08/12/2023
  * Author: Shun Suzuki
  * -----
- * Last Modified: 24/01/2024
+ * Last Modified: 30/01/2024
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -63,6 +63,7 @@ pub fn gen_c<P1: AsRef<Path>, P2: AsRef<Path>>(crate_path: P1, dest_dir: P2) -> 
             "ResultGainCalcDrivesMap".to_string(),
             "ResultDatagram".to_string(),
             "Drive".to_string(),
+            "Status".to_string(),
         ],
         exclude: vec!["ConstPtr".to_string()],
         rename: vec![

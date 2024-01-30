@@ -24,7 +24,7 @@ concept gain_transform_f = requires(F f, const driver::geometry::Device& dev, co
 template <class G, gain_transform_f F>
 class Transform final : public driver::Gain, public IntoCache<Transform<G, F>> {
  public:
-  Transform(G g, const F& f) : _g(std::move(g)), _f(f) {}
+  Transform(G g, F f) : _g(std::move(g)), _f(std::move(f)) {}
 
   [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry& geometry) const override {
     std::unordered_map<size_t, std::vector<driver::Drive>> drives;
@@ -49,19 +49,19 @@ class Transform final : public driver::Gain, public IntoCache<Transform<G, F>> {
 
  private:
   G _g;
-  const F& _f;
+  F _f;
 };
 
 template <class G>
 class IntoTransform {
  public:
   template <gain_transform_f F>
-  [[nodiscard]] Transform<G, F> with_transform(const F& f) & {
-    return Transform(*static_cast<G*>(this), f);
+  [[nodiscard]] Transform<G, F> with_transform(F f) & {
+    return Transform(*static_cast<G*>(this), std::move(f));
   }
   template <gain_transform_f F>
-  [[nodiscard]] Transform<G, F> with_transform(const F& f) && {
-    return Transform(std::move(*static_cast<G*>(this)), f);
+  [[nodiscard]] Transform<G, F> with_transform(F f) && {
+    return Transform(std::move(*static_cast<G*>(this)), std::move(f));
   }
 };
 

@@ -21,7 +21,7 @@ class ConfigureReadsFPGAState final {
   using native_f = bool (*)(const void*, native_methods::GeometryPtr, uint32_t);
 
  public:
-  explicit ConfigureReadsFPGAState(const F& f) : _f(f) {
+  explicit ConfigureReadsFPGAState(F f) : _f(std::move(f)) {
     _f_native = +[](const void* context, const native_methods::GeometryPtr geometry_ptr, const uint32_t dev_idx) -> bool {
       const geometry::Device dev(dev_idx, AUTDDevice(geometry_ptr, dev_idx));
       return static_cast<const ConfigureReadsFPGAState*>(context)->_f(dev);
@@ -34,7 +34,7 @@ class ConfigureReadsFPGAState final {
   }
 
  private:
-  const F& _f;
+  F _f;
   native_f _f_native;
 };
 

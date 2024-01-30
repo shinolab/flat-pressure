@@ -5,7 +5,6 @@
 #include <variant>
 
 #include "autd3/driver/geometry/geometry.hpp"
-#include "autd3/driver/link.hpp"
 #include "autd3/exception.hpp"
 #include "autd3/native_methods.hpp"
 #include "autd3/native_methods/autd3capi-link-visualizer.h"
@@ -50,7 +49,7 @@ struct PlotRange {
                      const double resolution = 1)
       : x_start(x_start), x_end(x_end), y_start(y_start), y_end(y_end), z_start(z_start), z_end(z_end), resolution(resolution) {}
 
-  std::vector<driver::Vector3> observe_points() {
+  [[nodiscard]] std::vector<driver::Vector3> observe_points() const {
     const auto range = ptr();
     const auto len = AUTDLinkVisualizerPlotRangeObservePointsLen(range);
     std::vector<driver::Vector3> points;
@@ -73,9 +72,9 @@ struct PlotConfig {
   uint32_t margin = 10;
   double ticks_step = 10;
   CMap cmap = CMap::Jet;
-  std::string fname = "";
+  std::string fname;
 
-  native_methods::PlotConfigPtr _raw_ptr() const {
+  [[nodiscard]] native_methods::PlotConfigPtr _raw_ptr() const {
     return validate(native_methods::AUTDLinkVisualizerPlotConfig(figsize.first, figsize.second, cbar_size, font_size, label_area_size, margin,
                                                                  ticks_step, cmap, fname.c_str()));
   }
@@ -93,7 +92,7 @@ struct PyPlotConfig {
   bool show = false;
   std::string fname = "fig.png";
 
-  native_methods::PyPlotConfigPtr _raw_ptr() const {
+  [[nodiscard]] native_methods::PyPlotConfigPtr _raw_ptr() const {
     return validate(native_methods::AUTDLinkVisualizerPyPlotConfig(figsize.first, figsize.second, dpi, cbar_position.c_str(), cbar_size.c_str(),
                                                                    cbar_pad.c_str(), fontsize, ticks_step, cmap.c_str(), show, fname.c_str()));
   }
@@ -112,7 +111,7 @@ class Visualizer final {
   native_methods::Backend _backend;
   native_methods::Directivity _directivity;
 
-  [[nodiscard]] native_methods::ConfigPtr get_plot_config(Config config) const {
+  [[nodiscard]] native_methods::ConfigPtr get_plot_config(const Config& config) const {
     if (_backend == native_methods::Backend::Plotters && std::holds_alternative<PlotConfig>(config)) {
       return native_methods::ConfigPtr{std::get<PlotConfig>(config)._raw_ptr()._0};
     }
@@ -204,7 +203,7 @@ class Visualizer final {
 
   Visualizer() = delete;
 
-  explicit Visualizer(const native_methods::LinkPtr ptr, native_methods::Backend backend, native_methods::Directivity directivity)
+  explicit Visualizer(const native_methods::LinkPtr ptr, const native_methods::Backend backend, const native_methods::Directivity directivity)
       : _ptr(ptr), _backend(backend), _directivity(directivity) {}
 
   [[nodiscard]] std::vector<uint8_t> phases_of(const size_t idx) const {

@@ -20,20 +20,32 @@ class EtherCATAdapter {
   std::string _name;
 
  public:
-  EtherCATAdapter(const std::string desc, const std::string name) : _desc(std::move(desc)), _name(std::move(name)) {}
+  EtherCATAdapter(std::string desc, std::string name) : _desc(std::move(desc)), _name(std::move(name)) {}
 
   [[nodiscard]] const std::string& desc() const { return _desc; }
   [[nodiscard]] const std::string& name() const { return _name; }
 };
 
-using OnErrCallback = void (*)(const char* msg);
+using native_methods::Status;
+
+template <class F>
+concept soem_err_handler_f = requires(F f, const uint16_t slave, const Status status, const std::string& msg) {
+  { f(slave, status, msg) } -> std::same_as<void>;
+};
 
 /**
  * @brief Link using [SOEM](https://github.com/OpenEtherCATsociety/SOEM)
  *
  */
-class SOEM {
-  SOEM() = default;
+class SOEM final {
+  using native_err_handler_t = void (*)(const void*, uint32_t, uint8_t, const char*);
+  using err_handler_t = void (*)(uint16_t, Status, const std::string&);
+
+  explicit SOEM(const native_err_handler_t native_err_handler, const err_handler_t err_handler)
+      : _native_err_handler(native_err_handler), _err_handler(err_handler) {}
+
+  native_err_handler_t _native_err_handler;
+  err_handler_t _err_handler;
 
  public:
   class Builder final {
@@ -41,10 +53,12 @@ class SOEM {
     friend class controller::ControllerBuilder;
 
     native_methods::LinkSOEMBuilderPtr _ptr;
+    native_err_handler_t _native_err_handler;
+    err_handler_t _err_handler;
 
-    Builder() : _ptr(native_methods::AUTDLinkSOEM()) {}
+    Builder() : _ptr(native_methods::AUTDLinkSOEM()), _err_handler(nullptr) {}
 
-    [[nodiscard]] static SOEM resolve_link(native_methods::LinkPtr) { return SOEM{}; }
+    [[nodiscard]] SOEM resolve_link(native_methods::LinkPtr) const { return SOEM{_native_err_handler, _err_handler}; }
 
    public:
     using Link = SOEM;
@@ -98,23 +112,18 @@ class SOEM {
     }
 
     /**
-     * @brief Set callback function when the link is lost
+     * @brief Set callback function when some error occur
      *
      * @param value
      * @return Builder
      */
-    Builder with_on_lost(const OnErrCallback value) {
-      _ptr = AUTDLinkSOEMWithOnLost(_ptr, reinterpret_cast<void*>(value));
-      return *this;
-    }
-    /**
-     * @brief Set callback function when some errors occur
-     *
-     * @param value
-     * @return Builder
-     */
-    Builder with_on_err(const OnErrCallback value) {
-      _ptr = AUTDLinkSOEMWithOnErr(_ptr, reinterpret_cast<void*>(value));
+    template <soem_err_handler_f F>
+    Builder with_err_handler(F value) {
+      _err_handler = static_cast<err_handler_t>(value);
+      _native_err_handler = +[](const void* context, const uint32_t slave, const uint8_t status, const char* msg) {
+        (*reinterpret_cast<err_handler_t>(const_cast<void*>(context)))(static_cast<uint16_t>(slave), static_cast<Status>(status), std::string(msg));
+      };
+      _ptr = AUTDLinkSOEMWithErrHandler(_ptr, reinterpret_cast<void*>(_native_err_handler), reinterpret_cast<void*>(_err_handler));
       return *this;
     }
 
@@ -131,9 +140,7 @@ class SOEM {
 
     /**
      * @brief Set sync mode
-     * @details See [Beckhoff's
-     * site](https://infosys.beckhoff.com/content/1033/ethercatsystem/2469122443.html)
-     * for more details.
+     * @details See [Beckhoff's site](https://infosys.beckhoff.com/content/1033/ethercatsystem/2469122443.html) for more details.
      *
      * @param value
      * @return Builder

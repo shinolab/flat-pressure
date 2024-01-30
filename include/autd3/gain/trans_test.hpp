@@ -25,7 +25,7 @@ class TransducerTest final : public driver::Gain, public IntoCache<TransducerTes
   using native_f = void (*)(const void*, native_methods::GeometryPtr, uint32_t, uint8_t, native_methods::Drive*);
 
  public:
-  explicit TransducerTest(const F& f) : _f(f) {
+  explicit TransducerTest(F f) : _f(std::move(f)) {
     _f_native = +[](const void* context, const native_methods::GeometryPtr geometry_ptr, const uint32_t dev_idx, const uint8_t tr_idx,
                     native_methods::Drive* raw) {
       const driver::geometry::Device dev(dev_idx, AUTDDevice(geometry_ptr, dev_idx));
@@ -43,7 +43,7 @@ class TransducerTest final : public driver::Gain, public IntoCache<TransducerTes
   }
 
  private:
-  const F& _f;
+  F _f;
   native_f _f_native;
 };
 

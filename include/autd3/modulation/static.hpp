@@ -20,7 +20,7 @@ class Static final : public driver::Modulation, public IntoCache<Static>, public
   static Static with_intensity(const uint8_t intensity) { return Static(intensity); }
   static Static with_intensity(const driver::EmitIntensity intensity) { return Static(intensity); }
 
-  driver::EmitIntensity intensity() const { return _intensity; }
+  [[nodiscard]] driver::EmitIntensity intensity() const { return _intensity; }
 
   [[nodiscard]] native_methods::ModulationPtr modulation_ptr() const override { return native_methods::AUTDModulationStatic(_intensity.value()); }
 

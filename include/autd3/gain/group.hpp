@@ -24,7 +24,7 @@ class Group final : public driver::Gain, public IntoCache<Group<F>>, public Into
  public:
   using key_type = typename std::invoke_result_t<F, const driver::geometry::Device&, const driver::geometry::Transducer&>::value_type;
 
-  explicit Group(const F& f) : _f(f) {}
+  explicit Group(F f) : _f(std::move(f)) {}
 
   /**
    * @brief Set gain
@@ -86,7 +86,7 @@ class Group final : public driver::Gain, public IntoCache<Group<F>>, public Into
   }
 
  private:
-  const F& _f;
+  F _f;
   std::unordered_map<key_type, std::shared_ptr<Gain>> _map;
 };
 
