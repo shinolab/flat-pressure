@@ -83,51 +83,58 @@ void AUTDLinkVisualizerPlotRangeObservePoints(PlotRangePtr range, double *points
 uint32_t AUTDLinkVisualizerPhasesOf(LinkPtr visualizer,
                                     Backend backend,
                                     Directivity directivity,
+                                    Segment segment,
                                     uint32_t idx,
                                     uint8_t *buf);
 
-uint32_t AUTDLinkVisualizerIntensitiesOf(LinkPtr visualizer,
-                                         Backend backend,
-                                         Directivity directivity,
-                                         uint32_t idx,
-                                         uint8_t *buf);
+uint32_t AUTDLinkVisualizerIntensities(LinkPtr visualizer,
+                                       Backend backend,
+                                       Directivity directivity,
+                                       Segment segment,
+                                       uint32_t idx,
+                                       uint8_t *buf);
 
 uint32_t AUTDLinkVisualizerModulation(LinkPtr visualizer,
                                       Backend backend,
                                       Directivity directivity,
+                                      Segment segment,
                                       uint8_t *buf);
 
-ResultI32 AUTDLinkVisualizerCalcFieldOf(LinkPtr visualizer,
-                                        Backend backend,
-                                        Directivity directivity,
-                                        const double *points,
-                                        uint32_t points_len,
-                                        GeometryPtr geometry,
-                                        uint32_t idx,
-                                        double *buf);
+ResultI32 AUTDLinkVisualizerCalcField(LinkPtr visualizer,
+                                      Backend backend,
+                                      Directivity directivity,
+                                      const double *points,
+                                      uint32_t points_len,
+                                      GeometryPtr geometry,
+                                      Segment segment,
+                                      uint32_t idx,
+                                      double *buf);
 
 [[nodiscard]]
-ResultI32 AUTDLinkVisualizerPlotFieldOf(LinkPtr visualizer,
-                                        Backend backend,
-                                        Directivity directivity,
-                                        ConfigPtr config,
-                                        PlotRangePtr range,
-                                        GeometryPtr geometry,
-                                        uint32_t idx);
+ResultI32 AUTDLinkVisualizerPlotField(LinkPtr visualizer,
+                                      Backend backend,
+                                      Directivity directivity,
+                                      ConfigPtr config,
+                                      PlotRangePtr range,
+                                      GeometryPtr geometry,
+                                      Segment segment,
+                                      uint32_t idx);
 
 [[nodiscard]]
-ResultI32 AUTDLinkVisualizerPlotPhaseOf(LinkPtr visualizer,
-                                        Backend backend,
-                                        Directivity directivity,
-                                        ConfigPtr config,
-                                        GeometryPtr geometry,
-                                        uint32_t idx);
+ResultI32 AUTDLinkVisualizerPlotPhase(LinkPtr visualizer,
+                                      Backend backend,
+                                      Directivity directivity,
+                                      ConfigPtr config,
+                                      GeometryPtr geometry,
+                                      Segment segment,
+                                      uint32_t idx);
 
 [[nodiscard]]
 ResultI32 AUTDLinkVisualizerPlotModulation(LinkPtr visualizer,
                                            Backend backend,
                                            Directivity directivity,
-                                           ConfigPtr config);
+                                           ConfigPtr config,
+                                           Segment segment);
 
 [[nodiscard]] LinkBuilderPtr AUTDLinkVisualizerSphereNull(bool use_gpu, int32_t gpu_idx);
 

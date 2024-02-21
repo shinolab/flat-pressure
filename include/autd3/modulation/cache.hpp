@@ -26,7 +26,8 @@ class Cache final : public driver::Modulation {
   [[nodiscard]] native_methods::ModulationPtr modulation_ptr() const override {
     const auto buf = calc();
     return AUTDModulationCustom(static_cast<native_methods::SamplingConfiguration>(_sampling_config.value()),
-                                reinterpret_cast<const uint8_t*>(buf.data()), static_cast<uint64_t>(buf.size()));
+                                reinterpret_cast<const uint8_t*>(buf.data()), static_cast<uint64_t>(buf.size()),
+                                static_cast<native_methods::LoopBehavior>(_m.loop_behavior()));
   }
 
   [[nodiscard]] const std::vector<driver::EmitIntensity>& buffer() const { return *_cache; }

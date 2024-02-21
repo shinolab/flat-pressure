@@ -206,69 +206,57 @@ class Visualizer final {
   explicit Visualizer(const native_methods::LinkPtr ptr, const native_methods::Backend backend, const native_methods::Directivity directivity)
       : _ptr(ptr), _backend(backend), _directivity(directivity) {}
 
-  [[nodiscard]] std::vector<uint8_t> phases_of(const size_t idx) const {
-    const auto size = AUTDLinkVisualizerPhasesOf(_ptr, _backend, _directivity, static_cast<uint32_t>(idx), nullptr);
+  [[nodiscard]] std::vector<uint8_t> phases(const native_methods::Segment segment, const size_t idx) const {
+    const auto size = AUTDLinkVisualizerPhasesOf(_ptr, _backend, _directivity, segment, static_cast<uint32_t>(idx), nullptr);
     std::vector<uint8_t> buf;
     buf.resize(size);
-    AUTDLinkVisualizerPhasesOf(_ptr, _backend, _directivity, static_cast<uint32_t>(idx), buf.data());
+    AUTDLinkVisualizerPhasesOf(_ptr, _backend, _directivity, segment, static_cast<uint32_t>(idx), buf.data());
     return buf;
   }  // LCOV_EXCL_LINE
 
-  [[nodiscard]] std::vector<uint8_t> phases() const { return phases_of(0); }
-
-  [[nodiscard]] std::vector<uint8_t> intensities_of(const size_t idx) const {
-    const auto size = AUTDLinkVisualizerIntensitiesOf(_ptr, _backend, _directivity, static_cast<uint32_t>(idx), nullptr);
+  [[nodiscard]] std::vector<uint8_t> intensities(const native_methods::Segment segment, const size_t idx) const {
+    const auto size = AUTDLinkVisualizerIntensities(_ptr, _backend, _directivity, segment, static_cast<uint32_t>(idx), nullptr);
     std::vector<uint8_t> buf;
     buf.resize(size);
-    AUTDLinkVisualizerIntensitiesOf(_ptr, _backend, _directivity, static_cast<uint32_t>(idx), buf.data());
+    AUTDLinkVisualizerIntensities(_ptr, _backend, _directivity, segment, static_cast<uint32_t>(idx), buf.data());
     return buf;
   }  // LCOV_EXCL_LINE
 
-  [[nodiscard]] std::vector<uint8_t> intensities() const { return intensities_of(0); }
-
-  [[nodiscard]] std::vector<uint8_t> modulation() const {
-    const auto size = AUTDLinkVisualizerModulation(_ptr, _backend, _directivity, nullptr);
+  [[nodiscard]] std::vector<uint8_t> modulation(const native_methods::Segment segment) const {
+    const auto size = AUTDLinkVisualizerModulation(_ptr, _backend, _directivity, segment, nullptr);
     std::vector<uint8_t> buf;
     buf.resize(size);
-    AUTDLinkVisualizerModulation(_ptr, _backend, _directivity, buf.data());
+    AUTDLinkVisualizerModulation(_ptr, _backend, _directivity, segment, buf.data());
     return buf;
   }  // LCOV_EXCL_LINE
 
-  [[nodiscard]] std::vector<std::complex<double>> calc_field_of(std::vector<driver::Vector3>& points, const driver::geometry::Geometry& geometry,
-                                                                const size_t idx) const {
+  [[nodiscard]] std::vector<std::complex<double>> calc_field(std::vector<driver::Vector3>& points, const driver::geometry::Geometry& geometry,
+                                                             const native_methods::Segment segment, const size_t idx) const {
     const auto points_len = static_cast<uint32_t>(points.size());
     const auto points_ptr = reinterpret_cast<double*>(points.data());
     std::vector<std::complex<double>> buf;
     buf.resize(points_len);
-    native_methods::validate(AUTDLinkVisualizerCalcFieldOf(_ptr, _backend, _directivity, points_ptr, points_len, geometry.ptr(),
-                                                           static_cast<uint32_t>(idx), reinterpret_cast<double*>(buf.data())));
+    native_methods::validate(AUTDLinkVisualizerCalcField(_ptr, _backend, _directivity, points_ptr, points_len, geometry.ptr(), segment,
+                                                         static_cast<uint32_t>(idx), reinterpret_cast<double*>(buf.data())));
     return buf;
   }  // LCOV_EXCL_LINE
 
-  [[nodiscard]] std::vector<std::complex<double>> calc_field(std::vector<driver::Vector3>& points, const driver::geometry::Geometry& geometry) const {
-    return calc_field_of(points, geometry, 0);
-  }
-
-  void plot_field_of(const Config& config, const PlotRange& range, const driver::geometry::Geometry& geometry, const size_t idx) const {
+  void plot_field(const Config& config, const PlotRange& range, const driver::geometry::Geometry& geometry, const native_methods::Segment segment,
+                  const size_t idx) const {
     const auto config_ptr = get_plot_config(config);
     native_methods::validate(
-        AUTDLinkVisualizerPlotFieldOf(_ptr, _backend, _directivity, config_ptr, range.ptr(), geometry.ptr(), static_cast<uint32_t>(idx)));
+        AUTDLinkVisualizerPlotField(_ptr, _backend, _directivity, config_ptr, range.ptr(), geometry.ptr(), segment, static_cast<uint32_t>(idx)));
   }
 
-  void plot_field(const Config& config, const PlotRange& range, const driver::geometry::Geometry& geometry) const {
-    plot_field_of(config, range, geometry, 0);
-  }
-
-  void plot_phase_of(const Config& config, const driver::geometry::Geometry& geometry, const size_t idx) const {
+  void plot_phase(const Config& config, const driver::geometry::Geometry& geometry, const native_methods::Segment segment, const size_t idx) const {
     const auto config_ptr = get_plot_config(config);
-    native_methods::validate(AUTDLinkVisualizerPlotPhaseOf(_ptr, _backend, _directivity, config_ptr, geometry.ptr(), static_cast<uint32_t>(idx)));
+    native_methods::validate(
+        AUTDLinkVisualizerPlotPhase(_ptr, _backend, _directivity, config_ptr, geometry.ptr(), segment, static_cast<uint32_t>(idx)));
   }
 
-  void plot_phase(const Config& config, const driver::geometry::Geometry& geometry) const { plot_phase_of(config, geometry, 0); }
-
-  void plot_modulation(const Config& config) const {
+  void plot_modulation(const Config& config, const native_methods::Segment segment) const {
     const auto config_ptr = get_plot_config(config);
-    native_methods::validate(AUTDLinkVisualizerPlotModulation(_ptr, _backend, _directivity, config_ptr));
+    native_methods::validate(AUTDLinkVisualizerPlotModulation(_ptr, _backend, _directivity, config_ptr, segment));
   }
 };
 

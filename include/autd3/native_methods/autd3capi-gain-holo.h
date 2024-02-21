@@ -34,6 +34,8 @@ extern "C" {
 
 [[nodiscard]] EmissionConstraintPtr AUTDGainHoloConstraintClamp(uint8_t min_v, uint8_t max_v);
 
+[[nodiscard]] bool AUTDGainHoloConstraintEq(EmissionConstraintPtr a, EmissionConstraintPtr b);
+
 [[nodiscard]]
 GainPtr AUTDGainHoloGreedy(const double *points,
                            const double *amps,

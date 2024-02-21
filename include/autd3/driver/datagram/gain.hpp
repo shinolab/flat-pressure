@@ -2,6 +2,7 @@
 
 #include <type_traits>
 
+#include "autd3/driver/datagram/with_segment.hpp"
 #include "autd3/driver/geometry/geometry.hpp"
 #include "autd3/native_methods.hpp"
 

@@ -16,7 +16,7 @@ TEST(Gain, TransTest) {
       })));
 
   {
-    auto [intensities, phases] = autd.link().intensities_and_phases(0, 0);
+    auto [intensities, phases] = autd.link().drives(0, autd3::native_methods::Segment::S0, 0);
     ASSERT_EQ(0x80, intensities[0]);
     ASSERT_EQ(0x90, phases[0]);
     ASSERT_TRUE(std::ranges::all_of(intensities | std::ranges::views::drop(1), [](auto d) { return d == 0; }));
@@ -24,7 +24,7 @@ TEST(Gain, TransTest) {
   }
 
   {
-    auto [intensities, phases] = autd.link().intensities_and_phases(1, 0);
+    auto [intensities, phases] = autd.link().drives(1, autd3::native_methods::Segment::S0, 0);
     const auto idx = autd.geometry()[1].num_transducers() - 1;
     ASSERT_EQ(0x81, intensities[idx]);
     ASSERT_EQ(0x91, phases[idx]);

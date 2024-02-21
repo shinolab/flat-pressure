@@ -9,7 +9,7 @@ TEST(Link, Simulator) {
 
 #ifdef RUN_LINK_SIMULATOR
   auto autd =
-      autd3::controller::ControllerBuilder().add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero())).open_with_async(std::move(link)).get();
+      autd3::controller::ControllerBuilder().add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero())).open_async(std::move(link)).get();
 
   autd.close();
 #else

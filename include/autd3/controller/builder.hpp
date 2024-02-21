@@ -34,11 +34,27 @@ class ControllerBuilder {
    *
    * @tparam B LinkBuilder
    * @param link_builder link builder
+   * @param timeout timeout
+   * @return Controller
+   */
+  template <driver::link_builder B, typename Rep, typename Period>
+  [[nodiscard]] Controller<typename B::Link> open_with_timeout(B&& link_builder, const std::chrono::duration<Rep, Period> timeout) {
+    const int64_t timeout_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(timeout.value()).count();
+    auto ptr = validate(AUTDControllerOpen(_ptr, link_builder.ptr(), timeout_ns));
+    driver::geometry::Geometry geometry(AUTDGeometry(ptr));
+    return Controller<typename B::Link>{std::move(geometry), ptr, link_builder.resolve_link(native_methods::AUTDLinkGet(ptr))};
+  }
+
+  /**
+   * @brief Open controller
+   *
+   * @tparam B LinkBuilder
+   * @param link_builder link builder
    * @return Controller
    */
   template <driver::link_builder B>
-  [[nodiscard]] Controller<typename B::Link> open_with(B&& link_builder) {
-    auto ptr = validate(AUTDControllerOpenWith(_ptr, link_builder.ptr()));
+  [[nodiscard]] Controller<typename B::Link> open(B&& link_builder) {
+    auto ptr = validate(AUTDControllerOpen(_ptr, link_builder.ptr(), -1));
     driver::geometry::Geometry geometry(AUTDGeometry(ptr));
     return Controller<typename B::Link>{std::move(geometry), ptr, link_builder.resolve_link(native_methods::AUTDLinkGet(ptr))};
   }
@@ -51,9 +67,21 @@ class ControllerBuilder {
    * @param link_builder link builder
    * @return Controller
    */
+  template <driver::link_builder B, typename Rep, typename Period>
+  [[nodiscard]] coro::task<Controller<typename B::Link>> open(B&& link_builder, const std::chrono::duration<Rep, Period> timeout) {
+    co_return open_with_timeout(std::forward<B>(link_builder), timeout);
+  }
+
+  /**
+   * @brief Open controller
+   *
+   * @tparam B LinkBuilder
+   * @param link_builder link builder
+   * @return Controller
+   */
   template <driver::link_builder B>
-  [[nodiscard]] coro::task<Controller<typename B::Link>> open_with_async(B&& link_builder) {
-      co_return open_with(std::forward<B>(link_builder));
+  [[nodiscard]] coro::task<Controller<typename B::Link>> open_async(B&& link_builder) {
+    co_return open(std::forward<B>(link_builder));
   }
 #endif
 

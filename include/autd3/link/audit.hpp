@@ -48,11 +48,7 @@ class Audit final {
 
   [[nodiscard]] bool is_force_fan(const size_t idx) const { return AUTDLinkAuditFpgaIsForceFan(_ptr, static_cast<std::uint32_t>(idx)); }
 
-  void up() const { AUTDLinkAuditUp(_ptr); }
-
   void break_down() const { AUTDLinkAuditBreakDown(_ptr); }
-
-  void update(const size_t idx) const { AUTDLinkAuditCpuUpdate(_ptr, static_cast<std::uint32_t>(idx)); }
 
   [[nodiscard]] uint16_t silencer_update_rate_intensity(const size_t idx) const {
     return AUTDLinkAuditFpgaSilencerUpdateRateIntensity(_ptr, static_cast<std::uint32_t>(idx));
@@ -79,43 +75,37 @@ class Audit final {
 
   void deassert_thermal_sensor(const size_t idx) const { AUTDLinkAuditFpgaDeassertThermalSensor(_ptr, static_cast<std::uint32_t>(idx)); }
 
-  [[nodiscard]] std::vector<std::uint8_t> modulation(const size_t idx) const {
-    const auto n = AUTDLinkAuditFpgaModulationCycle(_ptr, static_cast<std::uint32_t>(idx));
+  [[nodiscard]] std::vector<std::uint8_t> modulation(const size_t idx, const native_methods::Segment segment) const {
+    const auto n = AUTDLinkAuditFpgaModulationCycle(_ptr, segment, static_cast<std::uint32_t>(idx));
     std::vector<std::uint8_t> buf(n);
-    AUTDLinkAuditFpgaModulation(_ptr, static_cast<std::uint32_t>(idx), buf.data());
+    AUTDLinkAuditFpgaModulation(_ptr, segment, static_cast<std::uint32_t>(idx), buf.data());
     return buf;
   }  // LCOV_EXCL_LINE
 
-  [[nodiscard]] std::uint32_t modulation_frequency_division(const size_t idx) const {
-    return AUTDLinkAuditFpgaModulationFrequencyDivision(_ptr, static_cast<std::uint32_t>(idx));
+  [[nodiscard]] std::uint32_t modulation_frequency_division(const size_t idx, const native_methods::Segment segment) const {
+    return AUTDLinkAuditFpgaModulationFrequencyDivision(_ptr, segment, static_cast<std::uint32_t>(idx));
   }
 
-  [[nodiscard]] std::vector<std::uint16_t> mod_delays(const size_t idx) const {
-    const auto n = AUTDLinkAuditCpuNumTransducers(_ptr, static_cast<std::uint32_t>(idx));
-    std::vector<std::uint16_t> buf(n);
-    AUTDLinkAuditFpgaModDelays(_ptr, static_cast<std::uint32_t>(idx), buf.data());
-    return buf;
-  }  // LCOV_EXCL_LINE
-
-  [[nodiscard]] std::pair<std::vector<std::uint8_t>, std::vector<std::uint8_t>> intensities_and_phases(const size_t idx, const int stm_idx) const {
+  [[nodiscard]] std::pair<std::vector<std::uint8_t>, std::vector<std::uint8_t>> drives(const size_t idx, const native_methods::Segment segment,
+                                                                                       const int stm_idx) const {
     const auto n = AUTDLinkAuditCpuNumTransducers(_ptr, static_cast<std::uint32_t>(idx));
     std::vector<std::uint8_t> duties(n);
     std::vector<std::uint8_t> phases(n);
-    AUTDLinkAuditFpgaIntensitiesAndPhases(_ptr, static_cast<std::uint32_t>(idx), static_cast<std::uint32_t>(stm_idx), duties.data(), phases.data());
+    AUTDLinkAuditFpgaDrives(_ptr, segment, static_cast<std::uint32_t>(idx), static_cast<std::uint32_t>(stm_idx), duties.data(), phases.data());
     return std::make_pair(duties, phases);
   }
 
-  [[nodiscard]] std::uint32_t stm_cycle(const size_t idx) const { return AUTDLinkAuditFpgaStmCycle(_ptr, static_cast<std::uint32_t>(idx)); }
-
-  [[nodiscard]] bool is_stm_gain_mode(const size_t idx) const { return AUTDLinkAuditFpgaIsStmGainMode(_ptr, static_cast<std::uint32_t>(idx)); }
-
-  [[nodiscard]] std::uint32_t stm_frequency_division(const size_t idx) const {
-    return AUTDLinkAuditFpgaStmFrequencyDivision(_ptr, static_cast<std::uint32_t>(idx));
+  [[nodiscard]] std::uint32_t stm_cycle(const size_t idx, const native_methods::Segment segment) const {
+    return AUTDLinkAuditFpgaStmCycle(_ptr, segment, static_cast<std::uint32_t>(idx));
   }
 
-  [[nodiscard]] int stm_start_idx(const size_t idx) const { return AUTDLinkAuditFpgaStmStartIdx(_ptr, static_cast<std::uint32_t>(idx)); }
+  [[nodiscard]] bool is_stm_gain_mode(const size_t idx, const native_methods::Segment segment) const {
+    return AUTDLinkAuditFpgaIsStmGainMode(_ptr, segment, static_cast<std::uint32_t>(idx));
+  }
 
-  [[nodiscard]] int stm_finish_idx(const size_t idx) const { return AUTDLinkAuditFpgaStmFinishIdx(_ptr, static_cast<std::uint32_t>(idx)); }
+  [[nodiscard]] std::uint32_t stm_frequency_division(const size_t idx, const native_methods::Segment segment) const {
+    return AUTDLinkAuditFpgaStmFrequencyDivision(_ptr, segment, static_cast<std::uint32_t>(idx));
+  }
 };
 
 }  // namespace autd3::link

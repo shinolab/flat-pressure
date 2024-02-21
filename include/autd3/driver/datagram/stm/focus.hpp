@@ -8,6 +8,7 @@
 #include "autd3/driver/common/sampling_config.hpp"
 #include "autd3/driver/datagram/datagram.hpp"
 #include "autd3/driver/datagram/stm/stm.hpp"
+#include "autd3/driver/datagram/with_segment.hpp"
 #include "autd3/native_methods.hpp"
 
 namespace autd3::driver {
@@ -43,7 +44,7 @@ concept focus_range_c = std::ranges::viewable_range<R> && std::same_as<std::rang
  * [autd3::native_methods::FPGA_CLK_FREQ]/N, where `N` is a 32-bit
  * unsigned integer and must be at 4096.
  */
-class FocusSTM final : public STM {
+class FocusSTM final : public STM, public IntoDatagramWithSegment<native_methods::FocusSTMPtr, FocusSTM> {
  public:
   FocusSTM() = delete;
   FocusSTM(const FocusSTM& obj) = default;
@@ -61,10 +62,17 @@ class FocusSTM final : public STM {
     return FocusSTM(std::nullopt, std::chrono::duration_cast<std::chrono::nanoseconds>(period), std::nullopt);
   }
 
-  [[nodiscard]] native_methods::DatagramPtr ptr(const geometry::Geometry&) const {
+  [[nodiscard]] native_methods::FocusSTMPtr raw_ptr(const geometry::Geometry&) const override {
     return validate(AUTDSTMFocus(props(), reinterpret_cast<const double*>(_points.data()), reinterpret_cast<const uint8_t*>(_intensities.data()),
                                  _intensities.size()));
   }
+
+  [[nodiscard]] native_methods::DatagramPtr into_segment(const native_methods::FocusSTMPtr p, const native_methods::Segment segment,
+                                                         const bool update_segment) const override {
+    return AUTDSTMFocusIntoDatagramWithSegment(p, segment, update_segment);
+  }
+
+  [[nodiscard]] native_methods::DatagramPtr ptr(const geometry::Geometry& geometry) const { return AUTDSTMFocusIntoDatagram(raw_ptr(geometry)); }
 
   /**
    * @brief Add focus point
@@ -175,24 +183,6 @@ class FocusSTM final : public STM {
   [[nodiscard]] double frequency() const { return frequency_from_size(_points.size()); }
   [[nodiscard]] std::chrono::nanoseconds period() const { return period_from_size(_points.size()); }
   [[nodiscard]] SamplingConfiguration sampling_config() const { return sampling_config_from_size(_points.size()); }
-
-  void with_start_idx(const std::optional<uint16_t> start_idx) & {
-    _start_idx = start_idx.has_value() ? static_cast<int32_t>(start_idx.value()) : -1;
-  }
-
-  [[nodiscard]] FocusSTM&& with_start_idx(const std::optional<uint16_t> start_idx) && {
-    _start_idx = start_idx.has_value() ? static_cast<int32_t>(start_idx.value()) : -1;
-    return std::move(*this);
-  }
-
-  void with_finish_idx(const std::optional<uint16_t> finish_idx) & {
-    _finish_idx = finish_idx.has_value() ? static_cast<int32_t>(finish_idx.value()) : -1;
-  }
-
-  [[nodiscard]] FocusSTM&& with_finish_idx(const std::optional<uint16_t> finish_idx) && {
-    _finish_idx = finish_idx.has_value() ? static_cast<int32_t>(finish_idx.value()) : -1;
-    return std::move(*this);
-  }
 
  private:
   explicit FocusSTM(const std::optional<double> freq, const std::optional<std::chrono::nanoseconds> period,

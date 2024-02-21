@@ -17,7 +17,7 @@ TEST(Gain, Cache) {
   ASSERT_TRUE(autd.send(g));
   for (auto& dev : autd.geometry()) {
     ASSERT_TRUE(std::ranges::all_of(g.drives().at(dev.idx()), [](auto d) { return d == autd3::driver::Drive{autd3::driver::Phase(0x90), 0x80}; }));
-    auto [intensities, phases] = autd.link().intensities_and_phases(dev.idx(), 0);
+    auto [intensities, phases] = autd.link().drives(dev.idx(), autd3::native_methods::Segment::S0, 0);
     ASSERT_TRUE(std::ranges::all_of(intensities, [](auto d) { return d == 0x80; }));
     ASSERT_TRUE(std::ranges::all_of(phases, [](auto p) { return p == 0x90; }));
   }
@@ -76,12 +76,12 @@ TEST(Gain, CacheCheckOnlyForEnabled) {
   ASSERT_TRUE(g.drives().contains(1));
 
   {
-    auto [intensities, phases] = autd.link().intensities_and_phases(0, 0);
+    auto [intensities, phases] = autd.link().drives(0, autd3::native_methods::Segment::S0, 0);
     ASSERT_TRUE(std::ranges::all_of(intensities, [](auto d) { return d == 0; }));
     ASSERT_TRUE(std::ranges::all_of(phases, [](auto p) { return p == 0; }));
   }
   {
-    auto [intensities, phases] = autd.link().intensities_and_phases(1, 0);
+    auto [intensities, phases] = autd.link().drives(1, autd3::native_methods::Segment::S0, 0);
     ASSERT_TRUE(std::ranges::all_of(intensities, [](auto d) { return d == 0x80; }));
     ASSERT_TRUE(std::ranges::all_of(phases, [](auto p) { return p == 0x90; }));
   }

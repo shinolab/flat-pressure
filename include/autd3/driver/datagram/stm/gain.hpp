@@ -23,7 +23,7 @@ concept gain_range = std::ranges::viewable_range<R> && gain<std::ranges::range_v
  * [autd3::native_methods::FPGA_CLK_FREQ]/N, where `N` is a 32-bit
  * unsigned integer and must be at 4096.
  */
-class GainSTM final : public STM {
+class GainSTM final : public STM, public IntoDatagramWithSegment<native_methods::GainSTMPtr, GainSTM> {
  public:
   GainSTM() = delete;
   GainSTM(const GainSTM& obj) = default;
@@ -52,13 +52,20 @@ class GainSTM final : public STM {
     return GainSTM(std::nullopt, std::nullopt, std::nullopt, std::chrono::duration_cast<std::chrono::nanoseconds>(period));
   }
 
-  [[nodiscard]] native_methods::DatagramPtr ptr(const geometry::Geometry& geometry) const {
+  [[nodiscard]] native_methods::GainSTMPtr raw_ptr(const geometry::Geometry& geometry) const override {
     const auto mode = _mode.has_value() ? _mode.value() : native_methods::GainSTMMode::PhaseIntensityFull;
     std::vector<native_methods::GainPtr> gains;
     gains.reserve(_gains.size());
     std::ranges::transform(_gains, std::back_inserter(gains), [&](const auto& gain) { return gain->gain_ptr(geometry); });
     return validate(AUTDSTMGain(props(), gains.data(), static_cast<uint32_t>(gains.size()), mode));
   }
+
+  [[nodiscard]] native_methods::DatagramPtr into_segment(const native_methods::GainSTMPtr p, const native_methods::Segment segment,
+                                                         const bool update_segment) const override {
+    return AUTDSTMGainIntoDatagramWithSegment(p, segment, update_segment);
+  }
+
+  [[nodiscard]] native_methods::DatagramPtr ptr(const geometry::Geometry& geometry) const { return AUTDSTMGainIntoDatagram(raw_ptr(geometry)); }
 
   /**
    * @brief Add Gain to the GainSTM
@@ -118,24 +125,6 @@ class GainSTM final : public STM {
   void with_mode(const native_methods::GainSTMMode mode) & { _mode = mode; }
   [[nodiscard]] GainSTM&& with_mode(const native_methods::GainSTMMode mode) && {
     _mode = mode;
-    return std::move(*this);
-  }
-
-  void with_start_idx(const std::optional<uint16_t> start_idx) & {
-    _start_idx = start_idx.has_value() ? static_cast<int32_t>(start_idx.value()) : -1;
-  }
-
-  [[nodiscard]] GainSTM&& with_start_idx(const std::optional<uint16_t> start_idx) && {
-    _start_idx = start_idx.has_value() ? static_cast<int32_t>(start_idx.value()) : -1;
-    return std::move(*this);
-  }
-
-  void with_finish_idx(const std::optional<uint16_t> finish_idx) & {
-    _finish_idx = finish_idx.has_value() ? static_cast<int32_t>(finish_idx.value()) : -1;
-  }
-
-  [[nodiscard]] GainSTM&& with_finish_idx(const std::optional<uint16_t> finish_idx) && {
-    _finish_idx = finish_idx.has_value() ? static_cast<int32_t>(finish_idx.value()) : -1;
     return std::move(*this);
   }
 

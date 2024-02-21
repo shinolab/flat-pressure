@@ -13,7 +13,7 @@ namespace autd3::modulation {
  */
 class Static final : public driver::Modulation, public IntoCache<Static>, public IntoRadiationPressure<Static>, public IntoTransform<Static> {
  public:
-  Static() : _intensity(driver::EmitIntensity::maximum()) {}
+  Static() : Modulation(), _intensity(driver::EmitIntensity::maximum()) {}
   explicit Static(const uint8_t intensity) : _intensity(driver::EmitIntensity(intensity)) {}
   explicit Static(const driver::EmitIntensity intensity) : _intensity(intensity) {}
 

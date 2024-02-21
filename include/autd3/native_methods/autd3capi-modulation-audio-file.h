@@ -8,14 +8,18 @@ namespace autd3::native_methods {
 
 extern "C" {
 
-[[nodiscard]] ResultModulation AUTDModulationWav(const char *path, SamplingConfiguration config);
+[[nodiscard]]
+ResultModulation AUTDModulationWav(const char *path,
+                                   SamplingConfiguration config,
+                                   LoopBehavior loop_behavior);
 
 [[nodiscard]] bool AUTDModulationWavIsDefault(ModulationPtr wav);
 
 [[nodiscard]]
 ResultModulation AUTDModulationRawPCM(const char *path,
                                       uint32_t sample_rate,
-                                      SamplingConfiguration config);
+                                      SamplingConfiguration config,
+                                      LoopBehavior loop_behavior);
 
 [[nodiscard]] bool AUTDModulationRawPCMIsDefault(ModulationPtr rawpcm);
 

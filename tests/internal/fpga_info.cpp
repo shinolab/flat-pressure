@@ -16,8 +16,6 @@ TEST(Internal, FPGAState) {
 
   {
     autd.link().assert_thermal_sensor(0);
-    autd.link().update(0);
-    autd.link().update(1);
 
     const auto infos = autd.fpga_info();
     ASSERT_TRUE(infos[0].value().is_thermal_assert());
@@ -27,8 +25,6 @@ TEST(Internal, FPGAState) {
   {
     autd.link().deassert_thermal_sensor(0);
     autd.link().assert_thermal_sensor(1);
-    autd.link().update(0);
-    autd.link().update(1);
 
     const auto infos = autd.fpga_info();
     ASSERT_FALSE(infos[0].value().is_thermal_assert());
@@ -51,8 +47,6 @@ TEST(Internal, FPGAStateAsync) {
 
   {
     autd.link().assert_thermal_sensor(0);
-    autd.link().update(0);
-    autd.link().update(1);
 
     const auto infos = sync_wait(autd.fpga_info_async());
     ASSERT_TRUE(infos[0].value().is_thermal_assert());
@@ -62,8 +56,6 @@ TEST(Internal, FPGAStateAsync) {
   {
     autd.link().deassert_thermal_sensor(0);
     autd.link().assert_thermal_sensor(1);
-    autd.link().update(0);
-    autd.link().update(1);
 
     const auto infos = sync_wait(autd.fpga_info_async());
     ASSERT_FALSE(infos[0].value().is_thermal_assert());

@@ -13,10 +13,10 @@ TEST(Modulation, Transform) {
       [](size_t, const autd3::driver::EmitIntensity v) { return autd3::driver::EmitIntensity(v.value() / 2); })));
 
   for (auto& dev : autd1.geometry()) {
-    auto mod_expect = autd1.link().modulation(dev.idx());
+    auto mod_expect = autd1.link().modulation(dev.idx(), autd3::native_methods::Segment::S0);
     std::ranges::transform(mod_expect, mod_expect.begin(), [](const uint8_t x) { return x / 2; });
-    auto mod = autd2.link().modulation(dev.idx());
+    auto mod = autd2.link().modulation(dev.idx(), autd3::native_methods::Segment::S0);
     ASSERT_TRUE(std::ranges::equal(mod, mod_expect));
-    ASSERT_EQ(5120, autd2.link().modulation_frequency_division(dev.idx()));
+    ASSERT_EQ(5120, autd2.link().modulation_frequency_division(dev.idx(), autd3::native_methods::Segment::S0));
   }
 }

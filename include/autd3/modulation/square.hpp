@@ -15,6 +15,8 @@ namespace autd3::modulation {
  * @brief Square wave modulation
  */
 class Square final : public driver::ModulationWithSamplingConfig<Square>,
+                     public driver::ModulationWithLoopBehavior<Square>,
+
                      public IntoCache<Square>,
                      public IntoTransform<Square>,
                      public IntoRadiationPressure<Square> {
@@ -26,6 +28,7 @@ class Square final : public driver::ModulationWithSamplingConfig<Square>,
    */
   explicit Square(const double freq)
       : ModulationWithSamplingConfig(driver::SamplingConfiguration::from_frequency(4e3)),
+        ModulationWithLoopBehavior(),
         _freq(freq),
         _low(driver::EmitIntensity::minimum()),
         _high(driver::EmitIntensity::maximum()),
@@ -39,7 +42,8 @@ class Square final : public driver::ModulationWithSamplingConfig<Square>,
   AUTD3_DEF_PARAM(Square, native_methods::SamplingMode, mode)
 
   [[nodiscard]] native_methods::ModulationPtr modulation_ptr() const override {
-    return AUTDModulationSquare(_freq, static_cast<native_methods::SamplingConfiguration>(_config), _low.value(), _high.value(), _duty, _mode);
+    return AUTDModulationSquare(_freq, static_cast<native_methods::SamplingConfiguration>(_config), _low.value(), _high.value(), _duty, _mode,
+                                static_cast<native_methods::LoopBehavior>(_loop_behavior));
   }
 };
 

@@ -9,7 +9,7 @@ static inline autd3::controller::Controller<autd3::link::Audit> create_controlle
   return coro::sync_wait(autd3::controller::ControllerBuilder()
                              .add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero()))
                              .add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero()))
-                             .open_with_async(autd3::link::Audit::builder()));
+                             .open_async(autd3::link::Audit::builder()));
 }
 
 #define ASSERT_NEAR_VECTOR3(val1, val2, abs_error) \

@@ -67,9 +67,10 @@ class Fourier final : public driver::Modulation, public IntoCache<Fourier>, publ
   }  // LCOV_EXCL_LINE
 
   [[nodiscard]] native_methods::ModulationPtr modulation_ptr() const override {
-    return std::accumulate(
-        _components.begin() + 1, _components.end(), AUTDModulationFourier(_components[0].modulation_ptr()),
-        [](const native_methods::ModulationPtr ptr, const Sine& sine) { return AUTDModulationFourierAddComponent(ptr, sine.modulation_ptr()); });
+    std::vector<native_methods::ModulationPtr> components;
+    components.reserve(_components.size());
+    std::ranges::transform(_components, std::back_inserter(components), [&](const auto& m) { return m.modulation_ptr(); });
+    return AUTDModulationFourier(components.data(), static_cast<uint32_t>(components.size()));
   }
 
  private:

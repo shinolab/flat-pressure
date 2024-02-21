@@ -19,15 +19,17 @@ namespace autd3::gain {
 class Bessel final : public driver::Gain, public IntoCache<Bessel>, public IntoTransform<Bessel> {
  public:
   explicit Bessel(driver::Vector3 p, driver::Vector3 d, const double theta)
-      : _pos(std::move(p)), _dir(std::move(d)), _theta(theta), _intensity(driver::EmitIntensity::maximum()) {}
+      : _pos(std::move(p)), _dir(std::move(d)), _theta(theta), _intensity(driver::EmitIntensity::maximum()), _phase_offset(driver::Phase(0)) {}
 
   AUTD3_DEF_PROP(driver::Vector3, pos)
   AUTD3_DEF_PROP(driver::Vector3, dir)
   AUTD3_DEF_PROP(double, theta)
   AUTD3_DEF_PARAM_INTENSITY(Bessel, intensity)
+  AUTD3_DEF_PROP(driver::Phase, phase_offset)
 
   [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry&) const override {
-    return native_methods::AUTDGainBessel(_pos.x(), _pos.y(), _pos.z(), _dir.x(), _dir.y(), _dir.z(), _theta, _intensity.value());
+    return native_methods::AUTDGainBessel(_pos.x(), _pos.y(), _pos.z(), _dir.x(), _dir.y(), _dir.z(), _theta, _intensity.value(),
+                                          _phase_offset.value());
   }
 };
 

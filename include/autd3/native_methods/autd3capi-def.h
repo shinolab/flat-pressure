@@ -26,10 +26,19 @@ enum class GainSTMMode : uint8_t {
   PhaseHalf = 2,
 };
 
+enum class Segment : uint8_t {
+  S0 = 0,
+  S1 = 1,
+};
+
 enum class TimerStrategy : uint8_t {
   Sleep = 0,
   BusyWait = 1,
   NativeTimer = 2,
+};
+
+struct LoopBehavior {
+  uint32_t rep;
 };
 
 struct SamplingConfiguration {
@@ -107,6 +116,26 @@ struct Drive {
   uint8_t intensity;
 };
 
+struct GainSTMPtr {
+  void* _0;
+};
+
+struct FocusSTMPtr {
+  void* _0;
+};
+
+struct ResultGainSTM {
+  GainSTMPtr result;
+  uint32_t err_len;
+  void* err;
+};
+
+struct ResultFocusSTM {
+  FocusSTMPtr result;
+  uint32_t err_len;
+  void* err;
+};
+
 constexpr const double TRANS_SPACING_MM = 10.16;
 
 constexpr const double DEVICE_HEIGHT_MM = 151.4;
@@ -124,6 +153,12 @@ extern "C" {
 [[nodiscard]] uint8_t AUTDPhaseFromRad(double value);
 
 [[nodiscard]] double AUTDPhaseToRad(uint8_t value);
+
+[[nodiscard]] LoopBehavior AUTDLoopBehaviorInfinite();
+
+[[nodiscard]] LoopBehavior AUTDLoopBehaviorFinite(uint32_t v);
+
+[[nodiscard]] LoopBehavior AUTDLoopBehaviorOnce();
 
 void AUTDGetErr(void* src, char *dst);
 

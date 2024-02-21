@@ -18,13 +18,13 @@ TEST(Gain, Transform) {
                             })));
 
   {
-    auto [intensities, phases] = autd.link().intensities_and_phases(0, 0);
+    auto [intensities, phases] = autd.link().drives(0, autd3::native_methods::Segment::S0, 0);
     ASSERT_TRUE(std::ranges::all_of(intensities, [](auto d) { return d == 0x80; }));
     ASSERT_TRUE(std::ranges::all_of(phases, [](auto p) { return p == 128 + 32; }));
   }
 
   {
-    auto [intensities, phases] = autd.link().intensities_and_phases(1, 0);
+    auto [intensities, phases] = autd.link().drives(1, autd3::native_methods::Segment::S0, 0);
     ASSERT_TRUE(std::ranges::all_of(intensities, [](auto d) { return d == 0x80; }));
     ASSERT_TRUE(std::ranges::all_of(phases, [](auto p) { return p == 128 - 32; }));
   }
@@ -47,12 +47,12 @@ TEST(Gain, TransformCheckOnlyForEnabled) {
   ASSERT_TRUE(cnt[1]);
 
   {
-    auto [intensities, phases] = autd.link().intensities_and_phases(0, 0);
+    auto [intensities, phases] = autd.link().drives(0, autd3::native_methods::Segment::S0, 0);
     ASSERT_TRUE(std::ranges::all_of(intensities, [](auto d) { return d == 0; }));
     ASSERT_TRUE(std::ranges::all_of(phases, [](auto p) { return p == 0; }));
   }
   {
-    auto [intensities, phases] = autd.link().intensities_and_phases(1, 0);
+    auto [intensities, phases] = autd.link().drives(1, autd3::native_methods::Segment::S0, 0);
     ASSERT_TRUE(std::ranges::all_of(intensities, [](auto d) { return d == 0x80; }));
     ASSERT_TRUE(std::ranges::all_of(phases, [](auto p) { return p == 0x90; }));
   }

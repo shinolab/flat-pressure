@@ -18,12 +18,12 @@ TEST(Modulation, Fourier) {
   ASSERT_TRUE(autd.send(m));
 
   for (auto& dev : autd.geometry()) {
-    auto mod = autd.link().modulation(dev.idx());
+    auto mod = autd.link().modulation(dev.idx(), autd3::native_methods::Segment::S0);
     std::vector<uint8_t> mod_expect{127, 156, 183, 205, 220, 227, 226, 218, 205, 188, 170, 153, 139, 129, 124, 123, 127, 133, 140, 147,
                                     152, 155, 154, 151, 145, 138, 131, 125, 120, 119, 119, 122, 127, 132, 136, 140, 141, 140, 137, 133,
                                     127, 121, 116, 113, 112, 113, 117, 121, 127, 131, 134, 135, 133, 128, 122, 115, 108, 103, 99,  99,
                                     101, 106, 113, 121, 127, 130, 130, 124, 114, 100, 83,  66,  48,  35,  27,  27,  34,  49,  70,  97};
     ASSERT_TRUE(std::ranges::equal(mod, mod_expect));
-    ASSERT_EQ(5120, autd.link().modulation_frequency_division(dev.idx()));
+    ASSERT_EQ(5120, autd.link().modulation_frequency_division(dev.idx(), autd3::native_methods::Segment::S0));
   }
 }

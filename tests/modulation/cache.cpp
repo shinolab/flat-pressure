@@ -20,10 +20,10 @@ TEST(Modulation, Cache) {
   std::for_each(m2.cbegin(), m2.cend(), [](const auto& m) { ASSERT_EQ(autd3::driver::EmitIntensity(0x80), m); });
   for (size_t i = 0; i < m2.size(); i++) ASSERT_EQ(autd3::driver::EmitIntensity(0x80), m2[i]);
   for (auto& dev : autd1.geometry()) {
-    auto mod = autd2.link().modulation(dev.idx());
-    auto mod_expect = autd1.link().modulation(dev.idx());
+    auto mod = autd2.link().modulation(dev.idx(), autd3::native_methods::Segment::S0);
+    auto mod_expect = autd1.link().modulation(dev.idx(), autd3::native_methods::Segment::S0);
     ASSERT_TRUE(std::ranges::equal(mod, mod_expect));
-    ASSERT_EQ(0xFFFFFFFF, autd2.link().modulation_frequency_division(dev.idx()));
+    ASSERT_EQ(0xFFFFFFFF, autd2.link().modulation_frequency_division(dev.idx(), autd3::native_methods::Segment::S0));
   }
 }
 
@@ -35,7 +35,7 @@ class ForModulationCacheTest final : public autd3::modulation::Modulation, publi
   }
 
   explicit ForModulationCacheTest(size_t* cnt) noexcept
-      : Modulation(autd3::driver::SamplingConfiguration::from_frequency_division(5120)), _cnt(cnt) {}
+      : Modulation(autd3::driver::SamplingConfiguration::from_frequency_division(5120), autd3::driver::LoopBehavior::infinite()), _cnt(cnt) {}
 
  private:
   size_t* _cnt;

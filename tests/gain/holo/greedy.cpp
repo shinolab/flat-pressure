@@ -8,9 +8,8 @@
 #include "autd3/gain/holo.hpp"
 
 TEST(Gain_Holo, Greedy) {
-  auto autd = autd3::controller::ControllerBuilder()
-                  .add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero()))
-                  .open_with(autd3::link::Audit::builder());
+  auto autd =
+      autd3::controller::ControllerBuilder().add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero())).open(autd3::link::Audit::builder());
 
   std::vector<double> p{-30};
   auto g = autd3::gain::holo::Greedy()
@@ -25,16 +24,15 @@ TEST(Gain_Holo, Greedy) {
   ASSERT_TRUE(autd.send(g));
 
   for (auto& dev : autd.geometry()) {
-    auto [intensities, phases] = autd.link().intensities_and_phases(dev.idx(), 0);
+    auto [intensities, phases] = autd.link().drives(dev.idx(), autd3::native_methods::Segment::S0, 0);
     ASSERT_TRUE(std::ranges::all_of(intensities, [](auto d) { return d == 0x80; }));
     ASSERT_TRUE(std::ranges::any_of(phases, [](auto p) { return p != 0; }));
   }
 }
 
 TEST(Gain_Holo, GreedyDefault) {
-  auto autd = autd3::controller::ControllerBuilder()
-                  .add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero()))
-                  .open_with(autd3::link::Audit::builder());
+  auto autd =
+      autd3::controller::ControllerBuilder().add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero())).open(autd3::link::Audit::builder());
   auto g = autd3::gain::holo::Greedy();
   ASSERT_TRUE(autd3::native_methods::AUTDGainGreedyIsDefault(g.gain_ptr(autd.geometry())));
 }
