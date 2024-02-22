@@ -5,6 +5,13 @@
 
 namespace autd3::gain::holo {
 
+class IEmissionConstraint {
+ public:
+  virtual native_methods::EmissionConstraintPtr ptr() const = 0;
+
+  auto operator<=>(const IEmissionConstraint& other) const { return AUTDGainHoloConstraintEq(ptr(), other.ptr()); }
+};
+
 /**
  * @brief Amplitude constraint
  */

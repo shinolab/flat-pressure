@@ -16,7 +16,7 @@ namespace autd3::gain {
 /**
  * @brief Gain to produce a Bessel beam
  */
-class Bessel final : public driver::Gain, public IntoCache<Bessel>, public IntoTransform<Bessel> {
+class Bessel final : public driver::Gain<Bessel>, public IntoCache<Bessel>, public IntoTransform<Bessel> {
  public:
   explicit Bessel(driver::Vector3 p, driver::Vector3 d, const double theta)
       : _pos(std::move(p)), _dir(std::move(d)), _theta(theta), _intensity(driver::EmitIntensity::maximum()), _phase_offset(driver::Phase(0)) {}

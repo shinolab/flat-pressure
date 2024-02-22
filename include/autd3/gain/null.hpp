@@ -11,7 +11,7 @@ namespace autd3::gain {
 /**
  * @brief Gain to output nothing
  */
-class Null final : public driver::Gain, public IntoCache<Null>, public IntoTransform<Null> {
+class Null final : public driver::Gain<Null>, public IntoCache<Null>, public IntoTransform<Null> {
  public:
   Null() = default;
 

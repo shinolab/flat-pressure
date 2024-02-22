@@ -7,7 +7,6 @@
 #include "autd3/driver/geometry/geometry.hpp"
 #include "autd3/exception.hpp"
 #include "autd3/native_methods.hpp"
-#include "autd3/native_methods/autd3capi-link-visualizer.h"
 #include "autd3/native_methods/utils.hpp"
 
 namespace autd3::link {
@@ -56,7 +55,7 @@ struct PlotRange {
     points.resize(len);
     AUTDLinkVisualizerPlotRangeObservePoints(range, reinterpret_cast<double*>(points.data()));
     return points;
-  }
+  }  // LCOV_EXCL_LINE
 
  private:
   [[nodiscard]] native_methods::PlotRangePtr ptr() const {

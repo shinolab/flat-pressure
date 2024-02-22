@@ -59,9 +59,9 @@ class Simulator final {
 
   static Builder builder(const uint16_t port) { return Builder(port); }
 
-  [[nodiscard]] bool update_geometry(const driver::geometry::Geometry& geometry) const {
-    return validate(AUTDLinkSimulatorUpdateGeometry(_ptr, geometry.ptr())) == native_methods::AUTD3_TRUE;
-  }
+  [[nodiscard]] bool update_geometry(const driver::geometry::Geometry& geometry) const {                   // LCOV_EXCL_LINE
+    return validate(AUTDLinkSimulatorUpdateGeometry(_ptr, geometry.ptr())) == native_methods::AUTD3_TRUE;  // LCOV_EXCL_LINE
+  }                                                                                                        // LCOV_EXCL_LINE
 
 #ifdef AUTD3_ASYNC_API
   [[nodiscard]] coro::task<bool> update_geometry_async(const driver::geometry::Geometry& geometry) const { co_return update_geometry(geometry); }

@@ -4,9 +4,16 @@
 #include "autd3/native_methods.hpp"
 #include "autd3/native_methods/utils.hpp"
 
+namespace autd3::link {
+class Audit;
+}
+
 namespace autd3::driver {
+
 class LoopBehavior final {
  public:
+  friend class autd3::link::Audit;
+
   [[nodiscard]] static LoopBehavior infinite() noexcept { return LoopBehavior(native_methods::AUTDLoopBehaviorInfinite()); }
 
   [[nodiscard]] static LoopBehavior finite(const uint32_t v) {
@@ -14,7 +21,7 @@ class LoopBehavior final {
     return LoopBehavior(native_methods::AUTDLoopBehaviorFinite(v));
   }
 
-  [[nodiscard]] static LoopBehavior once() noexcept { return LoopBehavior(native_methods::AUTDLoopBehaviorFinite(1)); }
+  [[nodiscard]] static LoopBehavior once() noexcept { return LoopBehavior(native_methods::AUTDLoopBehaviorOnce()); }
 
   explicit operator native_methods::LoopBehavior() const { return _internal; }
 

@@ -121,7 +121,8 @@ class SOEM final {
     Builder with_err_handler(F value) {
       _err_handler = static_cast<err_handler_t>(value);
       _native_err_handler = +[](const void* context, const uint32_t slave, const uint8_t status, const char* msg) {
-        (*reinterpret_cast<err_handler_t>(const_cast<void*>(context)))(static_cast<uint16_t>(slave), static_cast<Status>(status), std::string(msg));
+        (*reinterpret_cast<err_handler_t>(const_cast<void*>(context)))(static_cast<uint16_t>(slave), static_cast<Status>(status),  // LCOV_EXCL_LINE
+                                                                       std::string(msg));                                          // LCOV_EXCL_LINE
       };
       _ptr = AUTDLinkSOEMWithErrHandler(_ptr, reinterpret_cast<void*>(_native_err_handler), reinterpret_cast<void*>(_err_handler));
       return *this;

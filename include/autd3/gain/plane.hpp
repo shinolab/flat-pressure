@@ -15,7 +15,7 @@ namespace autd3::gain {
 /**
  * @brief Gain to produce a plane wave
  */
-class Plane final : public driver::Gain, public IntoCache<Plane>, public IntoTransform<Plane> {
+class Plane final : public driver::Gain<Plane>, public IntoCache<Plane>, public IntoTransform<Plane> {
  public:
   explicit Plane(driver::Vector3 d) : _dir(std::move(d)), _phase(driver::Phase(0)), _intensity(driver::EmitIntensity::maximum()) {}
 

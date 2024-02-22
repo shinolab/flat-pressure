@@ -13,7 +13,7 @@ template <class R>
 concept holo_foci_range = std::ranges::viewable_range<R> && std::same_as<std::ranges::range_value_t<R>, std::pair<driver::Vector3, Amplitude>>;
 
 template <class H>
-class Holo : public driver::Gain {
+class Holo : public driver::Gain<H> {
  public:
   explicit Holo(const EmissionConstraint value) : _constraint(value) {}
 

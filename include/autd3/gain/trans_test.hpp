@@ -21,7 +21,7 @@ concept transducer_test_f = requires(F f, const driver::geometry::Device& d, con
  * @brief Gain to test
  */
 template <transducer_test_f F>
-class TransducerTest final : public driver::Gain, public IntoCache<TransducerTest<F>>, public IntoTransform<TransducerTest<F>> {
+class TransducerTest final : public driver::Gain<TransducerTest<F>>, public IntoCache<TransducerTest<F>>, public IntoTransform<TransducerTest<F>> {
   using native_f = void (*)(const void*, native_methods::GeometryPtr, uint32_t, uint8_t, native_methods::Drive*);
 
  public:

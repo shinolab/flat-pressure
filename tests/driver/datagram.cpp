@@ -39,6 +39,8 @@ TEST(Internal, Silencer) {
     ASSERT_EQ(40, autd.link().silencer_completion_steps_phase(dev.idx()));
     ASSERT_TRUE(autd.link().silencer_fixed_completion_steps_mode(dev.idx()));
   }
+
+  autd3::native_methods::AUTDDatagramSilencerFixedCompletionStepsIsDefault(autd3::driver::ConfigureSilencer::default_().ptr(autd.geometry()));
 }
 
 TEST(Internal, ConfigureDebugOutputIdx) {

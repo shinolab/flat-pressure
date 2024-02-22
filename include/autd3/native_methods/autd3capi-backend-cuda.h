@@ -46,13 +46,6 @@ GainPtr AUTDGainHoloCUDANaive(BackendPtr backend,
                               EmissionConstraintPtr constraint);
 
 [[nodiscard]]
-GainPtr AUTDGainHoloCUDAGreedy(const double *points,
-                               const double *amps,
-                               uint64_t size,
-                               uint8_t div,
-                               EmissionConstraintPtr constraint);
-
-[[nodiscard]]
 GainPtr AUTDGainHoloCUDALM(BackendPtr backend,
                            const double *points,
                            const double *amps,

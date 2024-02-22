@@ -5,7 +5,7 @@
 
 #include "utils.hpp"
 
-class Uniform final : public autd3::gain::Gain {
+class Uniform final : public autd3::gain::Gain<Uniform> {
  public:
   explicit Uniform(const uint8_t intensity, const uint8_t phase, std::vector<bool>* cnt)
       : _intensity(autd3::driver::EmitIntensity(intensity)), _phase(phase), _cnt(cnt) {}

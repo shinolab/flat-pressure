@@ -19,7 +19,7 @@ option(RUN_BACKEND_CUDA "RUN_BACKEND_CUDA" OFF)
 option(COVERAGE "Take coverage" OFF)
 
 if(COVERAGE)
-  set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} --coverage -fno-inline")
+  set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -O0 -g --coverage -fno-inline")
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
 endif()
 
@@ -50,7 +50,7 @@ target_link_libraries(test_autd3 PRIVATE autd3::link::simulator)
 target_link_libraries(test_autd3 PRIVATE autd3::link::visualizer)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/gain)
-add_subdirectory(${PROJECT_SOURCE_DIR}/internal)
+add_subdirectory(${PROJECT_SOURCE_DIR}/driver)
 add_subdirectory(${PROJECT_SOURCE_DIR}/link)
 add_subdirectory(${PROJECT_SOURCE_DIR}/modulation)
 

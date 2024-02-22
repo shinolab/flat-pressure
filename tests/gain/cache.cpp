@@ -23,7 +23,7 @@ TEST(Gain, Cache) {
   }
 }
 
-class ForCacheTest final : public autd3::gain::Gain, public autd3::gain::IntoCache<ForCacheTest> {
+class ForCacheTest final : public autd3::gain::Gain<ForCacheTest>, public autd3::gain::IntoCache<ForCacheTest> {
  public:
   explicit ForCacheTest(size_t* cnt) : _cnt(cnt) {}
 

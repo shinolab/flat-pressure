@@ -15,7 +15,7 @@ namespace autd3::gain {
 /**
  * @brief Gain to set intensity and phase uniformly
  */
-class Uniform final : public driver::Gain, public IntoCache<Uniform>, public IntoTransform<Uniform> {
+class Uniform final : public driver::Gain<Uniform>, public IntoCache<Uniform>, public IntoTransform<Uniform> {
  public:
   explicit Uniform(const uint8_t intensity) : _intensity(driver::EmitIntensity(intensity)), _phase(driver::Phase(0)) {}
   explicit Uniform(const driver::EmitIntensity intensity) : _intensity(intensity), _phase(driver::Phase(0)) {}

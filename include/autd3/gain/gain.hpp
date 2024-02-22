@@ -18,7 +18,8 @@ concept gain_transform = requires(F f, const driver::geometry::Device& dev, cons
   { f(dev, tr) } -> std::same_as<driver::Drive>;
 };
 
-class Gain : public driver::Gain {
+template <class G>
+class Gain : public driver::Gain<G> {
  public:
   Gain() = default;
 

@@ -18,12 +18,12 @@ concept gain_range = std::ranges::viewable_range<R> && gain<std::ranges::range_v
  * @brief GainSTM is an STM for moving Gain.
  * @details The sampling timing is determined by hardware, thus the sampling
  * time is precise. GainSTM has following restrictions:
- * - The maximum number of sampling Gain is 2048.
+ * - The maximum number of sampling Gain is 1024.
  * - The sampling frequency is
  * [autd3::native_methods::FPGA_CLK_FREQ]/N, where `N` is a 32-bit
- * unsigned integer and must be at 4096.
+ * unsigned integer and must be at least 512.
  */
-class GainSTM final : public STM, public IntoDatagramWithSegment<native_methods::GainSTMPtr, GainSTM> {
+class GainSTM final : public STM, public DatagramS<native_methods::GainSTMPtr> {
  public:
   GainSTM() = delete;
   GainSTM(const GainSTM& obj) = default;
@@ -66,6 +66,10 @@ class GainSTM final : public STM, public IntoDatagramWithSegment<native_methods:
   }
 
   [[nodiscard]] native_methods::DatagramPtr ptr(const geometry::Geometry& geometry) const { return AUTDSTMGainIntoDatagram(raw_ptr(geometry)); }
+
+  [[nodiscard]] DatagramWithSegment<native_methods::GainSTMPtr> with_segment(const native_methods::Segment segment, const bool update_segment) {
+    return DatagramWithSegment<native_methods::GainSTMPtr>(std::make_unique<GainSTM>(std::move(*this)), segment, update_segment);
+  }
 
   /**
    * @brief Add Gain to the GainSTM
@@ -133,8 +137,18 @@ class GainSTM final : public STM, public IntoDatagramWithSegment<native_methods:
                    const std::optional<SamplingConfiguration> config)
       : STM(freq, period, config) {}
 
-  std::vector<std::shared_ptr<Gain>> _gains;
+  std::vector<std::shared_ptr<IGain>> _gains;
   std::optional<native_methods::GainSTMMode> _mode;
+};
+
+class AUTDDatagramChangeGainSTMSegment final {
+ public:
+  explicit AUTDDatagramChangeGainSTMSegment(const native_methods::Segment segment) : _segment(segment){};
+
+  [[nodiscard]] native_methods::DatagramPtr ptr(const geometry::Geometry&) { return native_methods::AUTDDatagramChangeGainSTMSegment(_segment); }
+
+ private:
+  native_methods::Segment _segment;
 };
 
 }  // namespace autd3::driver

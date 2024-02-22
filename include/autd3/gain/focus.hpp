@@ -16,7 +16,7 @@ namespace autd3::gain {
 /**
  * @brief Gain to produce single focal point
  */
-class Focus final : public driver::Gain, public IntoCache<Focus>, public IntoTransform<Focus> {
+class Focus final : public driver::Gain<Focus>, public IntoCache<Focus>, public IntoTransform<Focus> {
  public:
   explicit Focus(driver::Vector3 p) : _pos(std::move(p)), _intensity(driver::EmitIntensity::maximum()), _phase_offset(driver::Phase(0)) {}
 

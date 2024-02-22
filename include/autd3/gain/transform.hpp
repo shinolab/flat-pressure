@@ -22,7 +22,7 @@ concept gain_transform_f = requires(F f, const driver::geometry::Device& dev, co
 };
 
 template <class G, gain_transform_f F>
-class Transform final : public driver::Gain, public IntoCache<Transform<G, F>> {
+class Transform final : public driver::Gain<Transform<G, F>>, public IntoCache<Transform<G, F>> {
  public:
   Transform(G g, F f) : _g(std::move(g)), _f(std::move(f)) {}
 

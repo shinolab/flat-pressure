@@ -20,7 +20,7 @@ concept gain_group_f = requires(F f, const driver::geometry::Device& dev, const 
 };
 
 template <gain_group_f F>
-class Group final : public driver::Gain, public IntoCache<Group<F>>, public IntoTransform<Group<F>> {
+class Group final : public driver::Gain<Group<F>>, public IntoCache<Group<F>>, public IntoTransform<Group<F>> {
  public:
   using key_type = typename std::invoke_result_t<F, const driver::geometry::Device&, const driver::geometry::Transducer&>::value_type;
 
@@ -87,7 +87,7 @@ class Group final : public driver::Gain, public IntoCache<Group<F>>, public Into
 
  private:
   F _f;
-  std::unordered_map<key_type, std::shared_ptr<Gain>> _map;
+  std::unordered_map<key_type, std::shared_ptr<driver::IGain>> _map;
 };
 
 }  // namespace autd3::gain

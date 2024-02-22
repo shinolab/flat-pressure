@@ -20,7 +20,7 @@ namespace autd3::gain {
  * @brief Gain to cache the result of calculation
  */
 template <class G>
-class Cache final : public driver::Gain {
+class Cache final : public driver::Gain<Cache<G>> {
  public:
   explicit Cache(G g) : _g(std::move(g)), _cache(std::make_shared<std::unordered_map<size_t, std::vector<driver::Drive>>>()) {}
 

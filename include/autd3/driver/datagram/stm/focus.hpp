@@ -42,9 +42,9 @@ concept focus_range_c = std::ranges::viewable_range<R> && std::same_as<std::rang
  * - The maximum number of sampling points is 65536.
  * - The sampling frequency is
  * [autd3::native_methods::FPGA_CLK_FREQ]/N, where `N` is a 32-bit
- * unsigned integer and must be at 4096.
+ * unsigned integer and must be at least 512.
  */
-class FocusSTM final : public STM, public IntoDatagramWithSegment<native_methods::FocusSTMPtr, FocusSTM> {
+class FocusSTM final : public STM, public DatagramS<native_methods::FocusSTMPtr> {
  public:
   FocusSTM() = delete;
   FocusSTM(const FocusSTM& obj) = default;
@@ -73,6 +73,10 @@ class FocusSTM final : public STM, public IntoDatagramWithSegment<native_methods
   }
 
   [[nodiscard]] native_methods::DatagramPtr ptr(const geometry::Geometry& geometry) const { return AUTDSTMFocusIntoDatagram(raw_ptr(geometry)); }
+
+  [[nodiscard]] DatagramWithSegment<native_methods::FocusSTMPtr> with_segment(const native_methods::Segment segment, const bool update_segment) {
+    return DatagramWithSegment<native_methods::FocusSTMPtr>(std::make_unique<FocusSTM>(std::move(*this)), segment, update_segment);
+  }
 
   /**
    * @brief Add focus point
@@ -192,4 +196,15 @@ class FocusSTM final : public STM, public IntoDatagramWithSegment<native_methods
   std::vector<Vector3> _points;
   std::vector<EmitIntensity> _intensities;
 };
+
+class ChangeFocusSTMSegment final {
+ public:
+  explicit ChangeFocusSTMSegment(const native_methods::Segment segment) : _segment(segment){};
+
+  [[nodiscard]] native_methods::DatagramPtr ptr(const geometry::Geometry&) { return native_methods::AUTDDatagramChangeFocusSTMSegment(_segment); }
+
+ private:
+  native_methods::Segment _segment;
+};
+
 }  // namespace autd3::driver

@@ -9,6 +9,7 @@ import shutil
 import subprocess
 import sys
 import tarfile
+from glob import glob
 from typing import List, Optional
 
 import requests
@@ -240,7 +241,38 @@ def cpp_test(args):
             ).check_returncode()
 
 
+def check_if_all_native_methods_called():
+    defined_methods = set()
+    pattern = re.compile(".* (AUTD.*)\\(.*")
+    for file in glob("include/autd3/native_methods/autd3capi*.h"):
+        with open(file, "r") as f:
+            for line in f.readlines():
+                result = pattern.match(line)
+                if result:
+                    defined_methods.add(result.group(1))
+
+    used_methods = set()
+    pattern = re.compile(".*(AUTD.*?)\\(.*")
+    for file in glob("include/**/*.hpp", recursive=True) + glob(
+        "tests/**/*.cpp", recursive=True
+    ):
+        with open(file, "r") as f:
+            for line in f.readlines():
+                result = pattern.match(line)
+                if result:
+                    used_methods.add(result.group(1))
+
+    unused_methods = defined_methods.difference(used_methods)
+    if len(unused_methods) > 0:
+        err("Following native methods are defined but not used.")
+        for method in unused_methods:
+            print(f"\t{method}")
+        sys.exit(-1)
+
+
 def cpp_cov(args):
+    check_if_all_native_methods_called()
+
     config = Config(args)
     if not config.is_linux():
         err("Coverage is only supported on Linux.")
@@ -279,10 +311,9 @@ def cpp_cov(args):
                     "lcov",
                     "-r",
                     "coverage.raw.info",
-                    "*/googletest/*",
+                    "*/_deps/*",
+                    "*/usr/*",
                     "*/tests/*",
-                    "*/c++/*",
-                    "*/gcc/*",
                     "*/gain/holo/backend_cuda.hpp",
                     "-o",
                     "coverage.info",
