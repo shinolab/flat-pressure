@@ -19,8 +19,8 @@ option(RUN_BACKEND_CUDA "RUN_BACKEND_CUDA" OFF)
 option(COVERAGE "Take coverage" OFF)
 
 if(COVERAGE)
-  set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -O0 -g --coverage -fno-inline")
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
+  set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -O0 -g --coverage -fno-inline -fno-inline-small-functions -fno-default-inline -fprofile-arcs -ftest-coverage")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage -fprofile-arcs -fprofile-generate")
 endif()
 
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
@@ -63,6 +63,7 @@ if(WIN32)
   target_link_options(test_autd3 PRIVATE /NODEFAULTLIB:libcmt.lib /NODEFAULTLIB:libcmtd.lib /NODEFAULTLIB:msvcrtd.lib)
 endif()
 
+target_compile_definitions(test_autd3 PRIVATE COVERAGE)
 if(RUN_LINK_SOEM)
   target_compile_definitions(test_autd3 PRIVATE RUN_LINK_SOEM)
 endif()

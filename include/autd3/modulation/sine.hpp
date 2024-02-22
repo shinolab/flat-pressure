@@ -41,9 +41,9 @@ class Sine final : public driver::ModulationWithSamplingConfig<Sine>,
   AUTD3_DEF_PARAM(Sine, driver::Phase, phase)
   AUTD3_DEF_PARAM(Sine, native_methods::SamplingMode, mode)
 
-  friend Fourier operator+(Sine&& lhs, const Sine& rhs);
+  AUTD3_API [[nodiscard]] friend Fourier operator+(Sine&& lhs, const Sine& rhs);
 
-  [[nodiscard]] native_methods::ModulationPtr modulation_ptr() const override {
+  AUTD3_API [[nodiscard]] native_methods::ModulationPtr modulation_ptr() const override {
     return AUTDModulationSine(_freq, static_cast<native_methods::SamplingConfiguration>(_config), _intensity.value(), _offset.value(), _phase.value(),
                               _mode, static_cast<native_methods::LoopBehavior>(_loop_behavior));
   }

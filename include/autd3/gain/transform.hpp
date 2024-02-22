@@ -25,8 +25,14 @@ template <class G, gain_transform_f F>
 class Transform final : public driver::Gain<Transform<G, F>>, public IntoCache<Transform<G, F>> {
  public:
   Transform(G g, F f) : _g(std::move(g)), _f(std::move(f)) {}
+  Transform() = delete;
+  Transform(const Transform& obj) = default;
+  Transform& operator=(const Transform& obj) = default;
+  Transform(Transform&& obj) = default;
+  Transform& operator=(Transform&& obj) = default;
+  ~Transform() override = default;  // LCOV_EXCL_LINE
 
-  [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry& geometry) const override {
+  AUTD3_API [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry& geometry) const override {
     std::unordered_map<size_t, std::vector<driver::Drive>> drives;
 
     const auto res = validate(native_methods::AUTDGainCalc(_g.gain_ptr(geometry), geometry.ptr()));
@@ -55,12 +61,18 @@ class Transform final : public driver::Gain<Transform<G, F>>, public IntoCache<T
 template <class G>
 class IntoTransform {
  public:
+  IntoTransform() = default;
+  IntoTransform(const IntoTransform& obj) = default;
+  IntoTransform& operator=(const IntoTransform& obj) = default;
+  IntoTransform(IntoTransform&& obj) = default;
+  IntoTransform& operator=(IntoTransform&& obj) = default;
+
   template <gain_transform_f F>
-  [[nodiscard]] Transform<G, F> with_transform(F f) & {
+  AUTD3_API [[nodiscard]] Transform<G, F> with_transform(F f) & {
     return Transform(*static_cast<G*>(this), std::move(f));
   }
   template <gain_transform_f F>
-  [[nodiscard]] Transform<G, F> with_transform(F f) && {
+  AUTD3_API [[nodiscard]] Transform<G, F> with_transform(F f) && {
     return Transform(std::move(*static_cast<G*>(this)), std::move(f));
   }
 };

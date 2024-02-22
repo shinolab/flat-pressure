@@ -6,7 +6,7 @@
 
 class BurstModulation final : public autd3::modulation::Modulation<BurstModulation> {
  public:
-  [[nodiscard]] std::vector<autd3::driver::EmitIntensity> calc() const override {
+  AUTD3_API [[nodiscard]] std::vector<autd3::driver::EmitIntensity> calc() const override {
     std::vector buffer(10, autd3::driver::EmitIntensity::minimum());
     buffer[0] = autd3::driver::EmitIntensity::maximum();
     return buffer;

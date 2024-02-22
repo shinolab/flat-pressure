@@ -3,6 +3,7 @@
 import argparse
 import contextlib
 import os
+import pathlib
 import platform
 import re
 import shutil
@@ -250,6 +251,7 @@ def check_if_all_native_methods_called():
                 result = pattern.match(line)
                 if result:
                     defined_methods.add(result.group(1))
+    defined_methods.remove("AUTD3_API __attribute__(")
 
     used_methods = set()
     pattern = re.compile(".*(AUTD.*?)\\(.*")
@@ -284,6 +286,20 @@ def cpp_cov(args):
     with working_dir("tests"):
         os.makedirs("build", exist_ok=True)
         with working_dir("build"):
+            # if pathlib.Path("CMakeFiles/test_autd3.dir").exists():
+            #     with working_dir("CMakeFiles/test_autd3.dir"):
+            #         subprocess.run(
+            #             [
+            #                 "lcov",
+            #                 "-i",
+            #                 "-d",
+            #                 ".",
+            #                 "-c",
+            #                 "-o",
+            #                 "coverage.baseline.info",
+            #             ]
+            #         ).check_returncode()
+
             command = ["cmake", "..", "-DCOVERAGE=ON"]
             if config.cmake_extra is not None:
                 for cmd in config.cmake_extra:
@@ -305,12 +321,32 @@ def cpp_cov(args):
             ).check_returncode()
 
             with working_dir("CMakeFiles/test_autd3.dir"):
-                command = ["lcov", "-d", ".", "-c", "-o", "coverage.raw.info"]
+                subprocess.run(
+                    ["lcov", "-d", ".", "-c", "-o", "coverage.raw.info"]
+                ).check_returncode()
+                command = [
+                    "lcov",
+                ]
+                # if pathlib.Path("coverage.baseline.info").exists():
+                #     command.extend(
+                #         [
+                #             "-a",
+                #             "coverage.baseline.info",
+                #         ]
+                #     )
+                command.extend(
+                    [
+                        "-a",
+                        "coverage.raw.info",
+                        "-o",
+                        "coverage.combined.info",
+                    ]
+                )
                 subprocess.run(command).check_returncode()
                 command = [
                     "lcov",
                     "-r",
-                    "coverage.raw.info",
+                    "coverage.combined.info",
                     "*/_deps/*",
                     "*/usr/*",
                     "*/tests/*",

@@ -23,9 +23,9 @@ class Fourier final : public driver::Modulation<Fourier>,
  public:
   explicit Fourier(Sine component) { _components.emplace_back(std::move(component)); }
 
-  void add_component(Sine component) & { _components.emplace_back(std::move(component)); }
+  AUTD3_API void add_component(Sine component) & { _components.emplace_back(std::move(component)); }
 
-  [[nodiscard]] Fourier&& add_component(Sine component) && {
+  AUTD3_API [[nodiscard]] Fourier&& add_component(Sine component) && {
     _components.emplace_back(std::move(component));
     return std::move(*this);
   }
@@ -37,7 +37,7 @@ class Fourier final : public driver::Modulation<Fourier>,
    * @param iter iterator of focus points
    */
   template <fourier_sine_range R>
-  void add_components_from_iter(R&& iter) & {
+  AUTD3_API void add_components_from_iter(R&& iter) & {
     for (Sine e : iter) _components.emplace_back(std::move(e));
   }
 
@@ -48,28 +48,28 @@ class Fourier final : public driver::Modulation<Fourier>,
    * @param iter iterator of focus points
    */
   template <fourier_sine_range R>
-  Fourier add_components_from_iter(R&& iter) && {
+  AUTD3_API [[nodiscard]] Fourier add_components_from_iter(R&& iter) && {
     for (Sine e : iter) _components.emplace_back(std::move(e));
     return std::move(*this);
   }
 
-  Fourier& operator+=(const Sine& rhs) {
+  AUTD3_API [[nodiscard]] Fourier& operator+=(const Sine& rhs) {
     _components.emplace_back(rhs);
     return *this;
   }
 
-  friend Fourier&& operator+(Fourier&& lhs, const Sine& rhs) {
+  AUTD3_API [[nodiscard]] friend Fourier&& operator+(Fourier&& lhs, const Sine& rhs) {
     lhs._components.emplace_back(rhs);
     return std::move(lhs);
   }
 
-  friend Fourier operator+(Sine&& lhs, const Sine& rhs) {
+  AUTD3_API [[nodiscard]] friend Fourier operator+(Sine&& lhs, const Sine& rhs) {
     Fourier m(lhs);
     m._components.emplace_back(rhs);
     return m;
   }  // LCOV_EXCL_LINE
 
-  [[nodiscard]] native_methods::ModulationPtr modulation_ptr() const override {
+  AUTD3_API [[nodiscard]] native_methods::ModulationPtr modulation_ptr() const override {
     std::vector<native_methods::ModulationPtr> components;
     components.reserve(_components.size());
     std::ranges::transform(_components, std::back_inserter(components), [&](const auto& m) { return m.modulation_ptr(); });

@@ -28,7 +28,7 @@ class SDP final : public Holo<SDP<B>>, public IntoCache<SDP<B>>, public IntoTran
   AUTD3_DEF_PARAM(SDP, uint32_t, repeat)
   AUTD3_DEF_PARAM(SDP, double, lambda)
 
-  [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry&) const override {
+  AUTD3_API [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry&) const override {
     return this->_backend->sdp(reinterpret_cast<const double*>(this->_foci.data()), reinterpret_cast<const double*>(this->_amps.data()),
                                this->_amps.size(), _alpha, _lambda, _repeat, this->_constraint);
   }

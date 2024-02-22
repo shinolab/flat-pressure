@@ -24,7 +24,7 @@ class GSPAT final : public Holo<GSPAT<B>>, public IntoCache<GSPAT<B>>, public In
 
   AUTD3_DEF_PARAM(GSPAT, uint32_t, repeat)
 
-  [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry&) const override {
+  AUTD3_API [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry&) const override {
     return this->_backend->gspat(reinterpret_cast<const double*>(this->_foci.data()), reinterpret_cast<const double*>(this->_amps.data()),
                                  this->_amps.size(), _repeat, this->_constraint);
   }

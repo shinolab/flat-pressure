@@ -16,15 +16,15 @@ class FPGAState {
   /**
    * @brief Check if thermal sensor is asserted
    */
-  [[nodiscard]] bool is_thermal_assert() const noexcept { return (_info & 0x01) != 0; }
+  AUTD3_API [[nodiscard]] bool is_thermal_assert() const noexcept { return (_info & 0x01) != 0; }
 
-  [[nodiscard]] std::string to_string() const { return "Thermal assert = " + std::to_string(is_thermal_assert()); }
+  AUTD3_API [[nodiscard]] std::string to_string() const { return "Thermal assert = " + std::to_string(is_thermal_assert()); }
 
  private:
   uint8_t _info;
 };
 
-inline std::ostream& operator<<(std::ostream& os, const FPGAState& obj) {
+AUTD3_API inline std::ostream& operator<<(std::ostream& os, const FPGAState& obj) {
   os << obj.to_string();
   return os;
 }

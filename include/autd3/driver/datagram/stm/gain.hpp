@@ -37,7 +37,7 @@ class GainSTM final : public STM, public DatagramS<native_methods::GainSTMPtr> {
    *
    * @param freq STM frequency
    */
-  static GainSTM from_freq(const double freq) { return GainSTM(freq, std::nullopt, std::nullopt); }
+  AUTD3_API [[nodiscard]] static GainSTM from_freq(const double freq) { return GainSTM(freq, std::nullopt, std::nullopt); }
 
   /**
    * @brief Constructor
@@ -45,14 +45,16 @@ class GainSTM final : public STM, public DatagramS<native_methods::GainSTMPtr> {
    * @param config Sampling configuration
    * @return GainSTM
    */
-  static GainSTM from_sampling_config(const SamplingConfiguration config) { return GainSTM(std::nullopt, std::nullopt, config); }
+  AUTD3_API [[nodiscard]] static GainSTM from_sampling_config(const SamplingConfiguration config) {
+    return GainSTM(std::nullopt, std::nullopt, config);
+  }
 
   template <typename Rep, typename Period>
-  static GainSTM from_period(const std::chrono::duration<Rep, Period> period) {
+  AUTD3_API [[nodiscard]] static GainSTM from_period(const std::chrono::duration<Rep, Period> period) {
     return GainSTM(std::nullopt, std::nullopt, std::nullopt, std::chrono::duration_cast<std::chrono::nanoseconds>(period));
   }
 
-  [[nodiscard]] native_methods::GainSTMPtr raw_ptr(const geometry::Geometry& geometry) const override {
+  AUTD3_API [[nodiscard]] native_methods::GainSTMPtr raw_ptr(const geometry::Geometry& geometry) const override {
     const auto mode = _mode.has_value() ? _mode.value() : native_methods::GainSTMMode::PhaseIntensityFull;
     std::vector<native_methods::GainPtr> gains;
     gains.reserve(_gains.size());
@@ -60,14 +62,17 @@ class GainSTM final : public STM, public DatagramS<native_methods::GainSTMPtr> {
     return validate(AUTDSTMGain(props(), gains.data(), static_cast<uint32_t>(gains.size()), mode));
   }
 
-  [[nodiscard]] native_methods::DatagramPtr into_segment(const native_methods::GainSTMPtr p, const native_methods::Segment segment,
-                                                         const bool update_segment) const override {
+  AUTD3_API [[nodiscard]] native_methods::DatagramPtr into_segment(const native_methods::GainSTMPtr p, const native_methods::Segment segment,
+                                                                   const bool update_segment) const override {
     return AUTDSTMGainIntoDatagramWithSegment(p, segment, update_segment);
   }
 
-  [[nodiscard]] native_methods::DatagramPtr ptr(const geometry::Geometry& geometry) const { return AUTDSTMGainIntoDatagram(raw_ptr(geometry)); }
+  AUTD3_API [[nodiscard]] native_methods::DatagramPtr ptr(const geometry::Geometry& geometry) const {
+    return AUTDSTMGainIntoDatagram(raw_ptr(geometry));
+  }
 
-  [[nodiscard]] DatagramWithSegment<native_methods::GainSTMPtr> with_segment(const native_methods::Segment segment, const bool update_segment) {
+  AUTD3_API [[nodiscard]] DatagramWithSegment<native_methods::GainSTMPtr> with_segment(const native_methods::Segment segment,
+                                                                                       const bool update_segment) {
     return DatagramWithSegment<native_methods::GainSTMPtr>(std::make_unique<GainSTM>(std::move(*this)), segment, update_segment);
   }
 
@@ -79,7 +84,7 @@ class GainSTM final : public STM, public DatagramS<native_methods::GainSTMPtr> {
    * @return GainSTM
    */
   template <gain G>
-  void add_gain(G&& gain) & {
+  AUTD3_API void add_gain(G&& gain) & {
     _gains.emplace_back(std::make_shared<std::remove_reference_t<G>>(std::forward<G>(gain)));
   }
 
@@ -91,7 +96,7 @@ class GainSTM final : public STM, public DatagramS<native_methods::GainSTMPtr> {
    * @return GainSTM
    */
   template <gain G>
-  [[nodiscard]] GainSTM&& add_gain(G&& gain) && {
+  AUTD3_API [[nodiscard]] GainSTM&& add_gain(G&& gain) && {
     _gains.emplace_back(std::make_shared<std::remove_reference_t<G>>(std::forward<G>(gain)));
     return std::move(*this);
   }
@@ -103,7 +108,7 @@ class GainSTM final : public STM, public DatagramS<native_methods::GainSTMPtr> {
    * @param iter gain iterator
    */
   template <gain_range R>
-  void add_gains_from_iter(R&& iter) & {
+  AUTD3_API void add_gains_from_iter(R&& iter) & {
     for (auto e : iter)
       _gains.emplace_back(std::make_shared<std::remove_reference_t<std::ranges::range_value_t<R>>>(std::forward<std::ranges::range_value_t<R>>(e)));
   }
@@ -116,25 +121,25 @@ class GainSTM final : public STM, public DatagramS<native_methods::GainSTMPtr> {
    * @return GainSTM
    */
   template <gain_range R>
-  GainSTM add_gains_from_iter(R&& iter) && {
+  AUTD3_API [[nodiscard]] GainSTM add_gains_from_iter(R&& iter) && {
     for (auto e : iter)
       _gains.emplace_back(std::make_shared<std::remove_reference_t<std::ranges::range_value_t<R>>>(std::forward<std::ranges::range_value_t<R>>(e)));
     return std::move(*this);
   }
 
-  [[nodiscard]] double frequency() const { return frequency_from_size(_gains.size()); }
-  [[nodiscard]] std::chrono::nanoseconds period() const { return period_from_size(_gains.size()); }
-  [[nodiscard]] SamplingConfiguration sampling_config() const { return sampling_config_from_size(_gains.size()); }
+  AUTD3_API [[nodiscard]] double frequency() const { return frequency_from_size(_gains.size()); }
+  AUTD3_API [[nodiscard]] std::chrono::nanoseconds period() const { return period_from_size(_gains.size()); }
+  AUTD3_API [[nodiscard]] SamplingConfiguration sampling_config() const { return sampling_config_from_size(_gains.size()); }
 
-  void with_mode(const native_methods::GainSTMMode mode) & { _mode = mode; }
-  [[nodiscard]] GainSTM&& with_mode(const native_methods::GainSTMMode mode) && {
+  AUTD3_API void with_mode(const native_methods::GainSTMMode mode) & { _mode = mode; }
+  AUTD3_API [[nodiscard]] GainSTM&& with_mode(const native_methods::GainSTMMode mode) && {
     _mode = mode;
     return std::move(*this);
   }
 
  private:
-  explicit GainSTM(const std::optional<double> freq, const std::optional<std::chrono::nanoseconds> period,
-                   const std::optional<SamplingConfiguration> config)
+  AUTD3_API explicit GainSTM(const std::optional<double> freq, const std::optional<std::chrono::nanoseconds> period,
+                             const std::optional<SamplingConfiguration> config)
       : STM(freq, period, config) {}
 
   std::vector<std::shared_ptr<IGain>> _gains;
@@ -143,9 +148,11 @@ class GainSTM final : public STM, public DatagramS<native_methods::GainSTMPtr> {
 
 class ChangeGainSTMSegment final {
  public:
-  explicit ChangeGainSTMSegment(const native_methods::Segment segment) : _segment(segment){};
+  AUTD3_API explicit ChangeGainSTMSegment(const native_methods::Segment segment) : _segment(segment){};
 
-  [[nodiscard]] native_methods::DatagramPtr ptr(const geometry::Geometry&) { return native_methods::AUTDDatagramChangeGainSTMSegment(_segment); }
+  AUTD3_API [[nodiscard]] native_methods::DatagramPtr ptr(const geometry::Geometry&) {
+    return native_methods::AUTDDatagramChangeGainSTMSegment(_segment);
+  }
 
  private:
   native_methods::Segment _segment;

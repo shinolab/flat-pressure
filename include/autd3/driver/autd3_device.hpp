@@ -52,20 +52,20 @@ class AUTD3 {
    *
    * @param rot Rotation
    */
-  void with_rotation(const Quaternion& rot) & { _rot = rot; }
+  AUTD3_API void with_rotation(const Quaternion& rot) & { _rot = rot; }
 
   /**
    * @brief Set device rotation
    *
    * @param rot Rotation
    */
-  AUTD3 with_rotation(const Quaternion& rot) && {
+  AUTD3_API [[nodiscard]] AUTD3 with_rotation(const Quaternion& rot) && {
     _rot = rot;
     return std::move(*this);
   }
 
-  [[nodiscard]] Vector3 position() const { return _pos; }
-  [[nodiscard]] std::optional<Quaternion> rotation() const { return _rot; }
+  AUTD3_API [[nodiscard]] Vector3 position() const { return _pos; }
+  AUTD3_API [[nodiscard]] std::optional<Quaternion> rotation() const { return _rot; }
 
  private:
   Vector3 _pos{};

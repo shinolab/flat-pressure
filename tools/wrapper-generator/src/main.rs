@@ -21,6 +21,14 @@ pub fn gen_c<P1: AsRef<Path>, P2: AsRef<Path>>(crate_path: P1, dest_dir: P2) -> 
     config.sys_includes = vec!["cstdint".to_string()];
     config.sort_by = cbindgen::SortKey::None;
     config.usize_is_size_t = true;
+    config.header = Some(
+        r#"#if defined __GNUC__ && defined COVERAGE
+#define AUTD3_API __attribute__((__used__))
+#else
+#define AUTD3_API
+#endif"#
+            .to_string(),
+    );
     config.export = cbindgen::ExportConfig {
         include: vec![
             "TimerStrategy".to_string(),
@@ -69,6 +77,7 @@ pub fn gen_c<P1: AsRef<Path>, P2: AsRef<Path>>(crate_path: P1, dest_dir: P2) -> 
     config.function = cbindgen::FunctionConfig {
         sort_by: None,
         must_use: Some("[[nodiscard]]".to_string()),
+        prefix: Some("AUTD3_API".to_string()),
         ..Default::default()
     };
     config.constant = cbindgen::ConstantConfig {

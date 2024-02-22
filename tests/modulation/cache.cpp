@@ -30,7 +30,7 @@ TEST(Modulation, Cache) {
 class ForModulationCacheTest final : public autd3::modulation::Modulation<ForModulationCacheTest>,
                                      public autd3::modulation::IntoCache<ForModulationCacheTest> {
  public:
-  [[nodiscard]] std::vector<autd3::driver::EmitIntensity> calc() const override {
+  AUTD3_API [[nodiscard]] std::vector<autd3::driver::EmitIntensity> calc() const override {
     ++*_cnt;
     return {autd3::driver::EmitIntensity::maximum(), autd3::driver::EmitIntensity::maximum()};
   }

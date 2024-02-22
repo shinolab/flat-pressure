@@ -22,12 +22,12 @@ class Nop {
 
     Builder() = default;
 
-    [[nodiscard]] static Nop resolve_link(const native_methods::LinkPtr link) { return Nop{link}; }
+    AUTD3_API [[nodiscard]] static Nop resolve_link(const native_methods::LinkPtr link) { return Nop{link}; }
 
    public:
     using Link = Nop;
 
-    [[nodiscard]] static native_methods::LinkBuilderPtr ptr() { return native_methods::AUTDLinkNop(); }
+    AUTD3_API [[nodiscard]] static native_methods::LinkBuilderPtr ptr() { return native_methods::AUTDLinkNop(); }
   };
 
   static Builder builder() { return {}; }

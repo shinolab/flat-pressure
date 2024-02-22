@@ -8,8 +8,7 @@ TEST(Link, TwinCAT) {
   auto link = autd3::link::TwinCAT::builder().with_timeout(std::chrono::milliseconds(200));
 
 #ifdef RUN_LINK_TWINCAT
-  auto autd =
-      autd3::controller::ControllerBuilder().add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero())).open_async(std::move(link)).get();
+  auto autd = autd3::controller::ControllerBuilder().add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero())).open(std::move(link));
 
   autd.close();
 #else
@@ -24,8 +23,7 @@ TEST(Link, RemoteTwinCAT) {
                   .with_timeout(std::chrono::milliseconds(200));
 
 #ifdef RUN_LINK_REMOTE_TWINCAT
-  auto autd =
-      autd3::controller::ControllerBuilder().add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero())).open_async(std::move(link)).get();
+  auto autd = autd3::controller::ControllerBuilder().add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero())).open(std::move(link));
 
   autd.close();
 #else

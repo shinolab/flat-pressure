@@ -24,7 +24,14 @@ class Cache final : public driver::Gain<Cache<G>> {
  public:
   explicit Cache(G g) : _g(std::move(g)), _cache(std::make_shared<std::unordered_map<size_t, std::vector<driver::Drive>>>()) {}
 
-  void init(const driver::geometry::Geometry& geometry) const {
+  Cache() = delete;
+  Cache(const Cache& obj) = default;
+  Cache& operator=(const Cache& obj) = default;
+  Cache(Cache&& obj) = default;
+  Cache& operator=(Cache&& obj) = default;
+  ~Cache() override = default;  // LCOV_EXCL_LINE
+
+  AUTD3_API void init(const driver::geometry::Geometry& geometry) const {
     auto view = geometry.devices() | std::views::transform([](const driver::geometry::Device& dev) { return static_cast<uint32_t>(dev.idx()); });
 
     if (std::vector<uint32_t> device_indices(view.begin(), view.end());
@@ -41,7 +48,7 @@ class Cache final : public driver::Gain<Cache<G>> {
     }
   }
 
-  [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry& geometry) const override {
+  AUTD3_API [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry& geometry) const override {
     init(geometry);
     return std::accumulate(geometry.devices().begin(), geometry.devices().end(), native_methods::AUTDGainCustom(),
                            [this](const native_methods::GainPtr acc, const driver::geometry::Device& dev) {
@@ -51,14 +58,14 @@ class Cache final : public driver::Gain<Cache<G>> {
                            });
   }
 
-  [[nodiscard]] const std::unordered_map<size_t, std::vector<driver::Drive>>& drives() const { return *_cache; }
+  AUTD3_API [[nodiscard]] const std::unordered_map<size_t, std::vector<driver::Drive>>& drives() const { return *_cache; }
 
-  [[nodiscard]] std::unordered_map<size_t, std::vector<driver::Drive>>::const_iterator cbegin() const noexcept { return _cache->cbegin(); }
-  [[nodiscard]] std::unordered_map<size_t, std::vector<driver::Drive>>::const_iterator cend() const noexcept { return _cache->cend(); }
-  [[nodiscard]] std::unordered_map<size_t, std::vector<driver::Drive>>::const_iterator begin() const noexcept { return _cache->begin(); }
-  [[nodiscard]] std::unordered_map<size_t, std::vector<driver::Drive>>::const_iterator end() const noexcept { return _cache->end(); }
+  AUTD3_API [[nodiscard]] std::unordered_map<size_t, std::vector<driver::Drive>>::const_iterator cbegin() const noexcept { return _cache->cbegin(); }
+  AUTD3_API [[nodiscard]] std::unordered_map<size_t, std::vector<driver::Drive>>::const_iterator cend() const noexcept { return _cache->cend(); }
+  AUTD3_API [[nodiscard]] std::unordered_map<size_t, std::vector<driver::Drive>>::const_iterator begin() const noexcept { return _cache->begin(); }
+  AUTD3_API [[nodiscard]] std::unordered_map<size_t, std::vector<driver::Drive>>::const_iterator end() const noexcept { return _cache->end(); }
 
-  [[nodiscard]] const std::vector<driver::Drive>& operator[](const driver::geometry::Device& dev) const { return _cache->at(dev.idx()); }
+  AUTD3_API [[nodiscard]] const std::vector<driver::Drive>& operator[](const driver::geometry::Device& dev) const { return _cache->at(dev.idx()); }
 
  private:
   G _g;
@@ -68,8 +75,14 @@ class Cache final : public driver::Gain<Cache<G>> {
 template <class G>
 class IntoCache {
  public:
-  [[nodiscard]] Cache<G> with_cache() & { return Cache(*static_cast<G*>(this)); }
-  [[nodiscard]] Cache<G> with_cache() && { return Cache(std::move(*static_cast<G*>(this))); }
+  IntoCache() = default;
+  IntoCache(const IntoCache& obj) = default;
+  IntoCache& operator=(const IntoCache& obj) = default;
+  IntoCache(IntoCache&& obj) = default;
+  IntoCache& operator=(IntoCache&& obj) = default;
+
+  AUTD3_API [[nodiscard]] Cache<G> with_cache() & { return Cache(*static_cast<G*>(this)); }
+  AUTD3_API [[nodiscard]] Cache<G> with_cache() && { return Cache(std::move(*static_cast<G*>(this))); }
 };
 
 }  // namespace autd3::gain

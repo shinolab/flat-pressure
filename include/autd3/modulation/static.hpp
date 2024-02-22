@@ -17,12 +17,12 @@ class Static final : public driver::Modulation<Static>, public IntoCache<Static>
   explicit Static(const uint8_t intensity) : _intensity(driver::EmitIntensity(intensity)) {}
   explicit Static(const driver::EmitIntensity intensity) : _intensity(intensity) {}
 
-  static Static with_intensity(const uint8_t intensity) { return Static(intensity); }
-  static Static with_intensity(const driver::EmitIntensity intensity) { return Static(intensity); }
+  AUTD3_API [[nodiscard]] static Static with_intensity(const uint8_t intensity) { return Static(intensity); }
+  AUTD3_API [[nodiscard]] static Static with_intensity(const driver::EmitIntensity intensity) { return Static(intensity); }
 
-  [[nodiscard]] driver::EmitIntensity intensity() const { return _intensity; }
+  AUTD3_API [[nodiscard]] driver::EmitIntensity intensity() const { return _intensity; }
 
-  [[nodiscard]] native_methods::ModulationPtr modulation_ptr() const override {
+  AUTD3_API [[nodiscard]] native_methods::ModulationPtr modulation_ptr() const override {
     return native_methods::AUTDModulationStatic(_intensity.value(), static_cast<native_methods::LoopBehavior>(_loop_behavior));
   }
 

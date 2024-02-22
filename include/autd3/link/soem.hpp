@@ -22,8 +22,8 @@ class EtherCATAdapter {
  public:
   EtherCATAdapter(std::string desc, std::string name) : _desc(std::move(desc)), _name(std::move(name)) {}
 
-  [[nodiscard]] const std::string& desc() const { return _desc; }
-  [[nodiscard]] const std::string& name() const { return _name; }
+  AUTD3_API [[nodiscard]] const std::string& desc() const { return _desc; }
+  AUTD3_API [[nodiscard]] const std::string& name() const { return _name; }
 };
 
 using native_methods::Status;
@@ -58,12 +58,12 @@ class SOEM final {
 
     Builder() : _ptr(native_methods::AUTDLinkSOEM()), _err_handler(nullptr) {}
 
-    [[nodiscard]] SOEM resolve_link(native_methods::LinkPtr) const { return SOEM{_native_err_handler, _err_handler}; }
+    AUTD3_API [[nodiscard]] SOEM resolve_link(native_methods::LinkPtr) const { return SOEM{_native_err_handler, _err_handler}; }
 
    public:
     using Link = SOEM;
 
-    [[nodiscard]] native_methods::LinkBuilderPtr ptr() const { return AUTDLinkSOEMIntoBuilder(_ptr); }
+    AUTD3_API [[nodiscard]] native_methods::LinkBuilderPtr ptr() const { return AUTDLinkSOEMIntoBuilder(_ptr); }
 
     /**
      * @brief Set network interface name
@@ -73,7 +73,7 @@ class SOEM final {
      * @param ifname Network interface name
      * @return Builder
      */
-    Builder with_ifname(const std::string& ifname) {
+    AUTD3_API [[nodiscard]] Builder with_ifname(const std::string& ifname) {
       _ptr = AUTDLinkSOEMWithIfname(_ptr, ifname.c_str());
       return *this;
     }
@@ -84,7 +84,7 @@ class SOEM final {
      * @param value
      * @return Builder
      */
-    Builder with_buf_size(const size_t value) {
+    AUTD3_API [[nodiscard]] Builder with_buf_size(const size_t value) {
       _ptr = AUTDLinkSOEMWithBufSize(_ptr, static_cast<uint32_t>(value));
       return *this;
     }
@@ -95,7 +95,7 @@ class SOEM final {
      * @param value
      * @return Builder
      */
-    Builder with_send_cycle(const uint16_t value) {
+    AUTD3_API [[nodiscard]] Builder with_send_cycle(const uint16_t value) {
       _ptr = AUTDLinkSOEMWithSendCycle(_ptr, value);
       return *this;
     }
@@ -106,7 +106,7 @@ class SOEM final {
      * @param value
      * @return Builder
      */
-    Builder with_sync0_cycle(const uint16_t value) {
+    AUTD3_API [[nodiscard]] Builder with_sync0_cycle(const uint16_t value) {
       _ptr = AUTDLinkSOEMWithSync0Cycle(_ptr, value);
       return *this;
     }
@@ -118,7 +118,7 @@ class SOEM final {
      * @return Builder
      */
     template <soem_err_handler_f F>
-    Builder with_err_handler(F value) {
+    AUTD3_API [[nodiscard]] Builder with_err_handler(F value) {
       _err_handler = static_cast<err_handler_t>(value);
       _native_err_handler = +[](const void* context, const uint32_t slave, const uint8_t status, const char* msg) {
         (*reinterpret_cast<err_handler_t>(const_cast<void*>(context)))(static_cast<uint16_t>(slave), static_cast<Status>(status),  // LCOV_EXCL_LINE
@@ -134,7 +134,7 @@ class SOEM final {
      * @param value
      * @return Builder
      */
-    Builder with_timer_strategy(const native_methods::TimerStrategy value) {
+    AUTD3_API [[nodiscard]] Builder with_timer_strategy(const native_methods::TimerStrategy value) {
       _ptr = AUTDLinkSOEMWithTimerStrategy(_ptr, value);
       return *this;
     }
@@ -146,7 +146,7 @@ class SOEM final {
      * @param value
      * @return Builder
      */
-    Builder with_sync_mode(const SyncMode value) {
+    AUTD3_API [[nodiscard]] Builder with_sync_mode(const SyncMode value) {
       _ptr = AUTDLinkSOEMWithSyncMode(_ptr, value);
       return *this;
     }
@@ -158,14 +158,14 @@ class SOEM final {
      * @return Builder
      */
     template <typename Rep, typename Period>
-    Builder with_state_check_interval(const std::chrono::duration<Rep, Period> value) {
+    AUTD3_API [[nodiscard]] Builder with_state_check_interval(const std::chrono::duration<Rep, Period> value) {
       const auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(value).count();
       _ptr = AUTDLinkSOEMWithStateCheckInterval(_ptr, static_cast<uint32_t>(ms));
       return *this;
     }
 
     template <typename Rep, typename Period>
-    Builder with_timeout(const std::chrono::duration<Rep, Period> timeout) {
+    AUTD3_API [[nodiscard]] Builder with_timeout(const std::chrono::duration<Rep, Period> timeout) {
       const auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(timeout).count();
       _ptr = AUTDLinkSOEMWithTimeout(_ptr, static_cast<uint64_t>(ns));
       return *this;
@@ -174,7 +174,7 @@ class SOEM final {
 
   static Builder builder() { return {}; }
 
-  static std::vector<EtherCATAdapter> enumerate_adapters() {
+  AUTD3_API [[nodiscard]] static std::vector<EtherCATAdapter> enumerate_adapters() {
     const auto handle = native_methods::AUTDAdapterPointer();
     const auto len = AUTDAdapterGetSize(handle);
     std::vector<EtherCATAdapter> adapters;
@@ -204,15 +204,15 @@ class RemoteSOEM final {
 
     explicit Builder(const std::string& addr) { _ptr = validate(native_methods::AUTDLinkRemoteSOEM(addr.c_str())); }
 
-    [[nodiscard]] static RemoteSOEM resolve_link(native_methods::LinkPtr) { return RemoteSOEM{}; }
+    AUTD3_API [[nodiscard]] static RemoteSOEM resolve_link(native_methods::LinkPtr) { return RemoteSOEM{}; }
 
    public:
     using Link = RemoteSOEM;
 
-    [[nodiscard]] native_methods::LinkBuilderPtr ptr() const { return AUTDLinkRemoteSOEMIntoBuilder(_ptr); }
+    AUTD3_API [[nodiscard]] native_methods::LinkBuilderPtr ptr() const { return AUTDLinkRemoteSOEMIntoBuilder(_ptr); }
 
     template <typename Rep, typename Period>
-    Builder with_timeout(const std::chrono::duration<Rep, Period> timeout) {
+    AUTD3_API [[nodiscard]] Builder with_timeout(const std::chrono::duration<Rep, Period> timeout) {
       const auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(timeout).count();
       _ptr = AUTDLinkRemoteSOEMWithTimeout(_ptr, static_cast<uint64_t>(ns));
       return std::move(*this);
@@ -224,7 +224,7 @@ class RemoteSOEM final {
    *
    * @param addr IP address and port of SOEMServer (e.g., "127.0.0.1:8080")
    */
-  static Builder builder(const std::string& addr) { return Builder(addr); }
+  AUTD3_API [[nodiscard]] static Builder builder(const std::string& addr) { return Builder(addr); }
 };
 
 }  // namespace autd3::link

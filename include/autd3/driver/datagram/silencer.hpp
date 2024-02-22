@@ -22,7 +22,7 @@ class ConfigureSilencer final {
     AUTD3_DEF_PROP(uint16_t, update_rate_intensity)
     AUTD3_DEF_PROP(uint16_t, update_rate_phase)
 
-    [[nodiscard]] native_methods::DatagramPtr ptr(const geometry::Geometry&) const {
+    AUTD3_API [[nodiscard]] native_methods::DatagramPtr ptr(const geometry::Geometry&) const {
       return validate(native_methods::AUTDDatagramSilencerFixedUpdateRate(_update_rate_intensity, _update_rate_phase));
     }
   };
@@ -39,7 +39,7 @@ class ConfigureSilencer final {
     AUTD3_DEF_PROP(uint16_t, step_phase)
     AUTD3_DEF_PARAM(FixedCompletionSteps, bool, strict_mode)
 
-    [[nodiscard]] native_methods::DatagramPtr ptr(const geometry::Geometry&) const {
+    AUTD3_API [[nodiscard]] native_methods::DatagramPtr ptr(const geometry::Geometry&) const {
       return validate(native_methods::AUTDDatagramSilencerFixedCompletionSteps(_step_intensity, _step_phase, _strict_mode));
     }
   };
@@ -52,7 +52,7 @@ class ConfigureSilencer final {
    * @param update_rate_phase Phase update rate of silencer. The smaller value is, the
    * quieter the output is.
    */
-  [[nodiscard]] static FixedUpdateRate fixed_update_rate(const uint16_t update_rate_intensity, const uint16_t update_rate_phase) noexcept {
+  AUTD3_API [[nodiscard]] static FixedUpdateRate fixed_update_rate(const uint16_t update_rate_intensity, const uint16_t update_rate_phase) noexcept {
     return FixedUpdateRate(update_rate_intensity, update_rate_phase);
   }
 
@@ -64,16 +64,16 @@ class ConfigureSilencer final {
    * @param steps_phase Phase completion steps of silencer. The smaller value is, the
    * quieter the output is.
    */
-  [[nodiscard]] static FixedCompletionSteps fixed_completion_steps(const uint16_t steps_intensity, const uint16_t steps_phase) noexcept {
+  AUTD3_API [[nodiscard]] static FixedCompletionSteps fixed_completion_steps(const uint16_t steps_intensity, const uint16_t steps_phase) noexcept {
     return FixedCompletionSteps(steps_intensity, steps_phase);
   }
 
   /**
    * @brief Disable silencer
    */
-  [[nodiscard]] static FixedCompletionSteps disable() noexcept { return fixed_completion_steps(1, 1); }
+  AUTD3_API [[nodiscard]] static FixedCompletionSteps disable() noexcept { return fixed_completion_steps(1, 1); }
 
-  [[nodiscard]] static FixedCompletionSteps default_() noexcept { return fixed_completion_steps(10, 40); }
+  AUTD3_API [[nodiscard]] static FixedCompletionSteps default_() noexcept { return fixed_completion_steps(10, 40); }
 };
 
 }  // namespace autd3::driver

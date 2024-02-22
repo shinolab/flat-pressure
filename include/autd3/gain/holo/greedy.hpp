@@ -24,7 +24,7 @@ class Greedy final : public Holo<Greedy>, public IntoCache<Greedy>, public IntoT
 
   AUTD3_DEF_PARAM(Greedy, uint8_t, phase_div)
 
-  [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry&) const override {
+  AUTD3_API [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry&) const override {
     return AUTDGainHoloGreedy(reinterpret_cast<const double*>(this->_foci.data()), reinterpret_cast<const double*>(this->_amps.data()),
                               this->_amps.size(), _phase_div, _constraint.ptr());
   }

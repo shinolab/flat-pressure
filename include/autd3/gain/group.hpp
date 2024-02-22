@@ -34,7 +34,7 @@ class Group final : public driver::Gain<Group<F>>, public IntoCache<Group<F>>, p
    * @param gain Gain
    */
   template <driver::gain G>
-  void set(const key_type key, G&& gain) & {
+  AUTD3_API void set(const key_type key, G&& gain) & {
     _map[key] = std::make_shared<std::remove_reference_t<G>>(std::forward<G>(gain));
   }
 
@@ -46,12 +46,12 @@ class Group final : public driver::Gain<Group<F>>, public IntoCache<Group<F>>, p
    * @param gain Gain
    */
   template <driver::gain G>
-  Group&& set(const key_type key, G&& gain) && {
+  AUTD3_API [[nodiscard]] Group&& set(const key_type key, G&& gain) && {
     _map[key] = std::make_shared<std::remove_reference_t<G>>(std::forward<G>(gain));
     return std::move(*this);
   }
 
-  [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry& geometry) const override {
+  AUTD3_API [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry& geometry) const override {
     std::unordered_map<key_type, int32_t> keymap;
 
     auto view = geometry.devices() | std::views::transform([](const driver::geometry::Device& dev) { return static_cast<uint32_t>(dev.idx()); });

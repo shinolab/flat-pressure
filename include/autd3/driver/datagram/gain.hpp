@@ -18,9 +18,11 @@ class IGain {
   IGain& operator=(IGain&& obj) = default;
   virtual ~IGain() = default;  // LCOV_EXCL_LINE
 
-  [[nodiscard]] native_methods::DatagramPtr ptr(const geometry::Geometry& geometry) const { return AUTDGainIntoDatagram(gain_ptr(geometry)); }
+  AUTD3_API [[nodiscard]] native_methods::DatagramPtr ptr(const geometry::Geometry& geometry) const {
+    return AUTDGainIntoDatagram(gain_ptr(geometry));
+  }
 
-  [[nodiscard]] virtual native_methods::GainPtr gain_ptr(const geometry::Geometry&) const = 0;
+  AUTD3_API [[nodiscard]] virtual native_methods::GainPtr gain_ptr(const geometry::Geometry&) const = 0;
 };
 
 template <class G>
@@ -33,15 +35,16 @@ class Gain : public IGain, public DatagramS<native_methods::GainPtr> {
   Gain& operator=(Gain&& obj) = default;
   virtual ~Gain() = default;  // LCOV_EXCL_LINE
 
-  [[nodiscard]] native_methods::GainPtr raw_ptr(const geometry::Geometry& geometry) const override { return gain_ptr(geometry); }
+  AUTD3_API [[nodiscard]] native_methods::GainPtr raw_ptr(const geometry::Geometry& geometry) const override { return gain_ptr(geometry); }
 
-  [[nodiscard]] native_methods::DatagramPtr into_segment(const native_methods::GainPtr p, const native_methods::Segment segment,
-                                                         const bool update_segment) const override {
+  AUTD3_API [[nodiscard]] native_methods::DatagramPtr into_segment(const native_methods::GainPtr p, const native_methods::Segment segment,
+                                                                   const bool update_segment) const override {
     return AUTDGainIntoDatagramWithSegment(p, segment, update_segment);
   }
 
-  [[nodiscard]] DatagramWithSegment<native_methods::GainPtr> with_segment(const native_methods::Segment segment, const bool update_segment) {
-    return DatagramWithSegment(std::make_unique<G>(std::move(*this)), segment, update_segment);
+  AUTD3_API [[nodiscard]] DatagramWithSegment<native_methods::GainPtr> with_segment(const native_methods::Segment segment,
+                                                                                    const bool update_segment) {
+    return DatagramWithSegment<native_methods::GainPtr>(std::make_unique<G>((std::move(*static_cast<G*>(this)))), segment, update_segment);
   }
 };
 
@@ -52,7 +55,9 @@ class ChangeGainSegment final {
  public:
   explicit ChangeGainSegment(const native_methods::Segment segment) : _segment(segment){};
 
-  [[nodiscard]] native_methods::DatagramPtr ptr(const geometry::Geometry&) { return native_methods::AUTDDatagramChangeGainSegment(_segment); }
+  AUTD3_API [[nodiscard]] native_methods::DatagramPtr ptr(const geometry::Geometry&) {
+    return native_methods::AUTDDatagramChangeGainSegment(_segment);
+  }
 
  private:
   native_methods::Segment _segment;

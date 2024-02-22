@@ -25,31 +25,34 @@ class Modulation : public DatagramS<native_methods::ModulationPtr> {
    * [autd3::native_methods::FPGA_CLK_FREQ] / (sampling frequency
    * division).
    */
-  [[nodiscard]] SamplingConfiguration sampling_config() const { return SamplingConfiguration(AUTDModulationSamplingConfig(modulation_ptr())); }
+  AUTD3_API [[nodiscard]] SamplingConfiguration sampling_config() const {
+    return SamplingConfiguration(AUTDModulationSamplingConfig(modulation_ptr()));
+  }
 
-  [[nodiscard]] native_methods::DatagramPtr ptr(const geometry::Geometry&) const { return AUTDModulationIntoDatagram(modulation_ptr()); }
+  AUTD3_API [[nodiscard]] native_methods::DatagramPtr ptr(const geometry::Geometry&) const { return AUTDModulationIntoDatagram(modulation_ptr()); }
 
-  [[nodiscard]] native_methods::ModulationPtr raw_ptr(const geometry::Geometry&) const override { return modulation_ptr(); }
+  AUTD3_API [[nodiscard]] native_methods::ModulationPtr raw_ptr(const geometry::Geometry&) const override { return modulation_ptr(); }
 
-  [[nodiscard]] native_methods::DatagramPtr into_segment(const native_methods::ModulationPtr p, const native_methods::Segment segment,
-                                                         const bool update_segment) const override {
+  AUTD3_API [[nodiscard]] native_methods::DatagramPtr into_segment(const native_methods::ModulationPtr p, const native_methods::Segment segment,
+                                                                   const bool update_segment) const override {
     return AUTDModulationIntoDatagramWithSegment(p, segment, update_segment);
   }
 
-  [[nodiscard]] virtual native_methods::ModulationPtr modulation_ptr() const = 0;
+  AUTD3_API [[nodiscard]] virtual native_methods::ModulationPtr modulation_ptr() const = 0;
 
-  [[nodiscard]] size_t size() const { return native_methods::validate<size_t>(AUTDModulationSize(modulation_ptr())); }
+  AUTD3_API [[nodiscard]] size_t size() const { return native_methods::validate<size_t>(AUTDModulationSize(modulation_ptr())); }
 
-  [[nodiscard]] LoopBehavior loop_behavior() const noexcept { return _loop_behavior; }
+  AUTD3_API [[nodiscard]] LoopBehavior loop_behavior() const noexcept { return _loop_behavior; }
 
   void with_loop_behavior(const LoopBehavior loop_behavior) & { _loop_behavior = loop_behavior; }
-  [[nodiscard]] M&& with_loop_behavior(const LoopBehavior loop_behavior) && {
+  AUTD3_API [[nodiscard]] M&& with_loop_behavior(const LoopBehavior loop_behavior) && {
     _loop_behavior = loop_behavior;
     return std::move(*static_cast<M*>(this));
   }
 
-  [[nodiscard]] DatagramWithSegment<native_methods::ModulationPtr> with_segment(const native_methods::Segment segment, const bool update_segment) {
-    return DatagramWithSegment(std::make_unique<DatagramS<native_methods::ModulationPtr>>(this), segment, update_segment);
+  AUTD3_API [[nodiscard]] DatagramWithSegment<native_methods::ModulationPtr> with_segment(const native_methods::Segment segment,
+                                                                                          const bool update_segment) {
+    return DatagramWithSegment<native_methods::ModulationPtr>(std::make_unique<M>((std::move(*static_cast<M*>(this)))), segment, update_segment);
   }
 
  protected:
@@ -64,8 +67,8 @@ class ModulationWithSamplingConfig : public Modulation<M> {
   explicit ModulationWithSamplingConfig(const SamplingConfiguration config) : _config(config) {}
 
  public:
-  void with_sampling_config(const SamplingConfiguration config) & { _config = config; }
-  [[nodiscard]] M&& with_sampling_config(const SamplingConfiguration config) && {
+  AUTD3_API void with_sampling_config(const SamplingConfiguration config) & { _config = config; }
+  AUTD3_API [[nodiscard]] M&& with_sampling_config(const SamplingConfiguration config) && {
     _config = config;
     return std::move(*static_cast<M*>(this));
   }
@@ -75,7 +78,9 @@ class ChangeModulationSegment final {
  public:
   explicit ChangeModulationSegment(const native_methods::Segment segment) : _segment(segment){};
 
-  [[nodiscard]] native_methods::DatagramPtr ptr(const geometry::Geometry&) { return native_methods::AUTDDatagramChangeModulationSegment(_segment); }
+  AUTD3_API [[nodiscard]] native_methods::DatagramPtr ptr(const geometry::Geometry&) {
+    return native_methods::AUTDDatagramChangeModulationSegment(_segment);
+  }
 
  private:
   native_methods::Segment _segment;

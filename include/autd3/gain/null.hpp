@@ -14,8 +14,15 @@ namespace autd3::gain {
 class Null final : public driver::Gain<Null>, public IntoCache<Null>, public IntoTransform<Null> {
  public:
   Null() = default;
+  Null(const Null& obj) = default;
+  Null& operator=(const Null& obj) = default;
+  Null(Null&& obj) = default;
+  Null& operator=(Null&& obj) = default;
+  ~Null() override = default;  // LCOV_EXCL_LINE
 
-  [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry&) const override { return native_methods::AUTDGainNull(); }
+  AUTD3_API [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry&) const override {
+    return native_methods::AUTDGainNull();
+  }
 };
 
 }  // namespace autd3::gain

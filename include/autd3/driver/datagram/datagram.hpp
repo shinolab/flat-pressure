@@ -19,7 +19,7 @@ class NullDatagram final {
   NullDatagram(NullDatagram&& obj) = default;
   NullDatagram& operator=(NullDatagram&& obj) = default;
 
-  [[nodiscard]] static native_methods::DatagramPtr ptr(const geometry::Geometry&) { return native_methods::DatagramPtr{nullptr}; }
+  AUTD3_API [[nodiscard]] static native_methods::DatagramPtr ptr(const geometry::Geometry&) { return native_methods::DatagramPtr{nullptr}; }
 };
 
 }  // namespace autd3::driver

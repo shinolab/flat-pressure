@@ -19,8 +19,7 @@ TEST(Link, SOEM) {
                   .with_timeout(std::chrono::milliseconds(200));
 
 #ifdef RUN_LINK_SOEM
-  auto autd =
-      autd3::controller::ControllerBuilder().add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero())).open_async(std::move(link)).get();
+  auto autd = autd3::controller::ControllerBuilder().add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero())).open(std::move(link));
 
   autd.close();
 #else
@@ -32,7 +31,7 @@ TEST(Link, RemoteSOEM) {
   auto link = autd3::link::RemoteSOEM::builder("127.0.0.1:8080").with_timeout(std::chrono::milliseconds(200));
 #ifdef RUN_LINK_REMOTE_SOEM
 
-  auto autd = autd3::controller::ControllerBuilder().add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero())).open(std::move(link)).get();
+  auto autd = autd3::controller::ControllerBuilder().add_device(autd3::driver::AUTD3(autd3::driver::Vector3::Zero())).open(std::move(link));
 
   autd.close();
 #else

@@ -18,12 +18,18 @@ namespace autd3::gain {
 class Plane final : public driver::Gain<Plane>, public IntoCache<Plane>, public IntoTransform<Plane> {
  public:
   explicit Plane(driver::Vector3 d) : _dir(std::move(d)), _phase(driver::Phase(0)), _intensity(driver::EmitIntensity::maximum()) {}
+  Plane() = delete;
+  Plane(const Plane& obj) = default;
+  Plane& operator=(const Plane& obj) = default;
+  Plane(Plane&& obj) = default;
+  Plane& operator=(Plane&& obj) = default;
+  ~Plane() override = default;  // LCOV_EXCL_LINE
 
   AUTD3_DEF_PROP(driver::Vector3, dir)
   AUTD3_DEF_PARAM(Plane, driver::Phase, phase)
   AUTD3_DEF_PARAM_INTENSITY(Plane, intensity)
 
-  [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry&) const override {
+  AUTD3_API [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry&) const override {
     return native_methods::AUTDGainPlane(_dir.x(), _dir.y(), _dir.z(), _intensity.value(), _phase.value());
   }
 };

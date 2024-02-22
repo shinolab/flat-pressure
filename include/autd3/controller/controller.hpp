@@ -54,23 +54,23 @@ class Controller {
     }
   }
 
-  [[nodiscard]] const driver::geometry::Geometry& geometry() const { return _geometry; }
-  [[nodiscard]] driver::geometry::Geometry& geometry() { return _geometry; }
+  AUTD3_API [[nodiscard]] const driver::geometry::Geometry& geometry() const { return _geometry; }
+  AUTD3_API [[nodiscard]] driver::geometry::Geometry& geometry() { return _geometry; }
 
-  [[nodiscard]] L& link() { return _link; }
-  [[nodiscard]] const L& link() const { return _link; }
+  AUTD3_API [[nodiscard]] L& link() { return _link; }
+  AUTD3_API [[nodiscard]] const L& link() const { return _link; }
 
   /**
    * @brief Close connection
    */
-  bool close() const { return validate(AUTDControllerClose(_ptr)) == native_methods::AUTD3_TRUE; }
+  AUTD3_API bool close() const { return validate(AUTDControllerClose(_ptr)) == native_methods::AUTD3_TRUE; }
 
   /**
    * @brief Get FPGA information
    *
    * @return List of FPGA information
    */
-  [[nodiscard]] std::vector<std::optional<driver::FPGAState>> fpga_info() {
+  AUTD3_API [[nodiscard]] std::vector<std::optional<driver::FPGAState>> fpga_info() {
     const size_t num_devices = geometry().num_devices();
     std::vector<int32_t> info(num_devices);
     validate(AUTDControllerFPGAState(_ptr, info.data()));
@@ -87,7 +87,7 @@ class Controller {
    *
    * @return List of firmware information
    */
-  [[nodiscard]] std::vector<driver::FirmwareInfo> firmware_infos() {
+  AUTD3_API [[nodiscard]] std::vector<driver::FirmwareInfo> firmware_infos() {
     const auto handle = validate(AUTDControllerFirmwareInfoListPointer(_ptr));
     std::vector<driver::FirmwareInfo> ret;
     for (uint32_t i = 0; i < static_cast<uint32_t>(geometry().num_devices()); i++) {
@@ -111,7 +111,7 @@ class Controller {
    * data has been sent reliably or not.
    */
   template <driver::datagram D, typename Rep, typename Period>
-  bool send(D&& data, const std::chrono::duration<Rep, Period> timeout) {
+  AUTD3_API bool send(D&& data, const std::chrono::duration<Rep, Period> timeout) {
     return send(std::forward<D>(data), std::optional(timeout));
   }
 
@@ -127,7 +127,7 @@ class Controller {
    * data has been sent reliably or not.
    */
   template <driver::datagram D, typename Rep = uint64_t, typename Period = std::milli>
-  bool send(D&& data, const std::optional<std::chrono::duration<Rep, Period>> timeout = std::nullopt) {
+  AUTD3_API bool send(D&& data, const std::optional<std::chrono::duration<Rep, Period>> timeout = std::nullopt) {
     return send(std::forward<D>(data), driver::NullDatagram(), timeout);
   }
 
@@ -145,7 +145,7 @@ class Controller {
    * data has been sent reliably or not.
    */
   template <driver::datagram D1, driver::datagram D2, typename Rep, typename Period>
-  bool send(D1&& data1, D2&& data2, const std::chrono::duration<Rep, Period> timeout) {
+  AUTD3_API bool send(D1&& data1, D2&& data2, const std::chrono::duration<Rep, Period> timeout) {
     return send(std::forward<D1>(data1), std::forward<D2>(data2), std::optional(timeout));
   }
 
@@ -163,7 +163,7 @@ class Controller {
    * data has been sent reliably or not.
    */
   template <driver::datagram D1, driver::datagram D2, typename Rep = uint64_t, typename Period = std::milli>
-  bool send(D1&& data1, D2&& data2, const std::optional<std::chrono::duration<Rep, Period>> timeout = std::nullopt) {
+  AUTD3_API bool send(D1&& data1, D2&& data2, const std::optional<std::chrono::duration<Rep, Period>> timeout = std::nullopt) {
     const int64_t timeout_ns = timeout.has_value() ? std::chrono::duration_cast<std::chrono::nanoseconds>(timeout.value()).count() : -1;
     return validate(AUTDControllerSend(_ptr, data1.ptr(_geometry), data2.ptr(_geometry), timeout_ns)) == native_methods::AUTD3_TRUE;
   }
@@ -173,11 +173,11 @@ class Controller {
    public:
     using key_type = typename std::invoke_result_t<F, const driver::geometry::Device&>::value_type;
 
-    explicit GroupGuard(F map, Controller& controller)
+    AUTD3_API explicit GroupGuard(F map, Controller& controller)
         : _controller(controller), _map(std::move(map)), _kv_map(native_methods::AUTDControllerGroupCreateKVMap()) {}
 
     template <driver::datagram D, typename Rep = uint64_t, typename Period = std::milli>
-    GroupGuard set(const key_type key, D&& data, const std::optional<std::chrono::duration<Rep, Period>> timeout = std::nullopt) {
+    AUTD3_API GroupGuard set(const key_type key, D&& data, const std::optional<std::chrono::duration<Rep, Period>> timeout = std::nullopt) {
       if (_keymap.contains(key)) throw AUTDException("Key already exists");
       const int64_t timeout_ns = timeout.has_value() ? timeout.value().count() : -1;
       const auto ptr = data.ptr(_controller._geometry);
@@ -187,12 +187,13 @@ class Controller {
     }
 
     template <driver::datagram D, typename Rep, typename Period>
-    GroupGuard set(const key_type key, D&& data, const std::chrono::duration<Rep, Period> timeout) {
+    AUTD3_API GroupGuard set(const key_type key, D&& data, const std::chrono::duration<Rep, Period> timeout) {
       return set(key, std::forward<D>(data), std::optional(timeout));
     }
 
     template <driver::datagram D1, driver::datagram D2, typename Rep = uint64_t, typename Period = std::milli>
-    GroupGuard set(const key_type key, D1&& data1, D2&& data2, const std::optional<std::chrono::duration<Rep, Period>> timeout = std::nullopt) {
+    AUTD3_API GroupGuard set(const key_type key, D1&& data1, D2&& data2,
+                             const std::optional<std::chrono::duration<Rep, Period>> timeout = std::nullopt) {
       if (_keymap.contains(key)) throw AUTDException("Key already exists");
       const int64_t timeout_ns = timeout.has_value() ? timeout.value().count() : -1;
       const auto ptr1 = data1.ptr(_controller._geometry);
@@ -203,11 +204,11 @@ class Controller {
     }
 
     template <driver::datagram D1, driver::datagram D2, typename Rep, typename Period>
-    GroupGuard set(const key_type key, D1&& data1, D2&& data2, const std::chrono::duration<Rep, Period> timeout) {
+    AUTD3_API GroupGuard set(const key_type key, D1&& data1, D2&& data2, const std::chrono::duration<Rep, Period> timeout) {
       return set(key, std::forward<D1>(data1), std::forward<D2>(data2), std::optional(timeout));
     }
 
-    bool send() {
+    AUTD3_API bool send() {
       std::vector<int32_t> map;
       map.reserve(_controller.geometry().num_devices());
       std::transform(_controller.geometry().cbegin(), _controller.geometry().cend(), std::back_inserter(map),
@@ -220,7 +221,7 @@ class Controller {
     }
 
 #ifdef AUTD3_ASYNC_API
-    [[nodiscard]] coro::task<bool> send_async() { co_return send(); }
+    AUTD3_API [[nodiscard]] coro::task<bool> send_async() { co_return send(); }
 #endif
 
    private:
@@ -232,7 +233,7 @@ class Controller {
   };
 
   template <group_f F>
-  GroupGuard<F> group(const F& map) {
+  AUTD3_API GroupGuard<F> group(const F& map) {
     return GroupGuard<F>(map, *this);
   }
 
@@ -240,13 +241,13 @@ class Controller {
   /**
    * @brief Close connection
    */
-  [[nodiscard]] coro::task<bool> close_async() const { co_return close(); }
+  AUTD3_API [[nodiscard]] coro::task<bool> close_async() const { co_return close(); }
   /**
    * @brief Get FPGA information
    *
    * @return List of FPGA information
    */
-  [[nodiscard]] coro::task<std::vector<std::optional<driver::FPGAState>>> fpga_info_async() { co_return fpga_info(); }
+  AUTD3_API [[nodiscard]] coro::task<std::vector<std::optional<driver::FPGAState>>> fpga_info_async() { co_return fpga_info(); }
 
   /**
    * @brief Send data to the devices
@@ -260,7 +261,7 @@ class Controller {
    * data has been sent reliably or not.
    */
   template <driver::datagram D, typename Rep, typename Period>
-  coro::task<bool> send_async(D&& data, const std::chrono::duration<Rep, Period> timeout) {
+  AUTD3_API [[nodiscard]] coro::task<bool> send_async(D&& data, const std::chrono::duration<Rep, Period> timeout) {
     auto res = co_await send_async(std::forward<D>(data), std::optional(timeout));
     co_return res;
   }
@@ -277,7 +278,7 @@ class Controller {
    * data has been sent reliably or not.
    */
   template <driver::datagram D, typename Rep = uint64_t, typename Period = std::milli>
-  coro::task<bool> send_async(D&& data, const std::optional<std::chrono::duration<Rep, Period>> timeout = std::nullopt) {
+  AUTD3_API [[nodiscard]] coro::task<bool> send_async(D&& data, const std::optional<std::chrono::duration<Rep, Period>> timeout = std::nullopt) {
     auto res = co_await send_async(std::forward<D>(data), driver::NullDatagram(), timeout);
     co_return res;
   }
@@ -296,7 +297,7 @@ class Controller {
    * data has been sent reliably or not.
    */
   template <driver::datagram D1, driver::datagram D2, typename Rep, typename Period>
-  coro::task<bool> send_async(D1&& data1, D2&& data2, const std::chrono::duration<Rep, Period> timeout) {
+  AUTD3_API [[nodiscard]] coro::task<bool> send_async(D1&& data1, D2&& data2, const std::chrono::duration<Rep, Period> timeout) {
     auto res = co_await send_async(std::forward<D1>(data1), std::forward<D2>(data2), std::optional(timeout));
     co_return res;
   }
@@ -315,7 +316,8 @@ class Controller {
    * data has been sent reliably or not.
    */
   template <driver::datagram D1, driver::datagram D2, typename Rep = uint64_t, typename Period = std::milli>
-  coro::task<bool> send_async(D1&& data1, D2&& data2, const std::optional<std::chrono::duration<Rep, Period>> timeout = std::nullopt) {
+  AUTD3_API [[nodiscard]] coro::task<bool> send_async(D1&& data1, D2&& data2,
+                                                      const std::optional<std::chrono::duration<Rep, Period>> timeout = std::nullopt) {
     const int64_t timeout_ns = timeout.has_value() ? std::chrono::duration_cast<std::chrono::nanoseconds>(timeout.value()).count() : -1;
     co_return validate(AUTDControllerSend(_ptr, data1.ptr(_geometry), data2.ptr(_geometry), timeout_ns)) == native_methods::AUTD3_TRUE;
   }
@@ -325,11 +327,11 @@ class Controller {
    *
    * @return List of firmware information
    */
-  [[nodiscard]] coro::task<std::vector<driver::FirmwareInfo>> firmware_infos_async() { co_return firmware_infos(); }
+  AUTD3_API [[nodiscard]] coro::task<std::vector<driver::FirmwareInfo>> firmware_infos_async() { co_return firmware_infos(); }
 #endif
 
  private:
-  Controller(driver::geometry::Geometry geometry, const native_methods::ControllerPtr ptr, L link)
+  AUTD3_API Controller(driver::geometry::Geometry geometry, const native_methods::ControllerPtr ptr, L link)
       : _geometry(std::move(geometry)), _ptr(ptr), _link(std::move(link)) {}
 
   driver::geometry::Geometry _geometry;

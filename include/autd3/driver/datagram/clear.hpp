@@ -11,6 +11,6 @@ class Clear final {
  public:
   Clear() = default;
 
-  [[nodiscard]] static native_methods::DatagramPtr ptr(const geometry::Geometry&) { return native_methods::AUTDDatagramClear(); }
+  AUTD3_API [[nodiscard]] static native_methods::DatagramPtr ptr(const geometry::Geometry&) { return native_methods::AUTDDatagramClear(); }
 };
 }  // namespace autd3::driver
