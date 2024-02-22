@@ -14,7 +14,7 @@
 #include "autd3/driver/datagram/datagram.hpp"
 #include "autd3/driver/datagram/debug.hpp"
 #include "autd3/driver/datagram/force_fan.hpp"
-#include "autd3/driver/datagram/mod_delay.hpp"
+#include "autd3/driver/datagram/phase_filter.hpp"
 #include "autd3/driver/datagram/reads_fpga_state.hpp"
 #include "autd3/driver/datagram/silencer.hpp"
 #include "autd3/driver/datagram/stm/focus.hpp"
@@ -64,16 +64,21 @@ using driver::geometry::Transducer;
 
 using driver::Drive;
 using driver::EmitIntensity;
+using driver::LoopBehavior;
 using driver::Phase;
 using gain::Gain;
 constexpr driver::UnitPhaseRad phase_rad = driver::rad;
 using driver::SamplingConfiguration;
 using modulation::Modulation;
 
+using driver::ChangeFocusSTMSegment;
+using driver::ChangeGainSegment;
+using driver::ChangeGainSTMSegment;
+using driver::ChangeModulationSegment;
 using driver::Clear;
 using driver::ConfigureDebugOutputIdx;
 using driver::ConfigureForceFan;
-using driver::ConfigureModDelay;
+using driver::ConfigurePhaseFilter;
 using driver::ConfigureReadsFPGAState;
 using driver::ConfigureSilencer;
 using driver::ControlPoint;
@@ -104,5 +109,7 @@ using controller::Controller;
 using controller::ControllerBuilder;
 
 using native_methods::TimerStrategy;
+
+using native_methods::Segment;
 
 }  // namespace autd3

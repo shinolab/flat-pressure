@@ -48,9 +48,9 @@ class Gain : public IGain, public DatagramS<native_methods::GainPtr> {
 template <class G>
 concept gain = std::derived_from<std::remove_reference_t<G>, IGain>;
 
-class AUTDDatagramChangeGainSegment final {
+class ChangeGainSegment final {
  public:
-  explicit AUTDDatagramChangeGainSegment(const native_methods::Segment segment) : _segment(segment){};
+  explicit ChangeGainSegment(const native_methods::Segment segment) : _segment(segment){};
 
   [[nodiscard]] native_methods::DatagramPtr ptr(const geometry::Geometry&) { return native_methods::AUTDDatagramChangeGainSegment(_segment); }
 

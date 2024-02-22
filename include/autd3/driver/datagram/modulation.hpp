@@ -29,7 +29,7 @@ class Modulation : public DatagramS<native_methods::ModulationPtr> {
 
   [[nodiscard]] native_methods::DatagramPtr ptr(const geometry::Geometry&) const { return AUTDModulationIntoDatagram(modulation_ptr()); }
 
-  [[nodiscard]] native_methods::ModulationPtr raw_ptr(const geometry::Geometry& geometry) const override { return modulation_ptr(); }
+  [[nodiscard]] native_methods::ModulationPtr raw_ptr(const geometry::Geometry&) const override { return modulation_ptr(); }
 
   [[nodiscard]] native_methods::DatagramPtr into_segment(const native_methods::ModulationPtr p, const native_methods::Segment segment,
                                                          const bool update_segment) const override {
@@ -71,9 +71,9 @@ class ModulationWithSamplingConfig : public Modulation<M> {
   }
 };
 
-class AUTDDatagramChangeModulationSegment final {
+class ChangeModulationSegment final {
  public:
-  explicit AUTDDatagramChangeModulationSegment(const native_methods::Segment segment) : _segment(segment){};
+  explicit ChangeModulationSegment(const native_methods::Segment segment) : _segment(segment){};
 
   [[nodiscard]] native_methods::DatagramPtr ptr(const geometry::Geometry&) { return native_methods::AUTDDatagramChangeModulationSegment(_segment); }
 

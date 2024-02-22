@@ -3,6 +3,10 @@
 #include <chrono>
 #include <string>
 
+#ifdef AUTD3_ASYNC_API
+#include <coro/coro.hpp>
+#endif
+
 #include "autd3/driver/geometry/geometry.hpp"
 #include "autd3/native_methods.hpp"
 #include "autd3/native_methods/utils.hpp"

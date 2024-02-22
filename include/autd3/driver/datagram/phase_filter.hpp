@@ -24,7 +24,7 @@ class ConfigurePhaseFilter final {
  public:
   explicit ConfigurePhaseFilter(F f) : _f(std::move(f)) {
     _f_native = +[](const void* context, const native_methods::GeometryPtr geometry_ptr, const uint32_t dev_idx, const uint8_t tr_idx) -> Phase {
-      const dev_ptr = AUTDDevice(geometry_ptr, dev_idx);
+      const auto dev_ptr = AUTDDevice(geometry_ptr, dev_idx);
       const geometry::Device dev(dev_idx, dev_ptr);
       const geometry::Transducer tr(tr_idx, dev_ptr);
       return static_cast<const ConfigurePhaseFilter*>(context)->_f(dev, tr);

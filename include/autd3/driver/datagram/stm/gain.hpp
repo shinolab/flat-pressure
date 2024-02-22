@@ -141,9 +141,9 @@ class GainSTM final : public STM, public DatagramS<native_methods::GainSTMPtr> {
   std::optional<native_methods::GainSTMMode> _mode;
 };
 
-class AUTDDatagramChangeGainSTMSegment final {
+class ChangeGainSTMSegment final {
  public:
-  explicit AUTDDatagramChangeGainSTMSegment(const native_methods::Segment segment) : _segment(segment){};
+  explicit ChangeGainSTMSegment(const native_methods::Segment segment) : _segment(segment){};
 
   [[nodiscard]] native_methods::DatagramPtr ptr(const geometry::Geometry&) { return native_methods::AUTDDatagramChangeGainSTMSegment(_segment); }
 
