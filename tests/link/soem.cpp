@@ -12,7 +12,7 @@ TEST(Link, SOEM) {
                   .with_buf_size(32)
                   .with_send_cycle(2)
                   .with_sync0_cycle(2)
-                  .with_err_handler([](const uint16_t slave, const autd3::link::Status status, const std::string& msg) {})
+                  .with_err_handler([](const uint16_t, const autd3::link::Status, const std::string&) {})
                   .with_timer_strategy(autd3::native_methods::TimerStrategy::Sleep)
                   .with_sync_mode(autd3::native_methods::SyncMode::FreeRun)
                   .with_state_check_interval(std::chrono::milliseconds(100))
