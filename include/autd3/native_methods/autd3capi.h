@@ -403,9 +403,14 @@ ModulationPtr AUTDModulationCustom(SamplingConfiguration config,
                                    uint64_t len,
                                    LoopBehavior loop_behavior);
 
-[[nodiscard]] ModulationPtr AUTDModulationFourier(const ModulationPtr *components, uint32_t size);
+[[nodiscard]]
+ModulationPtr AUTDModulationFourier(const ModulationPtr *components,
+                                    uint32_t size,
+                                    LoopBehavior loop_behavior);
 
-[[nodiscard]] ModulationPtr AUTDModulationWithRadiationPressure(ModulationPtr m);
+[[nodiscard]]
+ModulationPtr AUTDModulationWithRadiationPressure(ModulationPtr m,
+                                                  LoopBehavior loop_behavior);
 
 [[nodiscard]]
 ModulationPtr AUTDModulationSine(double freq,
@@ -429,11 +434,15 @@ ModulationPtr AUTDModulationSquare(double freq,
 
 [[nodiscard]] bool AUTDModulationSquareIsDefault(ModulationPtr square);
 
-[[nodiscard]] ModulationPtr AUTDModulationStatic(uint8_t intensity);
+[[nodiscard]] ModulationPtr AUTDModulationStatic(uint8_t intensity, LoopBehavior loop_behavior);
 
 [[nodiscard]] bool AUTDModulationStaticIsDefault(ModulationPtr s);
 
-[[nodiscard]] ModulationPtr AUTDModulationWithTransform(ModulationPtr m, void* f, void* context);
+[[nodiscard]]
+ModulationPtr AUTDModulationWithTransform(ModulationPtr m,
+                                          void* f,
+                                          void* context,
+                                          LoopBehavior loop_behavior);
 
 [[nodiscard]] STMPropsPtr AUTDSTMPropsFromFreq(double freq);
 

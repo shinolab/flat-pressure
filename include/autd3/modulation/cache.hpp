@@ -12,7 +12,7 @@ namespace autd3::modulation {
  * @brief Modulation to cache the result of calculation
  */
 template <class M>
-class Cache final : public driver::Modulation {
+class Cache final : public driver::Modulation<Cache<M>> {
  public:
   explicit Cache(M m) : _m(std::move(m)), _cache(std::make_shared<std::vector<driver::EmitIntensity>>()) {}
   Cache(const Cache& v) = default;

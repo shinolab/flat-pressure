@@ -9,10 +9,10 @@ namespace autd3::modulation {
 /**
  * @brief Base class for custom modulation
  */
-class Modulation : public driver::Modulation {
+template <class M>
+class Modulation : public driver::Modulation<M> {
  public:
-  explicit Modulation(const driver::SamplingConfiguration config, const driver::LoopBehavior loop_behavior)
-      : _config(config), _loop_behavior(loop_behavior) {}
+  explicit Modulation(const driver::SamplingConfiguration config) : _config(config) {}
 
   [[nodiscard]] virtual std::vector<driver::EmitIntensity> calc() const = 0;
 
@@ -20,12 +20,11 @@ class Modulation : public driver::Modulation {
     const auto buffer = calc();
     const auto size = buffer.size();
     return AUTDModulationCustom(static_cast<native_methods::SamplingConfiguration>(_config), reinterpret_cast<const uint8_t*>(buffer.data()), size,
-                                static_cast<native_methods::LoopBehavior>(_loop_behavior));
+                                static_cast<native_methods::LoopBehavior>(this->_loop_behavior));
   }
 
  private:
   driver::SamplingConfiguration _config;
-  driver::LoopBehavior _loop_behavior;
 };
 
 }  // namespace autd3::modulation

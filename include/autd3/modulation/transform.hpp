@@ -16,11 +16,12 @@ concept modulation_transform_f = requires(F f, size_t idx, driver::EmitIntensity
  * @brief Modulation to transform the result of calculation
  */
 template <class M, modulation_transform_f F>
-class Transform final : public driver::Modulation, public IntoCache<Transform<M, F>>, public IntoRadiationPressure<Transform<M, F>> {
+class Transform final : public driver::Modulation<Transform<M, F>>, public IntoCache<Transform<M, F>>, public IntoRadiationPressure<Transform<M, F>> {
   using transform_f = uint8_t (*)(const void*, uint32_t, uint8_t);
 
  public:
   Transform(M m, F f) : _m(std::move(m)), _f(std::move(f)) {
+    this->_loop_behavior = _m.loop_behavior();
     _f_native = +[](const void* context, const uint32_t i, const uint8_t d) -> uint8_t {
       return static_cast<const Transform*>(context)->_f(static_cast<size_t>(i), driver::EmitIntensity(d)).value();
     };
@@ -28,7 +29,8 @@ class Transform final : public driver::Modulation, public IntoCache<Transform<M,
 
   [[nodiscard]] native_methods::ModulationPtr modulation_ptr() const override {
     return native_methods::AUTDModulationWithTransform(_m.modulation_ptr(), const_cast<void*>(reinterpret_cast<const void*>(_f_native)),
-                                                       const_cast<void*>(static_cast<const void*>(this)));
+                                                       const_cast<void*>(static_cast<const void*>(this)),
+                                                       static_cast<native_methods::LoopBehavior>(this->_loop_behavior));
   }
 
  private:

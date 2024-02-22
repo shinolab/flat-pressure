@@ -11,7 +11,7 @@ namespace autd3::modulation {
 /**
  * @brief Without modulation
  */
-class Static final : public driver::Modulation, public IntoCache<Static>, public IntoRadiationPressure<Static>, public IntoTransform<Static> {
+class Static final : public driver::Modulation<Static>, public IntoCache<Static>, public IntoRadiationPressure<Static>, public IntoTransform<Static> {
  public:
   Static() : Modulation(), _intensity(driver::EmitIntensity::maximum()) {}
   explicit Static(const uint8_t intensity) : _intensity(driver::EmitIntensity(intensity)) {}
@@ -22,7 +22,9 @@ class Static final : public driver::Modulation, public IntoCache<Static>, public
 
   [[nodiscard]] driver::EmitIntensity intensity() const { return _intensity; }
 
-  [[nodiscard]] native_methods::ModulationPtr modulation_ptr() const override { return native_methods::AUTDModulationStatic(_intensity.value()); }
+  [[nodiscard]] native_methods::ModulationPtr modulation_ptr() const override {
+    return native_methods::AUTDModulationStatic(_intensity.value(), static_cast<native_methods::LoopBehavior>(_loop_behavior));
+  }
 
  private:
   driver::EmitIntensity _intensity;

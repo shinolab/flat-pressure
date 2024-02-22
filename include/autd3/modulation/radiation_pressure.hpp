@@ -10,12 +10,12 @@ namespace autd3::modulation {
  * @brief Modulation for modulating radiation pressure
  */
 template <class M>
-class RadiationPressure final : public driver::Modulation, public IntoCache<RadiationPressure<M>> {
+class RadiationPressure final : public driver::Modulation<RadiationPressure<M>>, public IntoCache<RadiationPressure<M>> {
  public:
-  explicit RadiationPressure(M m) : _m(std::move(m)) {}
+  explicit RadiationPressure(M m) : _m(std::move(m)) { this->_loop_behavior = _m.loop_behavior(); }
 
   [[nodiscard]] native_methods::ModulationPtr modulation_ptr() const override {
-    return native_methods::AUTDModulationWithRadiationPressure(_m.modulation_ptr());
+    return native_methods::AUTDModulationWithRadiationPressure(_m.modulation_ptr(), static_cast<native_methods::LoopBehavior>(this->_loop_behavior));
   }
 
  private:

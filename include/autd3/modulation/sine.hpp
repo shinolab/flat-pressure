@@ -16,7 +16,6 @@ class Fourier;
  * @brief Sine wave modulation
  */
 class Sine final : public driver::ModulationWithSamplingConfig<Sine>,
-                   public driver::ModulationWithLoopBehavior<Sine>,
                    public IntoCache<Sine>,
                    public IntoTransform<Sine>,
                    public IntoRadiationPressure<Sine> {
@@ -30,7 +29,6 @@ class Sine final : public driver::ModulationWithSamplingConfig<Sine>,
    */
   explicit Sine(const double freq)
       : ModulationWithSamplingConfig(driver::SamplingConfiguration::from_frequency(4e3)),
-        ModulationWithLoopBehavior(),
         _freq(freq),
         _intensity(driver::EmitIntensity::maximum()),
         _offset(driver::EmitIntensity::maximum() / 2),

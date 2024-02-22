@@ -9,10 +9,11 @@
 TEST(Internal, FPGAState) {
   auto autd = create_controller();
 
-  ASSERT_TRUE(autd.send(autd3::driver::ConfigureReadsFPGAState([](const auto&) { return true; })));
   {
     for (const auto infos = autd.fpga_info(); auto info : infos) ASSERT_FALSE(info.has_value());
   }
+
+  ASSERT_TRUE(autd.send(autd3::driver::ConfigureReadsFPGAState([](const auto&) { return true; })));
 
   {
     autd.link().assert_thermal_sensor(0);
@@ -40,10 +41,11 @@ TEST(Internal, FPGAState) {
 TEST(Internal, FPGAStateAsync) {
   auto autd = create_controller();
 
-  ASSERT_TRUE(autd.send(autd3::driver::ConfigureReadsFPGAState([](const auto&) { return true; })));
   {
     for (const auto infos = autd.fpga_info(); auto info : infos) ASSERT_FALSE(info.has_value());
   }
+
+  ASSERT_TRUE(autd.send(autd3::driver::ConfigureReadsFPGAState([](const auto&) { return true; })));
 
   {
     autd.link().assert_thermal_sensor(0);

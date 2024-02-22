@@ -15,7 +15,6 @@ namespace autd3::modulation::audio_file {
  * @details The wav data is re-sampled to the sampling frequency of Modulation.
  */
 class Wav final : public driver::ModulationWithSamplingConfig<Wav>,
-                  public driver::ModulationWithLoopBehavior<Wav>,
                   public IntoCache<Wav>,
                   public IntoRadiationPressure<Wav>,
                   public IntoTransform<Wav> {
@@ -26,7 +25,7 @@ class Wav final : public driver::ModulationWithSamplingConfig<Wav>,
    * @param path Path to wav file
    */
   explicit Wav(std::filesystem::path path)
-      : ModulationWithSamplingConfig(driver::SamplingConfiguration::from_frequency(4e3)), ModulationWithLoopBehavior(), _path(std::move(path)) {}
+      : ModulationWithSamplingConfig(driver::SamplingConfiguration::from_frequency(4e3)), _path(std::move(path)) {}
 
   [[nodiscard]] native_methods::ModulationPtr modulation_ptr() const override {
     return validate(AUTDModulationWav(_path.string().c_str(), static_cast<native_methods::SamplingConfiguration>(_config),

@@ -15,8 +15,6 @@ namespace autd3::modulation {
  * @brief Square wave modulation
  */
 class Square final : public driver::ModulationWithSamplingConfig<Square>,
-                     public driver::ModulationWithLoopBehavior<Square>,
-
                      public IntoCache<Square>,
                      public IntoTransform<Square>,
                      public IntoRadiationPressure<Square> {
@@ -28,7 +26,6 @@ class Square final : public driver::ModulationWithSamplingConfig<Square>,
    */
   explicit Square(const double freq)
       : ModulationWithSamplingConfig(driver::SamplingConfiguration::from_frequency(4e3)),
-        ModulationWithLoopBehavior(),
         _freq(freq),
         _low(driver::EmitIntensity::minimum()),
         _high(driver::EmitIntensity::maximum()),

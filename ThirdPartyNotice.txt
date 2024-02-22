@@ -70,7 +70,7 @@ atomic-polyfill 1.0.3 (Apache-2.0 OR MIT)
 https://github.com/embassy-rs/atomic-polyfill
 ---------------------------------------------------------
 
-autd3 22.0.0 (MIT)
+autd3 22.0.1 (MIT)
 https://github.com/shinolab/autd3-rs
 ---------------------------------------------------------
 
@@ -78,27 +78,27 @@ autd3-backend-cuda 22.0.0 (MIT)
 https://github.com/shinolab/autd3-backend-cuda
 ---------------------------------------------------------
 
-autd3-derive 22.0.0 (MIT)
+autd3-derive 22.0.1 (MIT)
 https://github.com/shinolab/autd3-rs
 ---------------------------------------------------------
 
-autd3-driver 22.0.0 (MIT)
+autd3-driver 22.0.1 (MIT)
 https://github.com/shinolab/autd3-rs
 ---------------------------------------------------------
 
-autd3-firmware-emulator 22.0.0 (MIT)
+autd3-firmware-emulator 22.0.1 (MIT)
 https://github.com/shinolab/autd3-rs
 ---------------------------------------------------------
 
-autd3-gain-holo 22.0.0 (MIT)
+autd3-gain-holo 22.0.1 (MIT)
 https://github.com/shinolab/autd3-rs
 ---------------------------------------------------------
 
-autd3-link-simulator 22.0.0 (MIT)
+autd3-link-simulator 22.0.1 (MIT)
 https://github.com/shinolab/autd3-rs
 ---------------------------------------------------------
 
-autd3-link-soem 22.0.0
+autd3-link-soem 22.0.1
 https://github.com/shinolab/autd3-rs
 
 ---
@@ -164,7 +164,7 @@ SOEM write to Beckhoff Automation GmbH, Eiserstrasse 5, D-33415 Verl, Germany
 
 ---------------------------------------------------------
 
-autd3-link-twincat 22.0.0
+autd3-link-twincat 22.0.1
 https://github.com/shinolab/autd3-rs
 
 ---
@@ -220,40 +220,40 @@ autd3-link-visualizer 22.0.0 (MIT)
 https://github.com/shinolab/autd3-link-visualizer
 ---------------------------------------------------------
 
-autd3-modulation-audio-file 22.0.0 (MIT)
+autd3-modulation-audio-file 22.0.1 (MIT)
 https://github.com/shinolab/autd3-rs
 ---------------------------------------------------------
 
-autd3-protobuf 22.0.0 (MIT)
+autd3-protobuf 22.0.1 (MIT)
 https://github.com/shinolab/autd3-rs
 ---------------------------------------------------------
 
-autd3capi 22.0.0 (MIT)
+autd3capi 22.0.1 (MIT)
 ---------------------------------------------------------
 
-autd3capi-backend-cuda 22.0.0 (MIT)
+autd3capi-backend-cuda 22.0.1 (MIT)
 ---------------------------------------------------------
 
-autd3capi-def 22.0.0 (MIT)
+autd3capi-def 22.0.1 (MIT)
 https://github.com/shinolab/autd3
 ---------------------------------------------------------
 
-autd3capi-gain-holo 22.0.0 (MIT)
+autd3capi-gain-holo 22.0.1 (MIT)
 ---------------------------------------------------------
 
-autd3capi-link-simulator 22.0.0 (MIT)
+autd3capi-link-simulator 22.0.1 (MIT)
 ---------------------------------------------------------
 
-autd3capi-link-soem 22.0.0 (MIT)
+autd3capi-link-soem 22.0.1 (MIT)
 ---------------------------------------------------------
 
-autd3capi-link-twincat 22.0.0 (MIT)
+autd3capi-link-twincat 22.0.1 (MIT)
 ---------------------------------------------------------
 
-autd3capi-link-visualizer 22.0.0 (MIT)
+autd3capi-link-visualizer 22.0.1 (MIT)
 ---------------------------------------------------------
 
-autd3capi-modulation-audio-file 22.0.0 (MIT)
+autd3capi-modulation-audio-file 22.0.1 (MIT)
 ---------------------------------------------------------
 
 autocfg 1.1.0 (Apache-2.0 OR MIT)

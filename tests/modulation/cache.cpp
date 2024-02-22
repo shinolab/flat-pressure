@@ -27,7 +27,8 @@ TEST(Modulation, Cache) {
   }
 }
 
-class ForModulationCacheTest final : public autd3::modulation::Modulation, public autd3::modulation::IntoCache<ForModulationCacheTest> {
+class ForModulationCacheTest final : public autd3::modulation::Modulation<ForModulationCacheTest>,
+                                     public autd3::modulation::IntoCache<ForModulationCacheTest> {
  public:
   [[nodiscard]] std::vector<autd3::driver::EmitIntensity> calc() const override {
     ++*_cnt;
@@ -35,7 +36,7 @@ class ForModulationCacheTest final : public autd3::modulation::Modulation, publi
   }
 
   explicit ForModulationCacheTest(size_t* cnt) noexcept
-      : Modulation(autd3::driver::SamplingConfiguration::from_frequency_division(5120), autd3::driver::LoopBehavior::infinite()), _cnt(cnt) {}
+      : Modulation(autd3::driver::SamplingConfiguration::from_frequency_division(5120)), _cnt(cnt) {}
 
  private:
   size_t* _cnt;

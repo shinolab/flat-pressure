@@ -4,7 +4,7 @@
 
 #include "utils.hpp"
 
-class BurstModulation final : public autd3::modulation::Modulation {
+class BurstModulation final : public autd3::modulation::Modulation<BurstModulation> {
  public:
   [[nodiscard]] std::vector<autd3::driver::EmitIntensity> calc() const override {
     std::vector buffer(10, autd3::driver::EmitIntensity::minimum());
@@ -12,8 +12,7 @@ class BurstModulation final : public autd3::modulation::Modulation {
     return buffer;
   }
 
-  explicit BurstModulation() noexcept
-      : Modulation(autd3::driver::SamplingConfiguration::from_frequency_division(5120), autd3::driver::LoopBehavior::infinite()) {}
+  explicit BurstModulation() noexcept : Modulation(autd3::driver::SamplingConfiguration::from_frequency_division(5120)) {}
 };
 
 TEST(Modulation, Modulation) {

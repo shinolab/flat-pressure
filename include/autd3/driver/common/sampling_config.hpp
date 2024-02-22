@@ -5,12 +5,10 @@
 
 namespace autd3::driver {
 class STM;
-class Modulation;
 
 class SamplingConfiguration final {
  public:
   friend class STM;
-  friend class Modulation;
 
   [[nodiscard]] static SamplingConfiguration from_frequency(const double f) {
     return SamplingConfiguration(validate(native_methods::AUTDSamplingConfigFromFrequency(f)));

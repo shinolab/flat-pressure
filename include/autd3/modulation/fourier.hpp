@@ -16,7 +16,10 @@ concept fourier_sine_range = std::ranges::viewable_range<R> && std::same_as<std:
 /**
  * @brief Multi-frequency sine wave modulation
  */
-class Fourier final : public driver::Modulation, public IntoCache<Fourier>, public IntoTransform<Fourier>, public IntoRadiationPressure<Fourier> {
+class Fourier final : public driver::Modulation<Fourier>,
+                      public IntoCache<Fourier>,
+                      public IntoTransform<Fourier>,
+                      public IntoRadiationPressure<Fourier> {
  public:
   explicit Fourier(Sine component) { _components.emplace_back(std::move(component)); }
 
@@ -70,7 +73,8 @@ class Fourier final : public driver::Modulation, public IntoCache<Fourier>, publ
     std::vector<native_methods::ModulationPtr> components;
     components.reserve(_components.size());
     std::ranges::transform(_components, std::back_inserter(components), [&](const auto& m) { return m.modulation_ptr(); });
-    return AUTDModulationFourier(components.data(), static_cast<uint32_t>(components.size()));
+    return AUTDModulationFourier(components.data(), static_cast<uint32_t>(components.size()),
+                                 static_cast<native_methods::LoopBehavior>(_loop_behavior));
   }
 
  private:

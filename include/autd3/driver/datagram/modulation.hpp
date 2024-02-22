@@ -8,6 +8,7 @@
 
 namespace autd3::driver {
 
+template <class M>
 class Modulation {
  public:
   Modulation() : _loop_behavior(LoopBehavior::infinite()) {}
@@ -33,12 +34,18 @@ class Modulation {
 
   [[nodiscard]] LoopBehavior loop_behavior() const noexcept { return _loop_behavior; }
 
+  void with_loop_behavior(const LoopBehavior loop_behavior) & { _loop_behavior = loop_behavior; }
+  [[nodiscard]] M&& with_loop_behavior(const LoopBehavior loop_behavior) && {
+    _loop_behavior = loop_behavior;
+    return std::move(*static_cast<M*>(this));
+  }
+
  protected:
   LoopBehavior _loop_behavior;
 };
 
 template <class M>
-class ModulationWithSamplingConfig {
+class ModulationWithSamplingConfig : public Modulation<M> {
  protected:
   SamplingConfiguration _config;
 
@@ -48,19 +55,6 @@ class ModulationWithSamplingConfig {
   void with_sampling_config(const SamplingConfiguration config) & { _config = config; }
   [[nodiscard]] M&& with_sampling_config(const SamplingConfiguration config) && {
     _config = config;
-    return std::move(*static_cast<M*>(this));
-  }
-};
-
-template <class M>
-class ModulationWithLoopBehavior : public Modulation {
- protected:
-  explicit ModulationWithLoopBehavior() : Modulation() {}
-
- public:
-  void with_loop_behavior(const LoopBehavior loop_behavior) & { _loop_behavior = loop_behavior; }
-  [[nodiscard]] M&& with_loop_behavior(const LoopBehavior loop_behavior) && {
-    _loop_behavior = loop_behavior;
     return std::move(*static_cast<M*>(this));
   }
 };
