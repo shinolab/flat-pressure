@@ -16,7 +16,7 @@ class DatagramWithSegment {
   DatagramWithSegment(DatagramWithSegment&& obj) = default;
   DatagramWithSegment& operator=(DatagramWithSegment&& obj) = default;
 
-  [[nodiscard]] static native_methods::DatagramPtr ptr(const geometry::Geometry& g) {
+  [[nodiscard]] native_methods::DatagramPtr ptr(const geometry::Geometry& g) {
     auto raw_ptr = _datagram.raw_ptr(g);
     return _datagram.into_segment(raw_ptr, _segment, _update_segment);
   }
