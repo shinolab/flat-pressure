@@ -10,14 +10,14 @@
 namespace autd3::driver {
 
 template <class M>
-class Modulation : public DatagramS<native_methods::ModulationPtr> {
+class ModulationBase : public DatagramS<native_methods::ModulationPtr>, public IntoDatagramWithSegment<native_methods::ModulationPtr, M> {
  public:
-  Modulation() : _loop_behavior(LoopBehavior::infinite()) {}
-  Modulation(const Modulation& obj) = default;
-  Modulation& operator=(const Modulation& obj) = default;
-  Modulation(Modulation&& obj) = default;
-  Modulation& operator=(Modulation&& obj) = default;
-  virtual ~Modulation() = default;  // LCOV_EXCL_LINE
+  ModulationBase() : _loop_behavior(LoopBehavior::infinite()) {}
+  ModulationBase(const ModulationBase& obj) = default;
+  ModulationBase& operator=(const ModulationBase& obj) = default;
+  ModulationBase(ModulationBase&& obj) = default;
+  ModulationBase& operator=(ModulationBase&& obj) = default;
+  virtual ~ModulationBase() = default;  // LCOV_EXCL_LINE
 
   /**
    * @brief Get sampling frequency division
@@ -50,28 +50,8 @@ class Modulation : public DatagramS<native_methods::ModulationPtr> {
     return std::move(*static_cast<M*>(this));
   }
 
-  AUTD3_API [[nodiscard]] DatagramWithSegment<native_methods::ModulationPtr> with_segment(const native_methods::Segment segment,
-                                                                                          const bool update_segment) {
-    return DatagramWithSegment<native_methods::ModulationPtr>(std::make_unique<M>((std::move(*static_cast<M*>(this)))), segment, update_segment);
-  }
-
  protected:
   LoopBehavior _loop_behavior;
-};
-
-template <class M>
-class ModulationWithSamplingConfig : public Modulation<M> {
- protected:
-  SamplingConfiguration _config;
-
-  explicit ModulationWithSamplingConfig(const SamplingConfiguration config) : _config(config) {}
-
- public:
-  AUTD3_API void with_sampling_config(const SamplingConfiguration config) & { _config = config; }
-  AUTD3_API [[nodiscard]] M&& with_sampling_config(const SamplingConfiguration config) && {
-    _config = config;
-    return std::move(*static_cast<M*>(this));
-  }
 };
 
 class ChangeModulationSegment final {

@@ -1,9 +1,7 @@
 #pragma once
 
 #include "autd3/driver/common/emit_intensity.hpp"
-#include "autd3/modulation/cache.hpp"
-#include "autd3/modulation/radiation_pressure.hpp"
-#include "autd3/modulation/transform.hpp"
+#include "autd3/driver/datagram/modulation/modulation.hpp"
 #include "autd3/native_methods.hpp"
 
 namespace autd3::modulation {
@@ -11,9 +9,12 @@ namespace autd3::modulation {
 /**
  * @brief Without modulation
  */
-class Static final : public driver::Modulation<Static>, public IntoCache<Static>, public IntoRadiationPressure<Static>, public IntoTransform<Static> {
+class Static final : public driver::ModulationBase<Static>,
+                     public driver::IntoModulationCache<Static>,
+                     public driver::IntoRadiationPressure<Static>,
+                     public driver::IntoModulationTransform<Static> {
  public:
-  Static() : Modulation(), _intensity(driver::EmitIntensity::maximum()) {}
+  Static() : ModulationBase(), _intensity(driver::EmitIntensity::maximum()) {}
   explicit Static(const uint8_t intensity) : _intensity(driver::EmitIntensity(intensity)) {}
   explicit Static(const driver::EmitIntensity intensity) : _intensity(intensity) {}
 

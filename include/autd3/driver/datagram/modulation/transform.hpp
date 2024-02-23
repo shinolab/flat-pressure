@@ -1,8 +1,8 @@
 #pragma once
 
-#include "autd3/driver/datagram/modulation.hpp"
-#include "autd3/modulation/cache.hpp"
-#include "autd3/modulation/radiation_pressure.hpp"
+#include "autd3/driver/datagram/modulation/base.hpp"
+#include "autd3/driver/datagram/modulation/radiation_pressure.hpp"
+#include "autd3/driver/datagram/modulation/transform.hpp"
 #include "autd3/native_methods.hpp"
 
 namespace autd3::modulation {
@@ -16,7 +16,9 @@ concept modulation_transform_f = requires(F f, size_t idx, driver::EmitIntensity
  * @brief Modulation to transform the result of calculation
  */
 template <class M, modulation_transform_f F>
-class Transform final : public driver::Modulation<Transform<M, F>>, public IntoCache<Transform<M, F>>, public IntoRadiationPressure<Transform<M, F>> {
+class Transform final : public driver::ModulationBase<Transform<M, F>>,
+                        public driver::IntoModulationCache<Transform<M, F>>,
+                        public driver::IntoRadiationPressure<Transform<M, F>> {
   using transform_f = uint8_t (*)(const void*, uint32_t, uint8_t);
 
  public:
@@ -39,17 +41,21 @@ class Transform final : public driver::Modulation<Transform<M, F>>, public IntoC
   transform_f _f_native;
 };
 
+}  // namespace autd3::modulation
+
+namespace autd3::driver {
+
 template <class M>
-class IntoTransform {
+class IntoModulationTransform {
  public:
-  template <modulation_transform_f F>
-  AUTD3_API [[nodiscard]] Transform<M, F> with_transform(F f) & {
-    return Transform(*static_cast<M*>(this), std::move(f));
+  template <modulation::modulation_transform_f F>
+  AUTD3_API [[nodiscard]] modulation::Transform<M, F> with_transform(F f) & {
+    return modulation::Transform(*static_cast<M*>(this), std::move(f));
   }
-  template <modulation_transform_f F>
-  AUTD3_API [[nodiscard]] Transform<M, F> with_transform(F f) && {
-    return Transform(std::move(*static_cast<M*>(this)), std::move(f));
+  template <modulation::modulation_transform_f F>
+  AUTD3_API [[nodiscard]] modulation::Transform<M, F> with_transform(F f) && {
+    return modulation::Transform(std::move(*static_cast<M*>(this)), std::move(f));
   }
 };
 
-}  // namespace autd3::modulation
+}  // namespace autd3::driver

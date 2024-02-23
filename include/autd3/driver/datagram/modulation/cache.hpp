@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "autd3/driver/common/emit_intensity.hpp"
-#include "autd3/driver/datagram/modulation.hpp"
+#include "autd3/driver/datagram/modulation/base.hpp"
 #include "autd3/native_methods.hpp"
 
 namespace autd3::modulation {
@@ -12,7 +12,7 @@ namespace autd3::modulation {
  * @brief Modulation to cache the result of calculation
  */
 template <class M>
-class Cache final : public driver::Modulation<Cache<M>> {
+class Cache final : public driver::ModulationBase<Cache<M>> {
  public:
   explicit Cache(M m) : _m(std::move(m)), _cache(std::make_shared<std::vector<driver::EmitIntensity>>()) {}
   Cache(const Cache& v) = default;
@@ -56,11 +56,15 @@ class Cache final : public driver::Modulation<Cache<M>> {
   mutable std::optional<driver::SamplingConfiguration> _sampling_config;
 };
 
+}  // namespace autd3::modulation
+
+namespace autd3::driver {
+
 template <class M>
-class IntoCache {
+class IntoModulationCache {
  public:
-  AUTD3_API [[nodiscard]] Cache<M> with_cache() & { return Cache(*static_cast<M*>(this)); }
-  AUTD3_API [[nodiscard]] Cache<M> with_cache() && { return Cache(std::move(*static_cast<M*>(this))); }
+  AUTD3_API [[nodiscard]] modulation::Cache<M> with_cache() & { return modulation::Cache(*static_cast<M*>(this)); }
+  AUTD3_API [[nodiscard]] modulation::Cache<M> with_cache() && { return modulation::Cache(std::move(*static_cast<M*>(this))); }
 };
 
-}  // namespace autd3::modulation
+}  // namespace autd3::driver

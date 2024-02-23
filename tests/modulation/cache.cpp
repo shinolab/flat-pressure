@@ -27,8 +27,7 @@ TEST(Modulation, Cache) {
   }
 }
 
-class ForModulationCacheTest final : public autd3::modulation::Modulation<ForModulationCacheTest>,
-                                     public autd3::modulation::IntoCache<ForModulationCacheTest> {
+class ForModulationCacheTest final : public autd3::modulation::Modulation<ForModulationCacheTest> {
  public:
   AUTD3_API [[nodiscard]] std::vector<autd3::driver::EmitIntensity> calc() const override {
     ++*_cnt;

@@ -2,9 +2,7 @@
 
 #include "autd3/driver/common/emit_intensity.hpp"
 #include "autd3/driver/common/phase.hpp"
-#include "autd3/modulation/cache.hpp"
-#include "autd3/modulation/radiation_pressure.hpp"
-#include "autd3/modulation/transform.hpp"
+#include "autd3/driver/datagram/modulation/modulation.hpp"
 #include "autd3/native_methods.hpp"
 #include "autd3/native_methods/utils.hpp"
 
@@ -15,10 +13,7 @@ class Fourier;
 /**
  * @brief Sine wave modulation
  */
-class Sine final : public driver::ModulationWithSamplingConfig<Sine>,
-                   public IntoCache<Sine>,
-                   public IntoTransform<Sine>,
-                   public IntoRadiationPressure<Sine> {
+class Sine final : public driver::Modulation<Sine> {
  public:
   /**
    * @brief Constructor.
@@ -28,7 +23,7 @@ class Sine final : public driver::ModulationWithSamplingConfig<Sine>,
    * @param freq Frequency of sine wave
    */
   explicit Sine(const double freq)
-      : ModulationWithSamplingConfig(driver::SamplingConfiguration::from_frequency(4e3)),
+      : Modulation(driver::SamplingConfiguration::from_frequency(4e3)),
         _freq(freq),
         _intensity(driver::EmitIntensity::maximum()),
         _offset(driver::EmitIntensity::maximum() / 2),

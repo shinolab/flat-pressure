@@ -3,9 +3,7 @@
 #pragma once
 
 #include "autd3/driver/common/emit_intensity.hpp"
-#include "autd3/modulation/cache.hpp"
-#include "autd3/modulation/radiation_pressure.hpp"
-#include "autd3/modulation/transform.hpp"
+#include "autd3/driver/datagram/modulation/modulation.hpp"
 #include "autd3/native_methods.hpp"
 #include "autd3/native_methods/utils.hpp"
 
@@ -14,10 +12,7 @@ namespace autd3::modulation {
 /**
  * @brief Square wave modulation
  */
-class Square final : public driver::ModulationWithSamplingConfig<Square>,
-                     public IntoCache<Square>,
-                     public IntoTransform<Square>,
-                     public IntoRadiationPressure<Square> {
+class Square final : public driver::Modulation<Square> {
  public:
   /**
    * @brief Constructor
@@ -25,7 +20,7 @@ class Square final : public driver::ModulationWithSamplingConfig<Square>,
    * @param freq Frequency of square wave
    */
   explicit Square(const double freq)
-      : ModulationWithSamplingConfig(driver::SamplingConfiguration::from_frequency(4e3)),
+      : Modulation(driver::SamplingConfiguration::from_frequency(4e3)),
         _freq(freq),
         _low(driver::EmitIntensity::minimum()),
         _high(driver::EmitIntensity::maximum()),

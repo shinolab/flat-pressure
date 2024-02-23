@@ -2,10 +2,8 @@
 
 #include <numeric>
 
-#include "autd3/modulation/cache.hpp"
-#include "autd3/modulation/radiation_pressure.hpp"
+#include "autd3/driver/datagram/modulation/modulation.hpp"
 #include "autd3/modulation/sine.hpp"
-#include "autd3/modulation/transform.hpp"
 #include "autd3/native_methods.hpp"
 
 namespace autd3::modulation {
@@ -16,12 +14,12 @@ concept fourier_sine_range = std::ranges::viewable_range<R> && std::same_as<std:
 /**
  * @brief Multi-frequency sine wave modulation
  */
-class Fourier final : public driver::Modulation<Fourier>,
-                      public IntoCache<Fourier>,
-                      public IntoTransform<Fourier>,
-                      public IntoRadiationPressure<Fourier> {
+class Fourier final : public driver::ModulationBase<Fourier>,
+                      public driver::IntoModulationCache<Fourier>,
+                      public driver::IntoRadiationPressure<Fourier>,
+                      public driver::IntoModulationTransform<Fourier> {
  public:
-  explicit Fourier(Sine component) { _components.emplace_back(std::move(component)); }
+  explicit Fourier(Sine component) : ModulationBase() { _components.emplace_back(std::move(component)); }
 
   AUTD3_API void add_component(Sine component) & { _components.emplace_back(std::move(component)); }
 

@@ -6,13 +6,13 @@
 namespace autd3::driver {
 class STM;
 template <class M>
-class Modulation;
+class ModulationBase;
 
 class SamplingConfiguration final {
  public:
   friend class STM;
   template <class M>
-  friend class Modulation;
+  friend class ModulationBase;
 
   AUTD3_API [[nodiscard]] static SamplingConfiguration from_frequency(const double f) {
     return SamplingConfiguration(validate(native_methods::AUTDSamplingConfigFromFrequency(f)));
