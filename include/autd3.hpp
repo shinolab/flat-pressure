@@ -31,14 +31,11 @@
 #include "autd3/gain/plane.hpp"
 #include "autd3/gain/trans_test.hpp"
 #include "autd3/gain/uniform.hpp"
-#include "autd3/modulation/cache.hpp"
 #include "autd3/modulation/fourier.hpp"
 #include "autd3/modulation/modulation.hpp"
-#include "autd3/modulation/radiation_pressure.hpp"
 #include "autd3/modulation/sine.hpp"
 #include "autd3/modulation/square.hpp"
 #include "autd3/modulation/static.hpp"
-#include "autd3/modulation/transform.hpp"
 
 namespace autd3 {
 
