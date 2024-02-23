@@ -12,7 +12,7 @@
 namespace autd3::driver {
 
 template <class G>
-class Gain : public GainBase, public IntoDatagramWithSegment<native_methods::GainPtr, G>, public IntoCache<G>, public IntoTransform<G> {
+class Gain : public GainBase, public IntoDatagramWithSegment<native_methods::GainPtr, G>, public IntoGainCache<G>, public IntoGainTransform<G> {
  public:
   Gain() = default;
   Gain(const Gain& obj) = default;

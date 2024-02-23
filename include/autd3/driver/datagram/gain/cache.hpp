@@ -76,14 +76,14 @@ class Cache final : public driver::GainBase, public driver::IntoDatagramWithSegm
 
 namespace autd3::driver {
 template <class G>
-class IntoCache {
+class IntoGainCache {
  public:
-  IntoCache() = default;
-  IntoCache(const IntoCache& obj) = default;
-  IntoCache& operator=(const IntoCache& obj) = default;
-  IntoCache(IntoCache&& obj) = default;
-  IntoCache& operator=(IntoCache&& obj) = default;
-  virtual ~IntoCache() = default;  // LCOV_EXCL_LINE
+  IntoGainCache() = default;
+  IntoGainCache(const IntoGainCache& obj) = default;
+  IntoGainCache& operator=(const IntoGainCache& obj) = default;
+  IntoGainCache(IntoGainCache&& obj) = default;
+  IntoGainCache& operator=(IntoGainCache&& obj) = default;
+  virtual ~IntoGainCache() = default;  // LCOV_EXCL_LINE
 
   AUTD3_API [[nodiscard]] gain::Cache<G> with_cache() & { return gain::Cache(*static_cast<G*>(this)); }
   AUTD3_API [[nodiscard]] gain::Cache<G> with_cache() && { return gain::Cache(std::move(*static_cast<G*>(this))); }

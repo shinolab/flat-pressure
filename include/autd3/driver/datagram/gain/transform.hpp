@@ -24,7 +24,7 @@ concept gain_transform_f = requires(F f, const driver::geometry::Device& dev, co
 template <class G, gain_transform_f F>
 class Transform final : public driver::GainBase,
                         public driver::IntoDatagramWithSegment<native_methods::GainPtr, Transform<G, F>>,
-                        public driver::IntoCache<Transform<G, F>> {
+                        public driver::IntoGainCache<Transform<G, F>> {
  public:
   Transform(G g, F f) : _g(std::move(g)), _f(std::move(f)) {}
   Transform() = delete;
@@ -64,14 +64,14 @@ class Transform final : public driver::GainBase,
 namespace autd3::driver {
 
 template <class G>
-class IntoTransform {
+class IntoGainTransform {
  public:
-  IntoTransform() = default;
-  IntoTransform(const IntoTransform& obj) = default;
-  IntoTransform& operator=(const IntoTransform& obj) = default;
-  IntoTransform(IntoTransform&& obj) = default;
-  IntoTransform& operator=(IntoTransform&& obj) = default;
-  virtual ~IntoTransform() = default;  // LCOV_EXCL_LINE
+  IntoGainTransform() = default;
+  IntoGainTransform(const IntoGainTransform& obj) = default;
+  IntoGainTransform& operator=(const IntoGainTransform& obj) = default;
+  IntoGainTransform(IntoGainTransform&& obj) = default;
+  IntoGainTransform& operator=(IntoGainTransform&& obj) = default;
+  virtual ~IntoGainTransform() = default;  // LCOV_EXCL_LINE
 
   template <gain::gain_transform_f F>
   AUTD3_API [[nodiscard]] gain::Transform<G, F> with_transform(F f) & {
