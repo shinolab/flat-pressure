@@ -38,4 +38,17 @@ class DatagramWithSegment {
   bool _update_segment;
 };
 
+template <typename P, class D>
+class IntoDatagramWithSegment {
+ public:
+  virtual ~IntoDatagramWithSegment() = default;  // LCOV_EXCL_LINE
+
+  AUTD3_API [[nodiscard]] DatagramWithSegment<P> with_segment(const native_methods::Segment segment, const bool update_segment) & {
+    return DatagramWithSegment<P>(std::make_unique<D>(*static_cast<D*>(this)), segment, update_segment);
+  }
+  AUTD3_API [[nodiscard]] DatagramWithSegment<P> with_segment(const native_methods::Segment segment, const bool update_segment) && {
+    return DatagramWithSegment<P>(std::make_unique<D>((std::move(*static_cast<D*>(this)))), segment, update_segment);
+  }
+};
+
 }  // namespace autd3::driver

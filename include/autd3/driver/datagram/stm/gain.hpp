@@ -6,7 +6,7 @@
 
 #include "autd3/driver/common/sampling_config.hpp"
 #include "autd3/driver/datagram/datagram.hpp"
-#include "autd3/driver/datagram/gain.hpp"
+#include "autd3/driver/datagram/gain/base.hpp"
 #include "autd3/driver/datagram/stm/stm.hpp"
 #include "autd3/native_methods.hpp"
 
@@ -142,7 +142,7 @@ class GainSTM final : public STM, public DatagramS<native_methods::GainSTMPtr> {
                              const std::optional<SamplingConfiguration> config)
       : STM(freq, period, config) {}
 
-  std::vector<std::shared_ptr<IGain>> _gains;
+  std::vector<std::shared_ptr<GainBase>> _gains;
   std::optional<native_methods::GainSTMMode> _mode;
 };
 

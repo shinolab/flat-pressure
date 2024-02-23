@@ -4,9 +4,7 @@
 #include <vector>
 
 #include "autd3/driver/geometry/geometry.hpp"
-#include "autd3/gain/cache.hpp"
 #include "autd3/gain/holo/holo.hpp"
-#include "autd3/gain/transform.hpp"
 #include "autd3/native_methods.hpp"
 #include "autd3/native_methods/utils.hpp"
 
@@ -23,7 +21,7 @@ namespace autd3::gain::holo {
  * * K.Madsen, H.Nielsen, and O.Tingleff, “Methods for non-linear least squares problems (2nd ed.),” 2004.
  */
 template <backend B>
-class LM final : public Holo<LM<B>>, public IntoCache<LM<B>>, public IntoTransform<LM<B>> {
+class LM final : public Holo<LM<B>> {
  public:
   explicit LM(std::shared_ptr<B> holo_backend)
       : Holo<LM>(EmissionConstraint::dont_care()), _eps1(1e-8), _eps2(1e-8), _tau(1e-3), _k_max(5), _backend(std::move(holo_backend)) {}

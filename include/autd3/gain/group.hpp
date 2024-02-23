@@ -5,11 +5,9 @@
 #include <unordered_map>
 #include <vector>
 
-#include "autd3/driver/datagram/gain.hpp"
+#include "autd3/driver/datagram/gain/gain.hpp"
 #include "autd3/driver/geometry/geometry.hpp"
 #include "autd3/exception.hpp"
-#include "autd3/gain/cache.hpp"
-#include "autd3/gain/transform.hpp"
 #include "autd3/native_methods.hpp"
 
 namespace autd3::gain {
@@ -20,7 +18,7 @@ concept gain_group_f = requires(F f, const driver::geometry::Device& dev, const 
 };
 
 template <gain_group_f F>
-class Group final : public driver::Gain<Group<F>>, public IntoCache<Group<F>>, public IntoTransform<Group<F>> {
+class Group final : public driver::Gain<Group<F>> {
  public:
   using key_type = typename std::invoke_result_t<F, const driver::geometry::Device&, const driver::geometry::Transducer&>::value_type;
 
@@ -87,7 +85,7 @@ class Group final : public driver::Gain<Group<F>>, public IntoCache<Group<F>>, p
 
  private:
   F _f;
-  std::unordered_map<key_type, std::shared_ptr<driver::IGain>> _map;
+  std::unordered_map<key_type, std::shared_ptr<driver::GainBase>> _map;
 };
 
 }  // namespace autd3::gain

@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 
 #include <autd3/driver/common/emit_intensity.hpp>
-#include <autd3/gain/cache.hpp>
 #include <autd3/gain/gain.hpp>
 #include <autd3/gain/uniform.hpp>
 
@@ -23,7 +22,7 @@ TEST(Gain, Cache) {
   }
 }
 
-class ForCacheTest final : public autd3::gain::Gain<ForCacheTest>, public autd3::gain::IntoCache<ForCacheTest> {
+class ForCacheTest final : public autd3::gain::Gain<ForCacheTest> {
  public:
   ForCacheTest() = delete;
   ForCacheTest(const ForCacheTest& obj) = default;

@@ -3,7 +3,6 @@
 import argparse
 import contextlib
 import os
-import pathlib
 import platform
 import re
 import shutil
@@ -286,20 +285,6 @@ def cpp_cov(args):
     with working_dir("tests"):
         os.makedirs("build", exist_ok=True)
         with working_dir("build"):
-            # if pathlib.Path("CMakeFiles/test_autd3.dir").exists():
-            #     with working_dir("CMakeFiles/test_autd3.dir"):
-            #         subprocess.run(
-            #             [
-            #                 "lcov",
-            #                 "-i",
-            #                 "-d",
-            #                 ".",
-            #                 "-c",
-            #                 "-o",
-            #                 "coverage.baseline.info",
-            #             ]
-            #         ).check_returncode()
-
             command = ["cmake", "..", "-DCOVERAGE=ON"]
             if config.cmake_extra is not None:
                 for cmd in config.cmake_extra:
@@ -327,13 +312,6 @@ def cpp_cov(args):
                 command = [
                     "lcov",
                 ]
-                # if pathlib.Path("coverage.baseline.info").exists():
-                #     command.extend(
-                #         [
-                #             "-a",
-                #             "coverage.baseline.info",
-                #         ]
-                #     )
                 command.extend(
                     [
                         "-a",

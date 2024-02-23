@@ -3,7 +3,7 @@
 #include <ranges>
 #include <vector>
 
-#include "autd3/driver/datagram/gain.hpp"
+#include "autd3/driver/datagram/gain/gain.hpp"
 #include "autd3/gain/holo/amplitude.hpp"
 #include "autd3/gain/holo/constraint.hpp"
 

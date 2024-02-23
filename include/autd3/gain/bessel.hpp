@@ -4,10 +4,8 @@
 
 #include "autd3/def.hpp"
 #include "autd3/driver/common/emit_intensity.hpp"
-#include "autd3/driver/datagram/gain.hpp"
+#include "autd3/driver/datagram/gain/gain.hpp"
 #include "autd3/driver/geometry/geometry.hpp"
-#include "autd3/gain/cache.hpp"
-#include "autd3/gain/transform.hpp"
 #include "autd3/native_methods.hpp"
 #include "autd3/native_methods/utils.hpp"
 
@@ -16,7 +14,7 @@ namespace autd3::gain {
 /**
  * @brief Gain to produce a Bessel beam
  */
-class Bessel final : public driver::Gain<Bessel>, public IntoCache<Bessel>, public IntoTransform<Bessel> {
+class Bessel final : public driver::Gain<Bessel> {
  public:
   explicit Bessel(driver::Vector3 p, driver::Vector3 d, const double theta)
       : _pos(std::move(p)), _dir(std::move(d)), _theta(theta), _intensity(driver::EmitIntensity::maximum()), _phase_offset(driver::Phase(0)) {}

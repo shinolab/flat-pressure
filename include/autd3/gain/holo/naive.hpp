@@ -3,9 +3,7 @@
 #include <memory>
 
 #include "autd3/driver/geometry/geometry.hpp"
-#include "autd3/gain/cache.hpp"
 #include "autd3/gain/holo/holo.hpp"
-#include "autd3/gain/transform.hpp"
 #include "autd3/native_methods.hpp"
 
 namespace autd3::gain::holo {
@@ -14,7 +12,7 @@ namespace autd3::gain::holo {
  * @brief Gain to produce multiple foci with naive linear synthesis
  */
 template <backend B>
-class Naive final : public Holo<Naive<B>>, public IntoCache<Naive<B>>, public IntoTransform<Naive<B>> {
+class Naive final : public Holo<Naive<B>> {
  public:
   explicit Naive(std::shared_ptr<B> holo_backend) : Holo<Naive>(EmissionConstraint::dont_care()), _backend(std::move(holo_backend)) {}
 

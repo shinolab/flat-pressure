@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "autd3/driver/common/drive.hpp"
-#include "autd3/driver/datagram/gain.hpp"
+#include "autd3/driver/datagram/gain/gain.hpp"
 #include "autd3/driver/geometry/geometry.hpp"
 #include "autd3/native_methods.hpp"
 

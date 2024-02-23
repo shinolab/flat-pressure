@@ -1,6 +1,6 @@
 #pragma once
 
-#include "autd3/driver/datagram/gain.hpp"
+#include "autd3/driver/datagram/gain/gain.hpp"
 #include "autd3/gain/holo/backend_nalgebra.hpp"
 #include "autd3/gain/holo/constraint.hpp"
 #include "autd3/gain/holo/greedy.hpp"

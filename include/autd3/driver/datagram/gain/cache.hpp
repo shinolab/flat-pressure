@@ -9,7 +9,8 @@
 
 #include "autd3/driver/common/drive.hpp"
 #include "autd3/driver/common/phase.hpp"
-#include "autd3/driver/datagram/gain.hpp"
+#include "autd3/driver/datagram/gain/base.hpp"
+#include "autd3/driver/datagram/with_segment.hpp"
 #include "autd3/driver/geometry/geometry.hpp"
 #include "autd3/native_methods.hpp"
 #include "autd3/native_methods/utils.hpp"
@@ -20,7 +21,7 @@ namespace autd3::gain {
  * @brief Gain to cache the result of calculation
  */
 template <class G>
-class Cache final : public driver::Gain<Cache<G>> {
+class Cache final : public driver::GainBase, public driver::IntoDatagramWithSegment<native_methods::GainPtr, Cache<G>> {
  public:
   explicit Cache(G g) : _g(std::move(g)), _cache(std::make_shared<std::unordered_map<size_t, std::vector<driver::Drive>>>()) {}
 
@@ -71,7 +72,9 @@ class Cache final : public driver::Gain<Cache<G>> {
   G _g;
   mutable std::shared_ptr<std::unordered_map<size_t, std::vector<driver::Drive>>> _cache;
 };
+}  // namespace autd3::gain
 
+namespace autd3::driver {
 template <class G>
 class IntoCache {
  public:
@@ -80,9 +83,10 @@ class IntoCache {
   IntoCache& operator=(const IntoCache& obj) = default;
   IntoCache(IntoCache&& obj) = default;
   IntoCache& operator=(IntoCache&& obj) = default;
+  virtual ~IntoCache() = default;  // LCOV_EXCL_LINE
 
-  AUTD3_API [[nodiscard]] Cache<G> with_cache() & { return Cache(*static_cast<G*>(this)); }
-  AUTD3_API [[nodiscard]] Cache<G> with_cache() && { return Cache(std::move(*static_cast<G*>(this))); }
+  AUTD3_API [[nodiscard]] gain::Cache<G> with_cache() & { return gain::Cache(*static_cast<G*>(this)); }
+  AUTD3_API [[nodiscard]] gain::Cache<G> with_cache() && { return gain::Cache(std::move(*static_cast<G*>(this))); }
 };
 
-}  // namespace autd3::gain
+}  // namespace autd3::driver
