@@ -23,9 +23,9 @@ class ControllerBuilder {
    * @return Builder
    */
   AUTD3_API ControllerBuilder add_device(const driver::AUTD3& device) {
-    const auto rot = device.rotation().has_value() ? device.rotation().value() : driver::Quaternion::Identity();
-    _ptr =
-        AUTDControllerBuilderAddDevice(_ptr, device.position().x(), device.position().y(), device.position().z(), rot.w(), rot.x(), rot.y(), rot.z());
+    const auto pos = device.position();
+    const auto rot = device.rotation();
+    _ptr = AUTDControllerBuilderAddDevice(_ptr, pos.x(), pos.y(), pos.z(), rot.w(), rot.x(), rot.y(), rot.z());
     return *this;
   }
 

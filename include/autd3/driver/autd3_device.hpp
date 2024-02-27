@@ -5,6 +5,7 @@
 
 #include "autd3/def.hpp"
 #include "autd3/native_methods.hpp"
+#include "autd3/native_methods/utils.hpp"
 
 namespace autd3::driver {
 
@@ -45,30 +46,9 @@ class AUTD3 {
    *
    * @param pos Global position
    */
-  explicit AUTD3(Vector3 pos) : _pos(std::move(pos)) {}
+  explicit AUTD3(Vector3 pos) : _position(std::move(pos)), _rotation(Quaternion::Identity()) {}
 
-  /**
-   * @brief Set device rotation
-   *
-   * @param rot Rotation
-   */
-  AUTD3_API void with_rotation(const Quaternion& rot) & { _rot = rot; }
-
-  /**
-   * @brief Set device rotation
-   *
-   * @param rot Rotation
-   */
-  AUTD3_API [[nodiscard]] AUTD3 with_rotation(const Quaternion& rot) && {
-    _rot = rot;
-    return std::move(*this);
-  }
-
-  AUTD3_API [[nodiscard]] Vector3 position() const { return _pos; }
-  AUTD3_API [[nodiscard]] std::optional<Quaternion> rotation() const { return _rot; }
-
- private:
-  Vector3 _pos{};
-  std::optional<Quaternion> _rot{std::nullopt};
+  AUTD3_DEF_PROP(Vector3, position)             // LCOV_EXCL_LINE
+  AUTD3_DEF_PARAM(AUTD3, Quaternion, rotation)  // LCOV_EXCL_LINE
 };
 }  // namespace autd3::driver
