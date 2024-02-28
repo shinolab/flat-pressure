@@ -19,6 +19,9 @@ TEST(Internal, FirmwareInfo) {
       ss << i;
       ss << ": CPU = v6.0.0, FPGA = v6.0.0 [Emulator]";
       ASSERT_EQ(ss.str(), infos[i].info());
+      std::stringstream ssf;
+      ssf << infos[i];
+      ASSERT_EQ(ss.str(), ssf.str());
     });
   }
 
