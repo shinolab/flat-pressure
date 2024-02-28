@@ -4,14 +4,14 @@
 #include <cmath>
 #include <numbers>
 
-TEST(Internal, EmitIntensity) {
+TEST(DriverCommon, EmitIntensity) {
   for (int i = 0; i <= 0xFF; i++) {
     const auto intensity = autd3::driver::EmitIntensity(static_cast<uint8_t>(i));
     ASSERT_EQ(intensity.value(), i);
   }
 }
 
-TEST(Internal, EmitIntensityWithCorrection) {
+TEST(DriverCommon, EmitIntensityWithCorrection) {
   for (int i = 0; i <= 0xFF; i++) {
     const auto intensity = autd3::driver::EmitIntensity::with_correction(static_cast<uint8_t>(i));
     ASSERT_EQ(

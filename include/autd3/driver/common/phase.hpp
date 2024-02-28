@@ -22,6 +22,8 @@ class Phase final {
 
   AUTD3_API [[nodiscard]] uint8_t value() const noexcept { return _value; }
 
+  AUTD3_API friend Phase operator*(const double l, const UnitPhaseRad&) { return Phase::from_rad(l); }
+
   AUTD3_API auto operator<=>(const Phase&) const = default;
 
  private:
