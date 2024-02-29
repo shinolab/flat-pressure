@@ -27,7 +27,7 @@ class Uniform final : public driver::Gain<Uniform> {
   AUTD3_DEF_PROP(driver::EmitIntensity, intensity)
   AUTD3_DEF_PARAM(Uniform, driver::Phase, phase)
 
-  AUTD3_API [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry&) const override {
+  [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry&) const override {
     return native_methods::AUTDGainUniform(_intensity.value(), _phase.value());
   }
 };

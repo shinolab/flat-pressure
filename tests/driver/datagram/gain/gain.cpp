@@ -16,8 +16,7 @@ class Uniform final : public autd3::gain::Gain<Uniform> {
   Uniform& operator=(Uniform&& obj) = default;
   virtual ~Uniform() = default;
 
-  AUTD3_API [[nodiscard]] std::unordered_map<size_t, std::vector<autd3::driver::Drive>> calc(
-      const autd3::driver::geometry::Geometry& geometry) const override {
+  [[nodiscard]] std::unordered_map<size_t, std::vector<autd3::driver::Drive>> calc(const autd3::driver::geometry::Geometry& geometry) const override {
     return transform(geometry, [&](const auto& dev, const auto&) {
       _cnt->operator[](dev.idx()) = true;
       return autd3::driver::Drive{_phase, _intensity};
@@ -30,7 +29,7 @@ class Uniform final : public autd3::gain::Gain<Uniform> {
   std::vector<bool>* _cnt;
 };
 
-TEST(Gain, Gain) {
+TEST(DriverDatagramGain, Gain) {
   auto autd = create_controller();
 
   std::vector cnt(autd.geometry().num_devices(), false);
@@ -43,7 +42,7 @@ TEST(Gain, Gain) {
   }
 }
 
-TEST(Gain, GainCheckOnlyForEnabled) {
+TEST(DriverDatagramGain, GainCheckOnlyForEnabled) {
   auto autd = create_controller();
   autd.geometry()[0].set_enable(false);
 

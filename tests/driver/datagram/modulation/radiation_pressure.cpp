@@ -4,7 +4,7 @@
 
 #include "utils.hpp"
 
-TEST(Modulation, RadiationPressure) {
+TEST(DriverDatagramModulation, RadiationPressure) {
   auto autd = create_controller();
 
   ASSERT_TRUE(autd.send(autd3::modulation::Sine(150).with_radiation_pressure()));

@@ -21,7 +21,7 @@ class GS final : public Holo<GS<B>> {
 
   AUTD3_DEF_PARAM(GS, uint32_t, repeat)
 
-  AUTD3_API [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry&) const override {
+  [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry&) const override {
     return this->_backend->gs(reinterpret_cast<const double*>(this->_foci.data()), reinterpret_cast<const double*>(this->_amps.data()),
                               this->_amps.size(), _repeat, this->_constraint);
   }

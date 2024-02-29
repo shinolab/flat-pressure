@@ -29,7 +29,7 @@ class Transform final : public driver::ModulationBase<Transform<M, F>>,
     };
   }
 
-  AUTD3_API [[nodiscard]] native_methods::ModulationPtr modulation_ptr() const override {
+  [[nodiscard]] native_methods::ModulationPtr modulation_ptr() const override {
     return native_methods::AUTDModulationWithTransform(_m.modulation_ptr(), const_cast<void*>(reinterpret_cast<const void*>(_f_native)),
                                                        const_cast<void*>(static_cast<const void*>(this)),
                                                        static_cast<native_methods::LoopBehavior>(this->_loop_behavior));
@@ -49,11 +49,11 @@ template <class M>
 class IntoModulationTransform {
  public:
   template <modulation::modulation_transform_f F>
-  AUTD3_API [[nodiscard]] modulation::Transform<M, F> with_transform(F f) & {
+  [[nodiscard]] modulation::Transform<M, F> with_transform(F f) & {
     return modulation::Transform(*static_cast<M*>(this), std::move(f));
   }
   template <modulation::modulation_transform_f F>
-  AUTD3_API [[nodiscard]] modulation::Transform<M, F> with_transform(F f) && {
+  [[nodiscard]] modulation::Transform<M, F> with_transform(F f) && {
     return modulation::Transform(std::move(*static_cast<M*>(this)), std::move(f));
   }
 };

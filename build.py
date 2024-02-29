@@ -250,7 +250,6 @@ def check_if_all_native_methods_called():
                 result = pattern.match(line)
                 if result:
                     defined_methods.add(result.group(1))
-    defined_methods.remove("AUTD3_API __attribute__(")
 
     used_methods = set()
     pattern = re.compile(".*(AUTD.*?)\\(.*")

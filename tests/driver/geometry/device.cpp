@@ -6,13 +6,13 @@
 
 #include "utils.hpp"
 
-TEST(Internal_Geometry, DeviceIdx) {
+TEST(DriverGeomtry, DeviceIdx) {
   auto autd = create_controller();
   ASSERT_EQ(autd.geometry()[0].idx(), 0);
   ASSERT_EQ(autd.geometry()[1].idx(), 1);
 }
 
-TEST(Internal_Geometry, DeviceSoundSpeed) {
+TEST(DriverGeomtry, DeviceSoundSpeed) {
   for (auto autd = create_controller(); auto& dev : autd.geometry()) {
     ASSERT_EQ(dev.sound_speed(), 340e3);
     dev.set_sound_speed(350e3);
@@ -20,14 +20,14 @@ TEST(Internal_Geometry, DeviceSoundSpeed) {
   }
 }
 
-TEST(Internal_Geometry, DeviceSoundSpeedFromTemp) {
+TEST(DriverGeomtry, DeviceSoundSpeedFromTemp) {
   for (auto autd = create_controller(); auto& dev : autd.geometry()) {
     dev.set_sound_speed_from_temp(15);
     ASSERT_EQ(dev.sound_speed(), 340.2952640537549e3);
   }
 }
 
-TEST(Internal_Geometry, DeviceAttenuation) {
+TEST(DriverGeomtry, DeviceAttenuation) {
   for (auto autd = create_controller(); auto& dev : autd.geometry()) {
     ASSERT_EQ(dev.attenuation(), 0);
     dev.set_attenuation(1);
@@ -35,19 +35,19 @@ TEST(Internal_Geometry, DeviceAttenuation) {
   }
 }
 
-TEST(Internal_Geometry, DeviceNumTransducers) {
+TEST(DriverGeomtry, DeviceNumTransducers) {
   for (auto autd = create_controller(); auto& dev : autd.geometry()) {
     ASSERT_EQ(dev.num_transducers(), 249);
   }
 }
 
-TEST(Internal_Geometry, DeviceCenter) {
+TEST(DriverGeomtry, DeviceCenter) {
   for (auto autd = create_controller(); auto& dev : autd.geometry()) {
     ASSERT_NEAR_VECTOR3(dev.center(), autd3::driver::Vector3(86.62522088353406, 66.7132530125621, 0), 1e-6);
   }
 }
 
-TEST(Internal_Geometry, DeviceEnable) {
+TEST(DriverGeomtry, DeviceEnable) {
   auto autd = create_controller();
   for (auto& dev : autd.geometry()) ASSERT_TRUE(dev.enable());
 
@@ -57,7 +57,7 @@ TEST(Internal_Geometry, DeviceEnable) {
   ASSERT_FALSE(autd.geometry()[1].enable());
 }
 
-TEST(Internal_Geometry, DeviceTranslate) {
+TEST(DriverGeomtry, DeviceTranslate) {
   for (auto autd = create_controller(); const auto& dev : autd.geometry()) {
     auto original_pos_view = dev.transducers() | std::views::transform([](const auto& tr) { return tr.position(); });
     std::vector original_pos(original_pos_view.begin(), original_pos_view.end());
@@ -67,7 +67,7 @@ TEST(Internal_Geometry, DeviceTranslate) {
   }
 }
 
-TEST(Internal_Geometry, DeviceRotate) {
+TEST(DriverGeomtry, DeviceRotate) {
   for (auto autd = create_controller(); const auto& dev : autd.geometry()) {
     autd3::driver::Quaternion r(0.7071067811865476, 0, 0, 0.7071067811865476);
     dev.rotate(r);
@@ -75,7 +75,7 @@ TEST(Internal_Geometry, DeviceRotate) {
   }
 }
 
-TEST(Internal_Geometry, DeviceAffine) {
+TEST(DriverGeomtry, DeviceAffine) {
   for (auto autd = create_controller(); const auto& dev : autd.geometry()) {
     auto original_pos_view = dev.transducers() | std::views::transform([](const auto& tr) { return tr.position(); });
     std::vector original_pos(original_pos_view.begin(), original_pos_view.end());
@@ -93,7 +93,7 @@ TEST(Internal_Geometry, DeviceAffine) {
   }
 }
 
-TEST(Internal_Geometry, TransducerLocal) {
+TEST(DriverGeomtry, TransducerLocal) {
   for (auto autd = create_controller(); auto& dev : autd.geometry()) {
     std::ranges::for_each(std::views::iota(0) | std::views::take(dev.num_transducers()), [&dev](auto i) { ASSERT_EQ(dev[i].idx(), i); });
   }

@@ -14,9 +14,9 @@ class Modulation : public driver::Modulation<M> {
  public:
   using driver::Modulation<M>::Modulation;
 
-  AUTD3_API [[nodiscard]] virtual std::vector<driver::EmitIntensity> calc() const = 0;
+  [[nodiscard]] virtual std::vector<driver::EmitIntensity> calc() const = 0;
 
-  AUTD3_API [[nodiscard]] native_methods::ModulationPtr modulation_ptr() const override {
+  [[nodiscard]] native_methods::ModulationPtr modulation_ptr() const override {
     const auto buffer = calc();
     const auto size = buffer.size();
     return AUTDModulationCustom(static_cast<native_methods::SamplingConfiguration>(this->_config), reinterpret_cast<const uint8_t*>(buffer.data()),

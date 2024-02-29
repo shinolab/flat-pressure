@@ -27,14 +27,14 @@ class Transform final : public driver::GainBase,
                         public driver::IntoGainCache<Transform<G, F>> {
  public:
   Transform(G g, F f) : _g(std::move(g)), _f(std::move(f)) {}
-  Transform() = delete;
-  Transform(const Transform& obj) = default;
-  Transform& operator=(const Transform& obj) = default;
-  Transform(Transform&& obj) = default;
-  Transform& operator=(Transform&& obj) = default;
-  ~Transform() override = default;  // LCOV_EXCL_LINE
+  Transform() = delete;                                  // LCOV_EXCL_LINE
+  Transform(const Transform& obj) = default;             // LCOV_EXCL_LINE
+  Transform& operator=(const Transform& obj) = default;  // LCOV_EXCL_LINE
+  Transform(Transform&& obj) = default;                  // LCOV_EXCL_LINE
+  Transform& operator=(Transform&& obj) = default;       // LCOV_EXCL_LINE
+  ~Transform() override = default;                       // LCOV_EXCL_LINE
 
-  AUTD3_API [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry& geometry) const override {
+  [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry& geometry) const override {
     std::unordered_map<size_t, std::vector<driver::Drive>> drives;
 
     const auto res = validate(native_methods::AUTDGainCalc(_g.gain_ptr(geometry), geometry.ptr()));
@@ -66,19 +66,19 @@ namespace autd3::driver {
 template <class G>
 class IntoGainTransform {
  public:
-  IntoGainTransform() = default;
-  IntoGainTransform(const IntoGainTransform& obj) = default;
-  IntoGainTransform& operator=(const IntoGainTransform& obj) = default;
-  IntoGainTransform(IntoGainTransform&& obj) = default;
-  IntoGainTransform& operator=(IntoGainTransform&& obj) = default;
-  virtual ~IntoGainTransform() = default;  // LCOV_EXCL_LINE
+  IntoGainTransform() = default;                                         // LCOV_EXCL_LINE
+  IntoGainTransform(const IntoGainTransform& obj) = default;             // LCOV_EXCL_LINE
+  IntoGainTransform& operator=(const IntoGainTransform& obj) = default;  // LCOV_EXCL_LINE
+  IntoGainTransform(IntoGainTransform&& obj) = default;                  // LCOV_EXCL_LINE
+  IntoGainTransform& operator=(IntoGainTransform&& obj) = default;       // LCOV_EXCL_LINE
+  virtual ~IntoGainTransform() = default;                                // LCOV_EXCL_LINE
 
   template <gain::gain_transform_f F>
-  AUTD3_API [[nodiscard]] gain::Transform<G, F> with_transform(F f) & {
+  [[nodiscard]] gain::Transform<G, F> with_transform(F f) & {
     return gain::Transform(*static_cast<G*>(this), std::move(f));
   }
   template <gain::gain_transform_f F>
-  AUTD3_API [[nodiscard]] gain::Transform<G, F> with_transform(F f) && {
+  [[nodiscard]] gain::Transform<G, F> with_transform(F f) && {
     return gain::Transform(std::move(*static_cast<G*>(this)), std::move(f));
   }
 };

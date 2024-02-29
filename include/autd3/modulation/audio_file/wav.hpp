@@ -21,7 +21,7 @@ class Wav final : public driver::Modulation<Wav> {
    */
   explicit Wav(std::filesystem::path path) : Modulation(driver::SamplingConfiguration::from_frequency(4e3)), _path(std::move(path)) {}
 
-  AUTD3_API [[nodiscard]] native_methods::ModulationPtr modulation_ptr() const override {
+  [[nodiscard]] native_methods::ModulationPtr modulation_ptr() const override {
     return validate(AUTDModulationWav(_path.string().c_str(), static_cast<native_methods::SamplingConfiguration>(_config),
                                       static_cast<native_methods::LoopBehavior>(_loop_behavior)));
   }

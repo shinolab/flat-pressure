@@ -6,7 +6,7 @@
 
 class BurstModulation final : public autd3::modulation::Modulation<BurstModulation> {
  public:
-  AUTD3_API [[nodiscard]] std::vector<autd3::driver::EmitIntensity> calc() const override {
+  [[nodiscard]] std::vector<autd3::driver::EmitIntensity> calc() const override {
     std::vector buffer(10, autd3::driver::EmitIntensity::minimum());
     buffer[0] = autd3::driver::EmitIntensity::maximum();
     return buffer;
@@ -15,7 +15,7 @@ class BurstModulation final : public autd3::modulation::Modulation<BurstModulati
   explicit BurstModulation() noexcept : Modulation(autd3::driver::SamplingConfiguration::from_frequency_division(5120)) {}
 };
 
-TEST(Modulation, Modulation) {
+TEST(DriverDatagramModulation, Modulation) {
   auto autd = create_controller();
 
   ASSERT_TRUE(autd.send(BurstModulation()));

@@ -10,9 +10,9 @@ class FirmwareInfo {
  public:
   explicit FirmwareInfo(std::string info) noexcept : _info(std::move(info)) {}
 
-  AUTD3_API [[nodiscard]] std::string info() const { return _info; }
+  [[nodiscard]] std::string info() const { return _info; }
 
-  AUTD3_API [[nodiscard]] static std::string latest_version() {
+  [[nodiscard]] static std::string latest_version() {
     char info[256];
     native_methods::AUTDFirmwareLatest(info);
     return {info};
@@ -22,7 +22,7 @@ class FirmwareInfo {
   std::string _info;
 };
 
-AUTD3_API inline std::ostream& operator<<(std::ostream& os, const FirmwareInfo& obj) {
+inline std::ostream& operator<<(std::ostream& os, const FirmwareInfo& obj) {
   os << obj.info();
   return os;
 }

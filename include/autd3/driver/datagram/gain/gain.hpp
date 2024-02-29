@@ -14,12 +14,12 @@ namespace autd3::driver {
 template <class G>
 class Gain : public GainBase, public IntoDatagramWithSegment<native_methods::GainPtr, G>, public IntoGainCache<G>, public IntoGainTransform<G> {
  public:
-  Gain() = default;
-  Gain(const Gain& obj) = default;
-  Gain& operator=(const Gain& obj) = default;
-  Gain(Gain&& obj) = default;
-  Gain& operator=(Gain&& obj) = default;
-  virtual ~Gain() = default;  // LCOV_EXCL_LINE
+  Gain() = default;                            // LCOV_EXCL_LINE
+  Gain(const Gain& obj) = default;             // LCOV_EXCL_LINE
+  Gain& operator=(const Gain& obj) = default;  // LCOV_EXCL_LINE
+  Gain(Gain&& obj) = default;                  // LCOV_EXCL_LINE
+  Gain& operator=(Gain&& obj) = default;       // LCOV_EXCL_LINE
+  virtual ~Gain() = default;                   // LCOV_EXCL_LINE
 };
 
 }  // namespace autd3::driver

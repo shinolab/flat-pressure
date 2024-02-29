@@ -4,7 +4,7 @@
 
 #include "utils.hpp"
 
-TEST(Gain, Transform) {
+TEST(DriverDatagramGain, Transform) {
   auto autd = create_controller();
 
   ASSERT_TRUE(autd.send(autd3::gain::Uniform(0x80)
@@ -30,7 +30,7 @@ TEST(Gain, Transform) {
   }
 }
 
-TEST(Gain, TransformCheckOnlyForEnabled) {
+TEST(DriverDatagramGain, TransformCheckOnlyForEnabled) {
   auto autd = create_controller();
   autd.geometry()[0].set_enable(false);
 

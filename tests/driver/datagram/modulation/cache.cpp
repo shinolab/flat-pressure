@@ -5,7 +5,7 @@
 
 #include "utils.hpp"
 
-TEST(Modulation, Cache) {
+TEST(DriverDatagramModulation, Cache) {
   auto autd1 = create_controller();
   auto autd2 = create_controller();
 
@@ -29,7 +29,7 @@ TEST(Modulation, Cache) {
 
 class ForModulationCacheTest final : public autd3::modulation::Modulation<ForModulationCacheTest> {
  public:
-  AUTD3_API [[nodiscard]] std::vector<autd3::driver::EmitIntensity> calc() const override {
+  [[nodiscard]] std::vector<autd3::driver::EmitIntensity> calc() const override {
     ++*_cnt;
     return {autd3::driver::EmitIntensity::maximum(), autd3::driver::EmitIntensity::maximum()};
   }
@@ -41,7 +41,7 @@ class ForModulationCacheTest final : public autd3::modulation::Modulation<ForMod
   size_t* _cnt;
 };
 
-TEST(Modulation, CacheCheckOnce) {
+TEST(DriverDatagramModulation, CacheCheckOnce) {
   auto autd = create_controller();
 
   {

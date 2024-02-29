@@ -33,7 +33,7 @@ class Square final : public driver::Modulation<Square> {
   AUTD3_DEF_PARAM(Square, double, duty)
   AUTD3_DEF_PARAM(Square, native_methods::SamplingMode, mode)
 
-  AUTD3_API [[nodiscard]] native_methods::ModulationPtr modulation_ptr() const override {
+  [[nodiscard]] native_methods::ModulationPtr modulation_ptr() const override {
     return AUTDModulationSquare(_freq, static_cast<native_methods::SamplingConfiguration>(_config), _low.value(), _high.value(), _duty, _mode,
                                 static_cast<native_methods::LoopBehavior>(_loop_behavior));
   }

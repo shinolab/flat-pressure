@@ -20,11 +20,11 @@ class Amplitude {
   friend class UnitPascal;
   friend class UnitSPL;
 
-  AUTD3_API [[nodiscard]] double as_pascal() const { return _value; }
-  AUTD3_API [[nodiscard]] double as_spl() const { return native_methods::AUTDGainHoloPascalToSPL(_value); }
+  [[nodiscard]] double as_pascal() const { return _value; }
+  [[nodiscard]] double as_spl() const { return native_methods::AUTDGainHoloPascalToSPL(_value); }
 
-  AUTD3_API friend Amplitude operator*(const double l, const UnitPascal&) { return Amplitude(l); }
-  AUTD3_API friend Amplitude operator*(const double l, const UnitSPL&) { return Amplitude(native_methods::AUTDGainHoloSPLToPascal(l)); }
+  friend Amplitude operator*(const double l, const UnitPascal&) { return Amplitude(l); }
+  friend Amplitude operator*(const double l, const UnitSPL&) { return Amplitude(native_methods::AUTDGainHoloSPLToPascal(l)); }
 
  private:
   explicit Amplitude(const double value) : _value(value) {}

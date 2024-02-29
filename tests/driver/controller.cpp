@@ -309,16 +309,3 @@ TEST(Internal, ControllerGroupCheckOnlyForEnabled) {
     ASSERT_TRUE(std::ranges::all_of(phases, [](auto p) { return p == 0x90; }));
   }
 }
-
-TEST(Internal_Geometry, DeviceForceFan) {
-  auto autd = create_controller();
-  for (auto& dev : autd.geometry()) ASSERT_FALSE(autd.link().is_force_fan(dev.idx()));
-
-  autd.send(autd3::driver::ConfigureForceFan([](const auto& dev) { return dev.idx() == 0; }));
-  ASSERT_TRUE(autd.link().is_force_fan(0));
-  ASSERT_FALSE(autd.link().is_force_fan(1));
-
-  autd.send(autd3::driver::ConfigureForceFan([](const auto& dev) { return dev.idx() == 1; }));
-  ASSERT_FALSE(autd.link().is_force_fan(0));
-  ASSERT_TRUE(autd.link().is_force_fan(1));
-}

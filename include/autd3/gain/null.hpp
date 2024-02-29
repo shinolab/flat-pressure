@@ -18,9 +18,7 @@ class Null final : public driver::Gain<Null> {
   Null& operator=(Null&& obj) = default;
   ~Null() override = default;  // LCOV_EXCL_LINE
 
-  AUTD3_API [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry&) const override {
-    return native_methods::AUTDGainNull();
-  }
+  [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry&) const override { return native_methods::AUTDGainNull(); }
 };
 
 }  // namespace autd3::gain

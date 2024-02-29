@@ -24,7 +24,7 @@ class RawPCM final : public driver::Modulation<RawPCM> {
   explicit RawPCM(std::filesystem::path path, const uint32_t sample_rate)
       : Modulation(driver::SamplingConfiguration::from_frequency(4e3)), _sample_rate(sample_rate), _path(std::move(path)) {}
 
-  AUTD3_API [[nodiscard]] native_methods::ModulationPtr modulation_ptr() const override {
+  [[nodiscard]] native_methods::ModulationPtr modulation_ptr() const override {
     return validate(AUTDModulationRawPCM(_path.string().c_str(), _sample_rate, static_cast<native_methods::SamplingConfiguration>(_config),
                                          static_cast<native_methods::LoopBehavior>(_loop_behavior)));
   }

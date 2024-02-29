@@ -6,7 +6,7 @@
 
 #include "utils.hpp"
 
-TEST(Internal, FPGAState) {
+TEST(DriverDatagram, FPGAState) {
   auto autd = create_controller();
 
   {
@@ -38,7 +38,7 @@ TEST(Internal, FPGAState) {
   }
 }
 
-TEST(Internal, FPGAStateAsync) {
+TEST(DriverDatagram, FPGAStateAsync) {
   auto autd = create_controller();
 
   {

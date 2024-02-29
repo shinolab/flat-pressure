@@ -7,9 +7,9 @@ namespace autd3::gain::holo {
 
 class IEmissionConstraint {
  public:
-  AUTD3_API virtual native_methods::EmissionConstraintPtr ptr() const = 0;
+  virtual native_methods::EmissionConstraintPtr ptr() const = 0;
 
-  AUTD3_API auto operator<=>(const IEmissionConstraint& other) const { return AUTDGainHoloConstraintEq(ptr(), other.ptr()); }
+  auto operator<=>(const IEmissionConstraint& other) const { return AUTDGainHoloConstraintEq(ptr(), other.ptr()); }
 };
 
 /**
@@ -61,7 +61,7 @@ class EmissionConstraint final {
     return clamp(driver::EmitIntensity(min_v), driver::EmitIntensity(max_v));
   }
 
-  AUTD3_API [[nodiscard]] native_methods::EmissionConstraintPtr ptr() const { return _ptr; }
+  [[nodiscard]] native_methods::EmissionConstraintPtr ptr() const { return _ptr; }
 
  private:
   explicit EmissionConstraint(const native_methods::EmissionConstraintPtr ptr) : _ptr(ptr) {}

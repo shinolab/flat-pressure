@@ -24,10 +24,10 @@ class Angle {
   friend class UnitRad;
   friend class UnitDegree;
 
-  AUTD3_API [[nodiscard]] double to_radian() const { return _value; }
+  [[nodiscard]] double to_radian() const { return _value; }
 
-  AUTD3_API friend Angle operator*(const double l, const UnitRad&) { return Angle(l); }
-  AUTD3_API friend Angle operator*(const double l, const UnitDegree&) { return Angle(l / 180 * std::numbers::pi); }
+  friend Angle operator*(const double l, const UnitRad&) { return Angle(l); }
+  friend Angle operator*(const double l, const UnitDegree&) { return Angle(l / 180 * std::numbers::pi); }
 
  private:
   explicit Angle(const double value) : _value(value) {}
@@ -37,7 +37,7 @@ class Angle {
 
 class EulerAngles {
  public:
-  AUTD3_API static Quaternion from_zyz(const Angle& z1, const Angle& y, const Angle& z2) {
+  static Quaternion from_zyz(const Angle& z1, const Angle& y, const Angle& z2) {
     double v[4];
     native_methods::AUTDRotationFromEulerZYZ(z1.to_radian(), y.to_radian(), z2.to_radian(), v);
     return {v[0], v[1], v[2], v[3]};

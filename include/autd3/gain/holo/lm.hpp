@@ -31,13 +31,13 @@ class LM final : public Holo<LM<B>> {
   AUTD3_DEF_PARAM(LM, double, tau)
   AUTD3_DEF_PARAM(LM, uint32_t, k_max)
 
-  AUTD3_API void with_initial(std::vector<double> value) & { _initial = std::move(value); }
-  AUTD3_API [[nodiscard]] LM&& with_initial(std::vector<double> value) && {
+  void with_initial(std::vector<double> value) & { _initial = std::move(value); }
+  [[nodiscard]] LM&& with_initial(std::vector<double> value) && {
     _initial = std::move(value);
     return std::move(*this);
   }
 
-  AUTD3_API [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry&) const override {
+  [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry&) const override {
     return this->_backend->lm(reinterpret_cast<const double*>(this->_foci.data()), reinterpret_cast<const double*>(this->_amps.data()),
                               this->_amps.size(), _eps1, _eps2, _tau, _k_max, _initial.data(), _initial.size(), this->_constraint);
   }

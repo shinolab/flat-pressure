@@ -4,7 +4,7 @@
 
 #include "utils.hpp"
 
-TEST(Modulation, Transform) {
+TEST(DriverDatagramModulation, Transform) {
   auto autd1 = create_controller();
   auto autd2 = create_controller();
 

@@ -21,23 +21,22 @@ class Cache final : public driver::ModulationBase<Cache<M>> {
   Cache& operator=(Cache&& obj) noexcept = delete;
   ~Cache() noexcept override = default;  // LCOV_EXCL_LINE
 
-  AUTD3_API const std::vector<driver::EmitIntensity>& calc() const { return init(); }
+  const std::vector<driver::EmitIntensity>& calc() const { return init(); }
 
-  AUTD3_API [[nodiscard]] native_methods::ModulationPtr modulation_ptr() const override {
+  [[nodiscard]] native_methods::ModulationPtr modulation_ptr() const override {
     const auto buf = calc();
     return AUTDModulationCustom(static_cast<native_methods::SamplingConfiguration>(_sampling_config.value()),
                                 reinterpret_cast<const uint8_t*>(buf.data()), static_cast<uint64_t>(buf.size()),
                                 static_cast<native_methods::LoopBehavior>(_m.loop_behavior()));
   }
 
-  AUTD3_API [[nodiscard]] const std::vector<driver::EmitIntensity>& buffer() const { return *_cache; }
+  [[nodiscard]] const std::vector<driver::EmitIntensity>& buffer() const { return *_cache; }
 
-  AUTD3_API [[nodiscard]] std::vector<driver::EmitIntensity>::const_iterator cbegin() const noexcept { return _cache->cbegin(); }
-  AUTD3_API [[nodiscard]] std::vector<driver::EmitIntensity>::const_iterator cend() const noexcept { return _cache->cend(); }
-  AUTD3_API [[nodiscard]] std::vector<driver::EmitIntensity>::const_iterator begin() const noexcept { return _cache->begin(); }
-  AUTD3_API [[nodiscard]] std::vector<driver::EmitIntensity>::const_iterator end() const noexcept { return _cache->end(); }
-
-  AUTD3_API [[nodiscard]] const driver::EmitIntensity& operator[](const size_t i) const { return _cache->at(i); }
+  [[nodiscard]] std::vector<driver::EmitIntensity>::const_iterator cbegin() const noexcept { return _cache->cbegin(); }
+  [[nodiscard]] std::vector<driver::EmitIntensity>::const_iterator cend() const noexcept { return _cache->cend(); }
+  [[nodiscard]] std::vector<driver::EmitIntensity>::const_iterator begin() const noexcept { return _cache->begin(); }
+  [[nodiscard]] std::vector<driver::EmitIntensity>::const_iterator end() const noexcept { return _cache->end(); }
+  [[nodiscard]] const driver::EmitIntensity& operator[](const size_t i) const { return _cache->at(i); }
 
  private:
   const std::vector<driver::EmitIntensity>& init() const {
@@ -63,8 +62,8 @@ namespace autd3::driver {
 template <class M>
 class IntoModulationCache {
  public:
-  AUTD3_API [[nodiscard]] modulation::Cache<M> with_cache() & { return modulation::Cache(*static_cast<M*>(this)); }
-  AUTD3_API [[nodiscard]] modulation::Cache<M> with_cache() && { return modulation::Cache(std::move(*static_cast<M*>(this))); }
+  [[nodiscard]] modulation::Cache<M> with_cache() & { return modulation::Cache(*static_cast<M*>(this)); }
+  [[nodiscard]] modulation::Cache<M> with_cache() && { return modulation::Cache(std::move(*static_cast<M*>(this))); }
 };
 
 }  // namespace autd3::driver

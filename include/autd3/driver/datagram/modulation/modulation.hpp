@@ -19,8 +19,8 @@ class Modulation : public ModulationBase<M>, public IntoModulationCache<M>, publ
   explicit Modulation(const SamplingConfiguration config) : _config(config) {}
 
  public:
-  AUTD3_API void with_sampling_config(const SamplingConfiguration config) & { _config = config; }
-  AUTD3_API [[nodiscard]] M&& with_sampling_config(const SamplingConfiguration config) && {
+  void with_sampling_config(const SamplingConfiguration config) & { _config = config; }  // LCOV_EXCL_LINE
+  [[nodiscard]] M&& with_sampling_config(const SamplingConfiguration config) && {
     _config = config;
     return std::move(*static_cast<M*>(this));
   }

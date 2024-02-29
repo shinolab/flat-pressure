@@ -9,8 +9,8 @@
 namespace autd3::driver {
 class STM {
  public:
-  AUTD3_API [[nodiscard]] explicit STM(const std::optional<double> freq, const std::optional<std::chrono::nanoseconds> period,
-                                       const std::optional<SamplingConfiguration> config)
+  [[nodiscard]] explicit STM(const std::optional<double> freq, const std::optional<std::chrono::nanoseconds> period,
+                             const std::optional<SamplingConfiguration> config)
       : _freq(freq), _period(period), _config(config), _loop_behavior(LoopBehavior::infinite()) {}
 
   STM(const STM& obj) = default;
@@ -20,7 +20,7 @@ class STM {
   virtual ~STM() = default;  // LCOV_EXCL_LINE
 
  protected:
-  AUTD3_API [[nodiscard]] native_methods::STMPropsPtr props() const {
+  [[nodiscard]] native_methods::STMPropsPtr props() const {
     native_methods::STMPropsPtr ptr{nullptr};
     if (_freq.has_value()) ptr = native_methods::AUTDSTMPropsFromFreq(_freq.value());
     if (_period.has_value()) ptr = native_methods::AUTDSTMPropsFromPeriod(static_cast<uint64_t>(_period.value().count()));
@@ -29,13 +29,13 @@ class STM {
     return native_methods::AUTDSTMPropsWithLoopBehavior(ptr, static_cast<native_methods::LoopBehavior>(_loop_behavior));
   }
 
-  AUTD3_API [[nodiscard]] double frequency_from_size(const size_t size) const { return AUTDSTMPropsFrequency(props(), size); }
+  [[nodiscard]] double frequency_from_size(const size_t size) const { return AUTDSTMPropsFrequency(props(), size); }
 
-  AUTD3_API [[nodiscard]] SamplingConfiguration sampling_config_from_size(const size_t size) const {
+  [[nodiscard]] SamplingConfiguration sampling_config_from_size(const size_t size) const {
     return SamplingConfiguration(validate(AUTDSTMPropsSamplingConfig(props(), size)));
   }
 
-  AUTD3_API [[nodiscard]] std::chrono::nanoseconds period_from_size(const size_t size) const {
+  [[nodiscard]] std::chrono::nanoseconds period_from_size(const size_t size) const {
     return std::chrono::nanoseconds(AUTDSTMPropsPeriod(props(), size));
   }
 

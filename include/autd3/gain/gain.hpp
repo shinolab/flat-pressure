@@ -23,9 +23,9 @@ class Gain : public driver::Gain<G> {
  public:
   Gain() = default;
 
-  AUTD3_API [[nodiscard]] virtual std::unordered_map<size_t, std::vector<driver::Drive>> calc(const driver::geometry::Geometry& geometry) const = 0;
+  [[nodiscard]] virtual std::unordered_map<size_t, std::vector<driver::Drive>> calc(const driver::geometry::Geometry& geometry) const = 0;
 
-  AUTD3_API [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry& geometry) const override {
+  [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry& geometry) const override {
     const auto drives = calc(geometry);
     return std::accumulate(drives.begin(), drives.end(), native_methods::AUTDGainCustom(),
                            [](const native_methods::GainPtr acc, const std::pair<size_t, std::vector<driver::Drive>>& kv) {
@@ -36,8 +36,7 @@ class Gain : public driver::Gain<G> {
   }
 
   template <gain_transform Fn>
-  AUTD3_API [[nodiscard]] static std::unordered_map<size_t, std::vector<driver::Drive>> transform(const driver::geometry::Geometry& geometry,
-                                                                                                  Fn func) {
+  [[nodiscard]] static std::unordered_map<size_t, std::vector<driver::Drive>> transform(const driver::geometry::Geometry& geometry, Fn func) {
     std::unordered_map<size_t, std::vector<driver::Drive>> drives_map;
     std::for_each(geometry.devices().begin(), geometry.devices().end(), [&drives_map, &func](const driver::geometry::Device& dev) {
       std::vector<driver::Drive> drives;

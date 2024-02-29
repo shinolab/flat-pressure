@@ -30,7 +30,7 @@ class ConfigureDebugOutputIdx final {
     };
   }
 
-  AUTD3_API [[nodiscard]] native_methods::DatagramPtr ptr(const geometry::Geometry& geometry) const {
+  [[nodiscard]] native_methods::DatagramPtr ptr(const geometry::Geometry& geometry) const {
     return AUTDDatagramConfigureDebugOutputIdx(const_cast<void*>(reinterpret_cast<const void*>(_f_native)),
                                                const_cast<void*>(static_cast<const void*>(this)), geometry.ptr());
   }

@@ -1,10 +1,8 @@
 target_sources(test_autd3 PRIVATE
   controller.cpp
-  datagram.cpp
   firmware_info.cpp
-  fpga_info.cpp
-  stm.cpp
 )
 
 add_subdirectory(common)
+add_subdirectory(datagram)
 add_subdirectory(geometry)

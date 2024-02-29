@@ -27,7 +27,7 @@ class Plane final : public driver::Gain<Plane> {
   AUTD3_DEF_PARAM(Plane, driver::Phase, phase)
   AUTD3_DEF_PARAM_INTENSITY(Plane, intensity)
 
-  AUTD3_API [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry&) const override {
+  [[nodiscard]] native_methods::GainPtr gain_ptr(const driver::geometry::Geometry&) const override {
     return native_methods::AUTDGainPlane(_dir.x(), _dir.y(), _dir.z(), _intensity.value(), _phase.value());
   }
 };

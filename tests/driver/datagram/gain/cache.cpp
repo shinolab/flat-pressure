@@ -6,7 +6,7 @@
 
 #include "utils.hpp"
 
-TEST(Gain, Cache) {
+TEST(DriverDatagramGain, Cache) {
   auto autd = create_controller();
 
   const auto g = autd3::gain::Uniform(0x80).with_phase(autd3::driver::Phase(0x90)).with_cache();
@@ -15,6 +15,7 @@ TEST(Gain, Cache) {
 
   ASSERT_TRUE(autd.send(g));
   for (auto& dev : autd.geometry()) {
+    ASSERT_TRUE(std::ranges::all_of(g[dev], [](auto d) { return d == autd3::driver::Drive{autd3::driver::Phase(0x90), 0x80}; }));
     ASSERT_TRUE(std::ranges::all_of(g.drives().at(dev.idx()), [](auto d) { return d == autd3::driver::Drive{autd3::driver::Phase(0x90), 0x80}; }));
     auto [intensities, phases] = autd.link().drives(dev.idx(), autd3::native_methods::Segment::S0, 0);
     ASSERT_TRUE(std::ranges::all_of(intensities, [](auto d) { return d == 0x80; }));
@@ -32,8 +33,7 @@ class ForCacheTest final : public autd3::gain::Gain<ForCacheTest> {
   ~ForCacheTest() override = default;  // LCOV_EXCL_LINE
   explicit ForCacheTest(size_t* cnt) : _cnt(cnt) {}
 
-  AUTD3_API [[nodiscard]] std::unordered_map<size_t, std::vector<autd3::driver::Drive>> calc(
-      const autd3::driver::geometry::Geometry& geometry) const override {
+  [[nodiscard]] std::unordered_map<size_t, std::vector<autd3::driver::Drive>> calc(const autd3::driver::geometry::Geometry& geometry) const override {
     ++*_cnt;
     return transform(geometry, [&](const auto&, const auto&) {
       return autd3::driver::Drive{autd3::driver::Phase(0x90), autd3::driver::EmitIntensity(0x80)};
@@ -44,7 +44,7 @@ class ForCacheTest final : public autd3::gain::Gain<ForCacheTest> {
   size_t* _cnt;
 };
 
-TEST(Gain, CacheCheckOnce) {
+TEST(DriverDatagramGain, CacheCheckOnce) {
   auto autd = create_controller();
 
   {
@@ -70,7 +70,7 @@ TEST(Gain, CacheCheckOnce) {
   }
 }
 
-TEST(Gain, CacheCheckOnlyForEnabled) {
+TEST(DriverDatagramGain, CacheCheckOnlyForEnabled) {
   auto autd = create_controller();
   autd.geometry()[0].set_enable(false);
 
