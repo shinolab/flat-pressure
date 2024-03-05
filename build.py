@@ -9,11 +9,9 @@ import shutil
 import subprocess
 import sys
 import tarfile
+import urllib.request
 from glob import glob
 from typing import List, Optional
-
-import requests
-from packaging import version
 
 
 def fetch_submodule():
@@ -71,10 +69,7 @@ def onexc(func, path, exeption):
 
 def rmtree_f(path):
     try:
-        if version.parse(platform.python_version()) >= version.parse("3.12"):
-            shutil.rmtree(path, onexc=onexc)
-        else:
-            shutil.rmtree(path, onerror=onexc)
+        shutil.rmtree(path, onerror=onexc)
     except FileNotFoundError:
         pass
 
@@ -166,21 +161,18 @@ def copy_lib(config: Config):
 
     if config.is_windows():
         url = f"https://github.com/shinolab/autd3-capi/releases/download/v{version}/autd3-v{version}-win-x64-static.zip"
-        with open("tmp.zip", mode="wb") as f:
-            f.write(requests.get(url).content)
+        urllib.request.urlretrieve(url, "tmp.zip")
         shutil.unpack_archive("tmp.zip", ".")
         rm_f("tmp.zip")
     elif config.is_macos():
         url = f"https://github.com/shinolab/autd3-capi/releases/download/v{version}/autd3-v{version}-macos-universal-static.tar.gz"
-        with open("tmp.tar.gz", mode="wb") as f:
-            f.write(requests.get(url).content)
+        urllib.request.urlretrieve(url, "tmp.tar.gz")
         with tarfile.open("tmp.tar.gz", "r:gz") as tar:
             tar.extractall()
         rm_f("tmp.tar.gz")
     elif config.is_linux():
         url = f"https://github.com/shinolab/autd3-capi/releases/download/v{version}/autd3-v{version}-linux-x64-static.tar.gz"
-        with open("tmp.tar.gz", mode="wb") as f:
-            f.write(requests.get(url).content)
+        urllib.request.urlretrieve(url, "tmp.tar.gz")
         with tarfile.open("tmp.tar.gz", "r:gz") as tar:
             tar.extractall()
         rm_f("tmp.tar.gz")

@@ -36,10 +36,10 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Install packaging
+      - name: Install deps
         shell: bash
         run: |
-          python3 -m pip install -U packaging requests numpy matplotlib
+          python3 -m pip install -U numpy matplotlib
       - name: Install lcov
         run: |
           sudo apt update && sudo apt -y install lcov
