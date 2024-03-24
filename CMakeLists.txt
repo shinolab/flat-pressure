@@ -4,7 +4,7 @@ if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
   message(FATAL_ERROR "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there. You may need to remove CMakeCache.txt. ")
 endif()
 
-project(autd3 VERSION 22.0.1)
+project(autd3 VERSION 22.0.3)
 
 message(STATUS "Build AUTD3: ${PROJECT_VERSION}")
 
@@ -86,7 +86,7 @@ add_library(autd3::common ALIAS autd3_common)
 add_library(autd3 INTERFACE)
 target_link_libraries(autd3 INTERFACE autd3::common autd3capi)
 if(WIN32)
-  target_link_libraries(autd3 INTERFACE ntdll.lib Winmm.lib bcrypt.lib userenv.lib)
+  target_link_libraries(autd3 INTERFACE ntdll.lib Winmm.lib bcrypt.lib userenv.lib RuntimeObject.lib Propsys.lib)
 elseif(APPLE)
   target_link_libraries(autd3 INTERFACE "-framework CoreFoundation")
 endif()

@@ -12,13 +12,23 @@ constexpr const uint32_t NUM_TRANS_IN_X = 18;
 
 constexpr const uint32_t NUM_TRANS_IN_Y = 14;
 
+constexpr const double TRANS_SPACING_MM = 10.16;
+
+constexpr const double DEVICE_HEIGHT_MM = 151.4;
+
+constexpr const double DEVICE_WIDTH_MM = 192.0;
+
 constexpr const uint32_t FPGA_CLK_FREQ = 20480000;
+
+constexpr const double ULTRASOUND_FREQUENCY = 40000.0;
 
 constexpr const int32_t AUTD3_ERR = -1;
 
 constexpr const int32_t AUTD3_TRUE = 1;
 
 constexpr const int32_t AUTD3_FALSE = 0;
+
+constexpr const double DEFAULT_CORRECTED_ALPHA = 0.803;
 
 enum class GainSTMMode : uint8_t {
   PhaseIntensityFull = 0,
@@ -135,16 +145,6 @@ struct ResultFocusSTM {
   uint32_t err_len;
   void* err;
 };
-
-constexpr const double TRANS_SPACING_MM = 10.16;
-
-constexpr const double DEVICE_HEIGHT_MM = 151.4;
-
-constexpr const double DEVICE_WIDTH_MM = 192.0;
-
-constexpr const double ULTRASOUND_FREQUENCY = 40000.0;
-
-constexpr const double DEFAULT_CORRECTED_ALPHA = 0.803;
 
 extern "C" {
 

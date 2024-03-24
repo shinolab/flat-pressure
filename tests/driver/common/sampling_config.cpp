@@ -9,7 +9,7 @@ static constexpr uint32_t SAMPLING_FREQ_DIV_MAX = 0xFFFFFFFF;
 static constexpr double FREQ_MIN = static_cast<double>(autd3::native_methods::FPGA_CLK_FREQ) / SAMPLING_FREQ_DIV_MAX;
 static constexpr double FREQ_MAX = static_cast<double>(autd3::native_methods::FPGA_CLK_FREQ) / SAMPLING_FREQ_DIV_MIN;
 static constexpr uint64_t PERIOD_MIN = static_cast<uint64_t>(1000000000.0 / autd3::native_methods::FPGA_CLK_FREQ * SAMPLING_FREQ_DIV_MIN);
-static constexpr uint64_t PERIOD_MAX = static_cast<uint64_t>(1000000000.0 / autd3::native_methods::FPGA_CLK_FREQ * SAMPLING_FREQ_DIV_MAX);
+static constexpr uint64_t PERIOD_MAX = 209715199999;
 
 TEST(DriverCommon, SamplingConfigWithFreqDiv) {
   const auto config = autd3::driver::SamplingConfiguration::from_frequency_division(512);
