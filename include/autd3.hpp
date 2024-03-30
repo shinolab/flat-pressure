@@ -47,7 +47,7 @@ constexpr double pi = driver::pi;
 /**
  * @brief AUTD3 software version
  */
-static inline std::string version = "22.0.3";
+static inline std::string version = "22.0.4";
 
 using driver::AUTD3;
 using driver::geometry::deg;
