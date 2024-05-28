@@ -1,0 +1,65 @@
+name: build
+
+on:
+  push:
+    branches:
+      - 'develop'
+  pull_request:
+    types: [opened, reopened, review_requested]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    name: check if files changed
+    outputs:
+      status: ${{ steps.changed-files.outputs.modified_files }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: tj-actions/changed-files@v42
+        id: changed-files
+        with:
+          files: |
+            .github/workflows/build.yml
+            build.py
+            ./CMakeLists.txt
+            ./**/CMakeLists.txt
+            ./**/*.hpp
+            ./**/*.cpp
+
+  build:
+    needs: check
+    name: build-cpp-${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        if: needs.check.outputs.status
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build and test C++ library on ${{ matrix.os }}
+        run: |
+          python3 build.py build --release --cmake-extra="-DCMAKE_C_COMPILER=gcc-12 -DCMAKE_CXX_COMPILER=g++-12"
+          python3 build.py test --release --cmake-extra="-DCMAKE_C_COMPILER=gcc-12 -DCMAKE_CXX_COMPILER=g++-12"
+        if: needs.check.outputs.status && matrix.os == 'ubuntu-latest'
+
+      - name: Build and test C++ library on ${{ matrix.os }}
+        run: |
+          python3 build.py build --release
+          python3 build.py test --release
+        if: needs.check.outputs.status && matrix.os == 'windows-latest'
+
+      - name: Build and test C++ library on ${{ matrix.os }}
+        run: |
+          brew update
+          brew install llvm@17
+          python3 build.py build --release --cmake-extra="-DCMAKE_C_COMPILER=/usr/local/opt/llvm/bin//clang-17 -DCMAKE_CXX_COMPILER=/usr/local/opt/llvm/bin//clang-17"
+          python3 build.py test --release --cmake-extra="-DCMAKE_C_COMPILER=/usr/local/opt/llvm/bin//clang-17 -DCMAKE_CXX_COMPILER=/usr/local/opt/llvm/bin//clang-17"
+        if: needs.check.outputs.status && matrix.os == 'macos-latest'

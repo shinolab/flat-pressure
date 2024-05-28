@@ -1,0 +1,172 @@
+name: Release
+
+on:
+  push:
+    tags:
+    - 'v*'
+
+jobs:
+  release:
+    name: create-github-release
+    runs-on: ubuntu-latest
+    steps:
+    - name: Create Release
+      id: create_release
+      uses: ncipollo/release-action@v1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        draft: false
+        prerelease: false
+    - name: Output Release URL File
+      run: |
+        echo "${{ steps.create_release.outputs.upload_url }}" > release_url.txt
+        echo "${{ steps.create_release.outputs.id }}" > release_id.txt
+    - name: Save Release URL File for publish
+      uses: actions/upload-artifact@v1
+      with:
+        name: release_url
+        path: release_url.txt
+    - name: Save Release URL File for publish
+      uses: actions/upload-artifact@v1
+      with:
+        name: release_id
+        path: release_id.txt
+
+  publish_win:
+    needs: [release]
+    name: upload-release-asset-windows
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        if: needs.check.outputs.status
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Get the version
+        id: get_version
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          result-encoding: string
+          script: |
+            return 'autd3-'+context.payload.ref.replace(/refs\/tags\//, '')+'-win';
+
+      - name: Build project x64
+        run: |
+          python3 build.py build --release --no-examples
+          Compress-Archive -Path LICENSE, lib, include, CMakeLists.txt, README.md, ThirdPartyNotice.txt -DestinationPath assets_x64.zip
+      - name: Load Release URL File from release job
+        uses: actions/download-artifact@v1
+        with:
+          name: release_url
+      - name: Get Release File Name & Upload URL
+        id: get_release_info
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: ./release_url/release_url.txt
+      - name: Upload Release Asset Win x64
+        id: upload-release-asset-win64
+        uses: shogo82148/actions-upload-release-asset@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          upload_url: ${{ steps.get_release_info.outputs.content }}
+          asset_path: ./assets_x64.zip
+          asset_name: ${{ steps.get_version.outputs.result }}-x64.zip
+          asset_content_type: application/zip
+
+  publish_linux:
+    needs: [release]
+    name: upload-release-asset-linux
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        if: needs.check.outputs.status
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Get the version
+        id: get_version
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          result-encoding: string
+          script: |
+            return 'autd3-'+context.payload.ref.replace(/refs\/tags\//, '')+'-linux';
+
+      - name: Build project x64
+        run: |
+          python3 build.py build --release --no-examples
+          tar -zcvf assets_x64.tar.gz lib include CMakeLists.txt LICENSE README.md ThirdPartyNotice.txt
+        shell: bash
+      - name: Load Release URL File from release job
+        uses: actions/download-artifact@v1
+        with:
+          name: release_url
+      - name: Get Release File Name & Upload URL
+        id: get_release_info
+        run: |
+          value=`cat release_url/release_url.txt`
+          echo "upload_url=$value" >> $GITHUB_OUTPUT
+      - name: Upload Release Asset
+        id: upload-release-asset-x64
+        uses: shogo82148/actions-upload-release-asset@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          upload_url: ${{ steps.get_release_info.outputs.upload_url }}
+          asset_path: ./assets_x64.tar.gz
+          asset_name: ${{ steps.get_version.outputs.result }}-x64.tar.gz
+          asset_content_type: application/octet-stream
+
+  publish_mac:
+    needs: [release]
+    name: upload-release-asset-macos
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        if: needs.check.outputs.status
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Get the version
+        id: get_version
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          result-encoding: string
+          script: |
+            return 'autd3-'+context.payload.ref.replace(/refs\/tags\//, '')+'-macos-universal.tar.gz';
+
+      - name: Build project
+        run: |
+          python3 build.py build --release --no-examples
+          tar -zcvf assets.tar.gz lib include CMakeLists.txt LICENSE README.md ThirdPartyNotice.txt
+      - name: Load Release URL File from release job
+        uses: actions/download-artifact@v1
+        with:
+          name: release_url
+      - name: Get Release File Name & Upload URL
+        id: get_release_info
+        run: |
+          value=`cat release_url/release_url.txt`
+          echo "upload_url=$value" >> $GITHUB_OUTPUT
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: shogo82148/actions-upload-release-asset@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          upload_url: ${{ steps.get_release_info.outputs.upload_url }}
+          asset_path: ./assets.tar.gz
+          asset_name: ${{ steps.get_version.outputs.result }}
+          asset_content_type: application/octet-stream
