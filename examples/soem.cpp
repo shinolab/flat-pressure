@@ -6,9 +6,21 @@
 #include "runner.hpp"
 #include "util.hpp"
 
+using namespace autd3::driver::geometry;
+
 coro::task<int> main_() {
   auto autd = co_await autd3::ControllerBuilder()
+                  //.add_device(autd3::AUTD3(autd3::Vector3::Zero()))
+                  .add_device(autd3::AUTD3(autd3::Vector3(autd3::AUTD3::DEVICE_WIDTH, 0.0, 0.0)).with_rotation(autd3::EulerAngles::from_zyz(0.0 * rad, -autd3::pi / 4.0 * rad, 0.0 * rad)))
                   .add_device(autd3::AUTD3(autd3::Vector3::Zero()))
+                  .add_device(autd3::AUTD3(autd3::Vector3(-autd3::AUTD3::DEVICE_WIDTH, 0.0, 0.0)))
+                  .add_device(autd3::AUTD3(autd3::Vector3(-2 * autd3::AUTD3::DEVICE_WIDTH - 10, 0.0, autd3::AUTD3::DEVICE_WIDTH / sqrt(2))).with_rotation(autd3::EulerAngles::from_zyz(0.0 * rad, autd3::pi / 4.0 * rad, 0.0 * rad)))
+
+                  .add_device(autd3::AUTD3(autd3::Vector3(-2 * autd3::AUTD3::DEVICE_WIDTH - 10, autd3::AUTD3::DEVICE_HEIGHT + 3, autd3::AUTD3::DEVICE_WIDTH / sqrt(2))).with_rotation(autd3::EulerAngles::from_zyz(0.0 * rad, autd3::pi / 4.0 * rad, 0.0 * rad)))
+                  .add_device(autd3::AUTD3(autd3::Vector3(-autd3::AUTD3::DEVICE_WIDTH, autd3::AUTD3::DEVICE_HEIGHT + 3, 0.0)))
+                  .add_device(autd3::AUTD3(autd3::Vector3(0.0 + 7, autd3::AUTD3::DEVICE_HEIGHT + 3, 0.0)))
+                  .add_device(autd3::AUTD3(autd3::Vector3(autd3::AUTD3::DEVICE_WIDTH, autd3::AUTD3::DEVICE_HEIGHT + 3, 0.0)).with_rotation(autd3::EulerAngles::from_zyz(0.0 * rad, -autd3::pi / 4.0 * rad, 0.0 * rad)))
+
                   .open_async(autd3::link::SOEM::builder().with_err_handler(
                       [](const uint16_t slave, const autd3::link::Status status, const std::string& msg) {
                         switch (status) {
