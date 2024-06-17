@@ -19,6 +19,7 @@
 #include "tests/plane.hpp"
 #include "tests/stm.hpp"
 #include "tests/transtest.hpp"
+//#include "tests/kishi_new_b4jikken.hpp"
 
 template <typename L>
 inline coro::task<int> run(autd3::Controller<L>& autd) {
@@ -33,7 +34,9 @@ inline coro::task<int> run(autd3::Controller<L>& autd) {
                                                   std::pair(F{advanced_test<L>}, "Custom Gain & Modulation test"),
                                                   std::pair(F{flag_test<L>}, "Flag test"),
                                                   std::pair(F{tran_test<L>}, "TransducerTest test"),
-                                                  std::pair(F{group_by_transducer_test<L>}, "Group (by Transducer) test")};
+                                                  std::pair(F{group_by_transducer_test<L>}, "Group (by Transducer) test")
+                                                  //std::pair(F{kishi_test_B4jikken<L>}, "kishi_test_B4jikken") 
+  };
 
   if (autd.geometry().num_devices() >= 2) tests.emplace_back(F{group_by_device_test<L>}, "Group (by Device) test");
 
